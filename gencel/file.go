@@ -7,6 +7,7 @@ import (
 
 type File struct {
 	pkg   *Package
+	path  string
 	file  *ast.File
 	decls []FuncDecl
 }
