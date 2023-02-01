@@ -7,17 +7,23 @@ import (
 
 var tplFuncs = map[string]any{
 	"castReturn": celTypeToObj,
+	"fnSuffix": func(args []Ident) string {
+		var output []string
+		for _, a := range args {
+			output = append(output, a.GoType)
+		}
+
+		return strings.Join(output, "_")
+	},
 	"getArgs": func(args []Ident) string {
-		output := []string{}
+		var output []string
 		for i := range args {
 			var a string
 			switch args[i].GoType {
-			case "time.Time":
-				a = fmt.Sprintf("args[%d].Value().(time.Time)", i)
-			case "time.Duration":
-				a = fmt.Sprintf("args[%d].Value().(time.Duration)", i)
-			default:
+			case "interface{}":
 				a = fmt.Sprintf("args[%d]", i)
+			default:
+				a = fmt.Sprintf("args[%d].Value().(%s)", i, args[i].GoType)
 			}
 
 			output = append(output, a)
@@ -36,7 +42,7 @@ type funcDefTemplateView struct {
 
 const funcDefTemplate = `
 var {{.FnName}}Gen = cel.Function("{{.FnName}}",
-	cel.Overload("{{.FnName}}_string_string",
+	cel.Overload("{{.FnName}}_{{fnSuffix .Args}}",
 	[]*cel.Type{
 		{{ range $elem := .Args }} {{.Type}},	{{end}}
 	},
