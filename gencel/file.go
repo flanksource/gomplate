@@ -2,8 +2,14 @@ package gencel
 
 import (
 	"go/ast"
-	"strings"
+	"log"
+	"regexp"
 )
+
+var blacklistedFuncs = []regexp.Regexp{
+	*regexp.MustCompile("^Create"),
+	*regexp.MustCompile("^init"),
+}
 
 type File struct {
 	pkg   *Package
@@ -13,8 +19,11 @@ type File struct {
 }
 
 func (t *File) handleFuncDecl(n *ast.FuncDecl) bool {
-	if strings.Index(n.Name.Name, "Create") == 0 {
-		return false
+	for _, blf := range blacklistedFuncs {
+		if blf.MatchString(n.Name.Name) {
+			log.Println("Ignoring func", n.Name.Name)
+			return false
+		}
 	}
 
 	decl := FuncDecl{
@@ -32,6 +41,7 @@ func (t *File) handleFuncDecl(n *ast.FuncDecl) bool {
 	if n.Type.Results != nil {
 		if len(n.Type.Results.List) > 1 {
 			// NOTE: Multiple returns not supported by cel-go
+			log.Printf("Ignoring func [%s] because of multiple return values", n.Name.Name)
 			return false
 		}
 

@@ -12,6 +12,8 @@ func celTypeToObj(name string) string {
 		return "Timestamp"
 	case "cel.IntType":
 		return "Int"
+	case "cel.DoubleType":
+		return "Double"
 	default:
 		return "Unknown"
 	}
