@@ -5,3 +5,6 @@ report.xml
 *.cid
 *.iid
 *.out
+
+.vscode
+*_gen.go
