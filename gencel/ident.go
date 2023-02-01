@@ -27,10 +27,18 @@ func goTypeToIdent(name string) Ident {
 		return Ident{Type: "cel.DurationType", GoType: "time.Duration"}
 	case "Time":
 		return Ident{Type: "cel.TimestampType", GoType: "time.Time"}
-	case "int", "int32", "int64":
+	case "int", "int8", "int16", "int32", "int64":
 		return Ident{Type: "cel.IntType", GoType: name}
+	case "uint", "uint8", "uint16", "uint32", "uint64":
+		return Ident{Type: "cel.UintType", GoType: name}
 	case "float32", "float64":
 		return Ident{Type: "cel.DoubleType", GoType: name}
+	case "[]byte":
+		return Ident{Type: "cel.BytesType", GoType: name}
+	case "map":
+		return Ident{Type: "cel.MapType", GoType: name}
+	case "array", "slice":
+		return Ident{Type: "cel.ListType", GoType: name}
 	default:
 		return Ident{Type: "cel.DynType", GoType: name}
 	}
