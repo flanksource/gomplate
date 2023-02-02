@@ -13,9 +13,11 @@ var V1uuidGen = cel.Function("V1",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x UUIDFuncs
+			a0, a1 := x.V1()
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -27,9 +29,11 @@ var V4uuidGen = cel.Function("V4",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x UUIDFuncs
+			a0, a1 := x.V4()
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -41,9 +45,11 @@ var NiluuidGen = cel.Function("Nil",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x UUIDFuncs
+			a0, a1 := x.Nil()
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -58,9 +64,11 @@ var IsValiduuidGen = cel.Function("IsValid",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x UUIDFuncs
+			a0, a1 := x.IsValid(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -75,9 +83,11 @@ var ParseuuidGen = cel.Function("Parse",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x UUIDFuncs
+			a0, a1 := x.Parse(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),

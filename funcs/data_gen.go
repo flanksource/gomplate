@@ -16,9 +16,11 @@ var JSONdataGen = cel.Function("JSON",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.JSON(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -33,9 +35,11 @@ var JSONArraydataGen = cel.Function("JSONArray",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.JSONArray(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -50,9 +54,11 @@ var YAMLdataGen = cel.Function("YAML",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.YAML(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -67,9 +73,11 @@ var YAMLArraydataGen = cel.Function("YAMLArray",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.YAMLArray(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -84,9 +92,11 @@ var TOMLdataGen = cel.Function("TOML",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.TOML(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -101,9 +111,11 @@ var CSVdataGen = cel.Function("CSV",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.CSV(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -118,9 +130,11 @@ var CSVByRowdataGen = cel.Function("CSVByRow",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.CSVByRow(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -135,9 +149,11 @@ var CSVByColumndataGen = cel.Function("CSVByColumn",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.CSVByColumn(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -152,9 +168,11 @@ var ToCSVdataGen = cel.Function("ToCSV",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.ToCSV(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -169,9 +187,11 @@ var ToJSONdataGen = cel.Function("ToJSON",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.ToJSON(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -186,9 +206,11 @@ var ToJSONPrettydataGen = cel.Function("ToJSONPretty",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.ToJSONPretty(args[0].Value().(string), args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -203,9 +225,11 @@ var ToYAMLdataGen = cel.Function("ToYAML",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.ToYAML(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -220,9 +244,11 @@ var ToTOMLdataGen = cel.Function("ToTOML",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x DataFuncs
+			a0, a1 := x.ToTOML(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),

@@ -16,9 +16,11 @@ var ASCIIrandomGen = cel.Function("ASCII",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x RandomFuncs
+			a0, a1 := x.ASCII(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -33,9 +35,11 @@ var AlpharandomGen = cel.Function("Alpha",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x RandomFuncs
+			a0, a1 := x.Alpha(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -50,9 +54,11 @@ var AlphaNumrandomGen = cel.Function("AlphaNum",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x RandomFuncs
+			a0, a1 := x.AlphaNum(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -67,9 +73,11 @@ var StringrandomGen = cel.Function("String",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x RandomFuncs
+			a0, a1 := x.String(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -84,9 +92,11 @@ var ItemrandomGen = cel.Function("Item",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x RandomFuncs
+			a0, a1 := x.Item(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -101,9 +111,11 @@ var NumberrandomGen = cel.Function("Number",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x RandomFuncs
+			a0, a1 := x.Number(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -118,9 +130,11 @@ var FloatrandomGen = cel.Function("Float",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x RandomFuncs
+			a0, a1 := x.Float(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),

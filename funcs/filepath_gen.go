@@ -135,9 +135,11 @@ var MatchfilepathGen = cel.Function("Match",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x FilePathFuncs
+			a0, a1 := x.Match(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -152,9 +154,11 @@ var RelfilepathGen = cel.Function("Rel",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x FilePathFuncs
+			a0, a1 := x.Rel(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),

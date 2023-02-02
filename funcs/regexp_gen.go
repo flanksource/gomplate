@@ -16,9 +16,11 @@ var FindregexpGen = cel.Function("Find",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x ReFuncs
+			a0, a1 := x.Find(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -33,9 +35,11 @@ var FindAllregexpGen = cel.Function("FindAll",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x ReFuncs
+			a0, a1 := x.FindAll(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -101,9 +105,11 @@ var ReplaceLiteralregexpGen = cel.Function("ReplaceLiteral",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x ReFuncs
+			a0, a1 := x.ReplaceLiteral(args[0], args[1], args[2])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),
@@ -118,9 +124,11 @@ var SplitregexpGen = cel.Function("Split",
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
-			// Need to figure this out
-			name := "Flanksource"
-			return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
+			var x ReFuncs
+			a0, a1 := x.Split(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
 
 		}),
 	),

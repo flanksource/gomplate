@@ -100,7 +100,7 @@ func (g *Generator) generateFile(file *File) {
 			RecvType:       decl.RecvType,
 		}
 
-		g.render(funcDefTemplate, v)
+		g.render(v)
 	}
 
 	// Write to file.
@@ -124,8 +124,15 @@ func (g *Generator) printf(format string, args ...interface{}) {
 	}
 }
 
-func (g *Generator) render(tpl string, model interface{}) {
-	t, err := template.New(tpl).Funcs(tplFuncs).Parse(tpl)
+func (g *Generator) render(model interface{}) {
+	t := template.New("main").Funcs(tplFuncs)
+
+	t, err := t.Parse(funcDefTemplate)
+	if err != nil {
+		log.Fatal("instance template parse: ", err)
+	}
+
+	t, err = t.Parse(funcBodyTemplate)
 	if err != nil {
 		log.Fatal("instance template parse: ", err)
 	}

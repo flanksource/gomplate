@@ -18,7 +18,7 @@ var GetenvenvGen = cel.Function("Getenv",
 
 			var x EnvFuncs
 
-			return types.DefaultTypeAdapter.NativeToValue(x.Getenv(args[0], args[1].Value().(string)))
+			return types.DefaultTypeAdapter.NativeToValue(x.Getenv(args[0], args[1]))
 
 		}),
 	),

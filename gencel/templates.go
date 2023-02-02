@@ -23,6 +23,14 @@ func getArgs(args []Ident) string {
 }
 
 var tplFuncs = map[string]any{
+	"getReturnIdentifiers": func(args []Ident) string {
+		var output []string
+		for i := range args {
+			output = append(output, fmt.Sprintf("a%d", i))
+		}
+
+		return strings.Join(output, ", ")
+	},
 	"fnSuffix": func(args []Ident) string {
 		var output []string
 		for _, a := range args {
@@ -52,6 +60,27 @@ type funcDefTemplateView struct {
 	RecvType       string
 }
 
+const funcBodyTemplate = `
+{{define "body"}}
+		{{if gt (len .ReturnTypes) 1}}
+			var x {{.RecvType}}
+			{{getReturnIdentifiers .ReturnTypes}} := x.{{.FnName}}({{getArgs .Args}})
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				{{getReturnIdentifiers .ReturnTypes}},
+			})
+		{{else}}
+			var x {{.RecvType}}
+			{{if eq (index .ReturnTypes 0).Type "cel.DurationType"}}
+			return types.Duration{Duration: x.{{.FnName}}({{getArgs .Args}})}
+			{{else if eq (index .ReturnTypes 0).Type "cel.TimestampType"}}
+			return types.Timestamp{Time: x.{{.FnName}}({{getArgs .Args}})}
+			{{else}}
+			return types.DefaultTypeAdapter.NativeToValue(x.{{.FnName}}({{getArgs .Args}}))
+			{{end}}
+		{{end}}
+{{end}}
+`
+
 const funcDefTemplate = `
 var {{.FnName}}{{.ParentFileName}}Gen = cel.Function("{{.FnName}}",
 	cel.Overload("{{.FnName}}_{{fnSuffix .Args}}",
@@ -61,20 +90,7 @@ var {{.FnName}}{{.ParentFileName}}Gen = cel.Function("{{.FnName}}",
 	}{{else}}nil{{end}},
 	{{getReturnTypes .ReturnTypes}},
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			{{if gt (len .ReturnTypes) 1}}
-				// Need to figure this out
-				name := "Flanksource"
-				return types.DefaultTypeAdapter.NativeToValue([]string{name, name + "suffix"})
-			{{else}}
-				var x {{.RecvType}}
-				{{if eq (index .ReturnTypes 0).Type "cel.DurationType"}}
-				return types.Duration{Duration: x.{{.FnName}}({{getArgs .Args}})}
-				{{else if eq (index .ReturnTypes 0).Type "cel.TimestampType"}}
-				return types.Timestamp{Time: x.{{.FnName}}({{getArgs .Args}})}
-				{{else}}
-				return types.DefaultTypeAdapter.NativeToValue(x.{{.FnName}}({{getArgs .Args}}))
-				{{end}}
-			{{end}}
+			{{ block "body" . }}{{end}}
 		}),
 	),
 )
