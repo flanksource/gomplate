@@ -9,13 +9,20 @@ import "github.com/google/cel-go/common/types/ref"
 
 var SlicecollGen = cel.Function("Slice",
 	cel.Overload("Slice_interface{}",
+	
 	[]*cel.Type{
 		 cel.DynType,	
 	},
 	cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			
+		
 			var x CollFuncs
+			
 			return types.DefaultTypeAdapter.NativeToValue(x.Slice(args[0]))
+			
+		
+
 		}),
 	),
 )

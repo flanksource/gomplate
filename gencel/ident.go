@@ -53,7 +53,7 @@ func astToIdent(a ast.Expr) Ident {
 	case *ast.Ellipsis:
 		return Ident{Type: "cel.DynType", GoType: "interface{}"}
 	case *ast.SelectorExpr:
-		return goTypeToIdent(v.Sel.Name)
+		return goTypeToIdent(astToIdent(v.X).GoType + "." + v.Sel.Name)
 	default:
 		return Ident{Type: "cel.StringType", GoType: ""}
 	}
