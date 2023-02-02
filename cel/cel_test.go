@@ -18,7 +18,7 @@ func panIf(err error) {
 
 func TestEnv(t *testing.T) {
 	var envopt []cel.EnvOption
-	envopt = append(envopt, funcs.ReplaceregexpGen)
+	envopt = append(envopt, funcs.CelEnvOption...)
 
 	env, err := cel.NewEnv(envopt...)
 	panIf(err)
@@ -41,7 +41,7 @@ func TestEnv(t *testing.T) {
 }
 
 func TestMultipleReturns(t *testing.T) {
-	env, err := cel.NewEnv(funcs.Encodebase64Gen)
+	env, err := cel.NewEnv(funcs.CelEnvOption...)
 	panIf(err)
 
 	expr := `Encode("flanksource")`

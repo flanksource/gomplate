@@ -53,11 +53,25 @@ var tplFuncs = map[string]any{
 }
 
 type funcDefTemplateView struct {
-	ParentFileName string
-	FnName         string
-	Args           []Ident
-	ReturnTypes    []Ident
-	RecvType       string
+	// IdentName is the name of the exported cel func
+	// in this codebase.
+	IdentName string
+
+	// FnName is the name of the cel func inside the
+	// cel environment.
+	FnName string
+
+	// Args is the list of arguments of the go func
+	// that this cel func is encapsulating.
+	Args []Ident
+
+	// ReturnTypes is the list of all returns of the go func
+	// that this cel func is encapsulating.
+	ReturnTypes []Ident
+
+	// RecvType is the parent type of the member func
+	// that this cel func is encapsulating.
+	RecvType string
 }
 
 const funcBodyTemplate = `
@@ -82,7 +96,7 @@ const funcBodyTemplate = `
 `
 
 const funcDefTemplate = `
-var {{.FnName}}{{.ParentFileName}}Gen = cel.Function("{{.FnName}}",
+var {{.IdentName}} = cel.Function("{{.FnName}}",
 	cel.Overload("{{.FnName}}_{{fnSuffix .Args}}",
 	{{if .Args}}
 	[]*cel.Type{
@@ -94,4 +108,15 @@ var {{.FnName}}{{.ParentFileName}}Gen = cel.Function("{{.FnName}}",
 		}),
 	),
 )
+`
+
+type exportFuncsTemplateView struct {
+	FnNames []string
+}
+
+const exportAllTemplate = `
+var CelEnvOption = []cel.EnvOption{
+	{{range $fnName := .FnNames}}{{$fnName}},
+	{{end}}
+}
 `
