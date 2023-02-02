@@ -7,8 +7,6 @@ import (
 
 	"github.com/flanksource/gomplate/v3/funcs"
 	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
 	"github.com/google/cel-go/ext"
 )
 
@@ -42,32 +40,11 @@ func TestEnv(t *testing.T) {
 	}
 }
 
-func Split(name string) (string, string) {
-	return name, name + "suffix"
-}
-
-var ReplaceGen = cel.Function("Suffixer",
-	cel.Overload("Replace_interface{}_interface{}_interface{}",
-		[]*cel.Type{
-			cel.StringType,
-		},
-		cel.StringType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			name := args[0].Value().(string)
-			a, b := Split(name)
-			return types.DefaultTypeAdapter.NativeToValue([]any{a, b})
-		}),
-	),
-)
-
 func TestMultipleReturns(t *testing.T) {
-	var envopt []cel.EnvOption
-	envopt = append(envopt, ReplaceGen)
-
-	env, err := cel.NewEnv(envopt...)
+	env, err := cel.NewEnv(funcs.Encodebase64Gen)
 	panIf(err)
 
-	expr := `Suffixer("flanksource")`
+	expr := `Encode("flanksource")`
 	ast, issues := env.Compile(expr)
 	if issues != nil && issues.Err() != nil {
 		panIf(err)
@@ -82,6 +59,10 @@ func TestMultipleReturns(t *testing.T) {
 	res := out.Value().([]any)
 	if len(res) != 2 {
 		t.Fatalf("Expected ranksource got %s\n", out)
+	}
+
+	if res[0] != "Zmxhbmtzb3VyY2U=" {
+		t.Fatalf("Expected Zmxhbmtzb3VyY2U= got %s\n", res[0])
 	}
 }
 
