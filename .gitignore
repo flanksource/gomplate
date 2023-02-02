@@ -7,4 +7,3 @@ report.xml
 *.out
 
 .vscode
-*_gen.go
