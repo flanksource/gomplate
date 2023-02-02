@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var BoolconvGen = cel.Function("Bool",
-	cel.Overload("Bool_interface{}",
+var BoolconvGen = cel.Function("conv.Bool",
+	cel.Overload("conv.Bool_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -24,8 +24,8 @@ var BoolconvGen = cel.Function("Bool",
 	),
 )
 
-var ToBoolconvGen = cel.Function("ToBool",
-	cel.Overload("ToBool_interface{}",
+var ToBoolconvGen = cel.Function("conv.ToBool",
+	cel.Overload("conv.ToBool_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -41,8 +41,8 @@ var ToBoolconvGen = cel.Function("ToBool",
 	),
 )
 
-var JoinconvGen = cel.Function("Join",
-	cel.Overload("Join_interface{}_string",
+var JoinconvGen = cel.Function("conv.Join",
+	cel.Overload("conv.Join_interface{}_string",
 
 		[]*cel.Type{
 			cel.DynType, cel.StringType,
@@ -60,8 +60,8 @@ var JoinconvGen = cel.Function("Join",
 	),
 )
 
-var HasconvGen = cel.Function("Has",
-	cel.Overload("Has_interface{}_string",
+var HasconvGen = cel.Function("conv.Has",
+	cel.Overload("conv.Has_interface{}_string",
 
 		[]*cel.Type{
 			cel.DynType, cel.StringType,
@@ -77,8 +77,8 @@ var HasconvGen = cel.Function("Has",
 	),
 )
 
-var ParseIntconvGen = cel.Function("ParseInt",
-	cel.Overload("ParseInt_interface{}_int_int",
+var ParseIntconvGen = cel.Function("conv.ParseInt",
+	cel.Overload("conv.ParseInt_interface{}_int_int",
 
 		[]*cel.Type{
 			cel.DynType, cel.IntType, cel.IntType,
@@ -94,8 +94,8 @@ var ParseIntconvGen = cel.Function("ParseInt",
 	),
 )
 
-var ParseFloatconvGen = cel.Function("ParseFloat",
-	cel.Overload("ParseFloat_interface{}_int",
+var ParseFloatconvGen = cel.Function("conv.ParseFloat",
+	cel.Overload("conv.ParseFloat_interface{}_int",
 
 		[]*cel.Type{
 			cel.DynType, cel.IntType,
@@ -111,8 +111,8 @@ var ParseFloatconvGen = cel.Function("ParseFloat",
 	),
 )
 
-var ParseUintconvGen = cel.Function("ParseUint",
-	cel.Overload("ParseUint_interface{}_int_int",
+var ParseUintconvGen = cel.Function("conv.ParseUint",
+	cel.Overload("conv.ParseUint_interface{}_int_int",
 
 		[]*cel.Type{
 			cel.DynType, cel.IntType, cel.IntType,
@@ -128,8 +128,8 @@ var ParseUintconvGen = cel.Function("ParseUint",
 	),
 )
 
-var AtoiconvGen = cel.Function("Atoi",
-	cel.Overload("Atoi_interface{}",
+var AtoiconvGen = cel.Function("conv.Atoi",
+	cel.Overload("conv.Atoi_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -145,8 +145,8 @@ var AtoiconvGen = cel.Function("Atoi",
 	),
 )
 
-var URLconvGen = cel.Function("URL",
-	cel.Overload("URL_interface{}",
+var URLconvGen = cel.Function("conv.URL",
+	cel.Overload("conv.URL_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -164,8 +164,8 @@ var URLconvGen = cel.Function("URL",
 	),
 )
 
-var ToInt64convGen = cel.Function("ToInt64",
-	cel.Overload("ToInt64_interface{}",
+var ToInt64convGen = cel.Function("conv.ToInt64",
+	cel.Overload("conv.ToInt64_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -181,8 +181,8 @@ var ToInt64convGen = cel.Function("ToInt64",
 	),
 )
 
-var ToIntconvGen = cel.Function("ToInt",
-	cel.Overload("ToInt_interface{}",
+var ToIntconvGen = cel.Function("conv.ToInt",
+	cel.Overload("conv.ToInt_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -198,8 +198,8 @@ var ToIntconvGen = cel.Function("ToInt",
 	),
 )
 
-var ToFloat64convGen = cel.Function("ToFloat64",
-	cel.Overload("ToFloat64_interface{}",
+var ToFloat64convGen = cel.Function("conv.ToFloat64",
+	cel.Overload("conv.ToFloat64_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -215,8 +215,8 @@ var ToFloat64convGen = cel.Function("ToFloat64",
 	),
 )
 
-var ToStringconvGen = cel.Function("ToString",
-	cel.Overload("ToString_interface{}",
+var ToStringconvGen = cel.Function("conv.ToString",
+	cel.Overload("conv.ToString_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -232,8 +232,8 @@ var ToStringconvGen = cel.Function("ToString",
 	),
 )
 
-var DefaultconvGen = cel.Function("Default",
-	cel.Overload("Default_interface{}_interface{}",
+var DefaultconvGen = cel.Function("conv.Default",
+	cel.Overload("conv.Default_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,

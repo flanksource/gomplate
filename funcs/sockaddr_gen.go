@@ -7,8 +7,8 @@ import (
 	"github.com/hashicorp/go-sockaddr"
 )
 
-var GetAllInterfacessockaddrGen = cel.Function("GetAllInterfaces",
-	cel.Overload("GetAllInterfaces_",
+var GetAllInterfacessockaddrGen = cel.Function("sockaddr.GetAllInterfaces",
+	cel.Overload("sockaddr.GetAllInterfaces_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -23,8 +23,8 @@ var GetAllInterfacessockaddrGen = cel.Function("GetAllInterfaces",
 	),
 )
 
-var GetDefaultInterfacessockaddrGen = cel.Function("GetDefaultInterfaces",
-	cel.Overload("GetDefaultInterfaces_",
+var GetDefaultInterfacessockaddrGen = cel.Function("sockaddr.GetDefaultInterfaces",
+	cel.Overload("sockaddr.GetDefaultInterfaces_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -39,8 +39,8 @@ var GetDefaultInterfacessockaddrGen = cel.Function("GetDefaultInterfaces",
 	),
 )
 
-var GetPrivateInterfacessockaddrGen = cel.Function("GetPrivateInterfaces",
-	cel.Overload("GetPrivateInterfaces_",
+var GetPrivateInterfacessockaddrGen = cel.Function("sockaddr.GetPrivateInterfaces",
+	cel.Overload("sockaddr.GetPrivateInterfaces_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -55,8 +55,8 @@ var GetPrivateInterfacessockaddrGen = cel.Function("GetPrivateInterfaces",
 	),
 )
 
-var GetPublicInterfacessockaddrGen = cel.Function("GetPublicInterfaces",
-	cel.Overload("GetPublicInterfaces_",
+var GetPublicInterfacessockaddrGen = cel.Function("sockaddr.GetPublicInterfaces",
+	cel.Overload("sockaddr.GetPublicInterfaces_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -71,8 +71,8 @@ var GetPublicInterfacessockaddrGen = cel.Function("GetPublicInterfaces",
 	),
 )
 
-var SortsockaddrGen = cel.Function("Sort",
-	cel.Overload("Sort_string_sockaddr.IfAddrs",
+var SortsockaddrGen = cel.Function("sockaddr.Sort",
+	cel.Overload("sockaddr.Sort_string_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -90,8 +90,8 @@ var SortsockaddrGen = cel.Function("Sort",
 	),
 )
 
-var ExcludesockaddrGen = cel.Function("Exclude",
-	cel.Overload("Exclude_string_string_sockaddr.IfAddrs",
+var ExcludesockaddrGen = cel.Function("sockaddr.Exclude",
+	cel.Overload("sockaddr.Exclude_string_string_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.StringType, cel.StringType, cel.DynType,
@@ -109,8 +109,8 @@ var ExcludesockaddrGen = cel.Function("Exclude",
 	),
 )
 
-var IncludesockaddrGen = cel.Function("Include",
-	cel.Overload("Include_string_string_sockaddr.IfAddrs",
+var IncludesockaddrGen = cel.Function("sockaddr.Include",
+	cel.Overload("sockaddr.Include_string_string_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.StringType, cel.StringType, cel.DynType,
@@ -128,8 +128,8 @@ var IncludesockaddrGen = cel.Function("Include",
 	),
 )
 
-var AttrsockaddrGen = cel.Function("Attr",
-	cel.Overload("Attr_string_interface{}",
+var AttrsockaddrGen = cel.Function("sockaddr.Attr",
+	cel.Overload("sockaddr.Attr_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -147,8 +147,8 @@ var AttrsockaddrGen = cel.Function("Attr",
 	),
 )
 
-var JoinsockaddrGen = cel.Function("Join",
-	cel.Overload("Join_string_string_sockaddr.IfAddrs",
+var JoinsockaddrGen = cel.Function("sockaddr.Join",
+	cel.Overload("sockaddr.Join_string_string_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.StringType, cel.StringType, cel.DynType,
@@ -166,8 +166,8 @@ var JoinsockaddrGen = cel.Function("Join",
 	),
 )
 
-var LimitsockaddrGen = cel.Function("Limit",
-	cel.Overload("Limit_uint_sockaddr.IfAddrs",
+var LimitsockaddrGen = cel.Function("sockaddr.Limit",
+	cel.Overload("sockaddr.Limit_uint_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.UintType, cel.DynType,
@@ -185,8 +185,8 @@ var LimitsockaddrGen = cel.Function("Limit",
 	),
 )
 
-var OffsetsockaddrGen = cel.Function("Offset",
-	cel.Overload("Offset_int_sockaddr.IfAddrs",
+var OffsetsockaddrGen = cel.Function("sockaddr.Offset",
+	cel.Overload("sockaddr.Offset_int_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.IntType, cel.DynType,
@@ -204,8 +204,8 @@ var OffsetsockaddrGen = cel.Function("Offset",
 	),
 )
 
-var UniquesockaddrGen = cel.Function("Unique",
-	cel.Overload("Unique_string_sockaddr.IfAddrs",
+var UniquesockaddrGen = cel.Function("sockaddr.Unique",
+	cel.Overload("sockaddr.Unique_string_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -223,8 +223,8 @@ var UniquesockaddrGen = cel.Function("Unique",
 	),
 )
 
-var MathsockaddrGen = cel.Function("Math",
-	cel.Overload("Math_string_string_sockaddr.IfAddrs",
+var MathsockaddrGen = cel.Function("sockaddr.Math",
+	cel.Overload("sockaddr.Math_string_string_sockaddr.IfAddrs",
 
 		[]*cel.Type{
 			cel.StringType, cel.StringType, cel.DynType,
@@ -242,8 +242,8 @@ var MathsockaddrGen = cel.Function("Math",
 	),
 )
 
-var GetPrivateIPsockaddrGen = cel.Function("GetPrivateIP",
-	cel.Overload("GetPrivateIP_",
+var GetPrivateIPsockaddrGen = cel.Function("sockaddr.GetPrivateIP",
+	cel.Overload("sockaddr.GetPrivateIP_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -258,8 +258,8 @@ var GetPrivateIPsockaddrGen = cel.Function("GetPrivateIP",
 	),
 )
 
-var GetPrivateIPssockaddrGen = cel.Function("GetPrivateIPs",
-	cel.Overload("GetPrivateIPs_",
+var GetPrivateIPssockaddrGen = cel.Function("sockaddr.GetPrivateIPs",
+	cel.Overload("sockaddr.GetPrivateIPs_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -274,8 +274,8 @@ var GetPrivateIPssockaddrGen = cel.Function("GetPrivateIPs",
 	),
 )
 
-var GetPublicIPsockaddrGen = cel.Function("GetPublicIP",
-	cel.Overload("GetPublicIP_",
+var GetPublicIPsockaddrGen = cel.Function("sockaddr.GetPublicIP",
+	cel.Overload("sockaddr.GetPublicIP_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -290,8 +290,8 @@ var GetPublicIPsockaddrGen = cel.Function("GetPublicIP",
 	),
 )
 
-var GetPublicIPssockaddrGen = cel.Function("GetPublicIPs",
-	cel.Overload("GetPublicIPs_",
+var GetPublicIPssockaddrGen = cel.Function("sockaddr.GetPublicIPs",
+	cel.Overload("sockaddr.GetPublicIPs_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -306,8 +306,8 @@ var GetPublicIPssockaddrGen = cel.Function("GetPublicIPs",
 	),
 )
 
-var GetInterfaceIPsockaddrGen = cel.Function("GetInterfaceIP",
-	cel.Overload("GetInterfaceIP_string",
+var GetInterfaceIPsockaddrGen = cel.Function("sockaddr.GetInterfaceIP",
+	cel.Overload("sockaddr.GetInterfaceIP_string",
 
 		[]*cel.Type{
 			cel.StringType,
@@ -325,8 +325,8 @@ var GetInterfaceIPsockaddrGen = cel.Function("GetInterfaceIP",
 	),
 )
 
-var GetInterfaceIPssockaddrGen = cel.Function("GetInterfaceIPs",
-	cel.Overload("GetInterfaceIPs_string",
+var GetInterfaceIPssockaddrGen = cel.Function("sockaddr.GetInterfaceIPs",
+	cel.Overload("sockaddr.GetInterfaceIPs_string",
 
 		[]*cel.Type{
 			cel.StringType,

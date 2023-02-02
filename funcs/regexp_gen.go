@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var FindregexpGen = cel.Function("Find",
-	cel.Overload("Find_interface{}_interface{}",
+var FindregexpGen = cel.Function("regexp.Find",
+	cel.Overload("regexp.Find_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -26,8 +26,8 @@ var FindregexpGen = cel.Function("Find",
 	),
 )
 
-var MatchregexpGen = cel.Function("Match",
-	cel.Overload("Match_interface{}_interface{}",
+var MatchregexpGen = cel.Function("regexp.Match",
+	cel.Overload("regexp.Match_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -43,8 +43,8 @@ var MatchregexpGen = cel.Function("Match",
 	),
 )
 
-var QuoteMetaregexpGen = cel.Function("QuoteMeta",
-	cel.Overload("QuoteMeta_interface{}",
+var QuoteMetaregexpGen = cel.Function("regexp.QuoteMeta",
+	cel.Overload("regexp.QuoteMeta_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -60,8 +60,8 @@ var QuoteMetaregexpGen = cel.Function("QuoteMeta",
 	),
 )
 
-var ReplaceregexpGen = cel.Function("Replace",
-	cel.Overload("Replace_interface{}_interface{}_interface{}",
+var ReplaceregexpGen = cel.Function("regexp.Replace",
+	cel.Overload("regexp.Replace_interface{}_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType, cel.DynType,
@@ -77,8 +77,8 @@ var ReplaceregexpGen = cel.Function("Replace",
 	),
 )
 
-var ReplaceLiteralregexpGen = cel.Function("ReplaceLiteral",
-	cel.Overload("ReplaceLiteral_interface{}_interface{}_interface{}",
+var ReplaceLiteralregexpGen = cel.Function("regexp.ReplaceLiteral",
+	cel.Overload("regexp.ReplaceLiteral_interface{}_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType, cel.DynType,

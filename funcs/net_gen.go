@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var LookupIPnetGen = cel.Function("LookupIP",
-	cel.Overload("LookupIP_interface{}",
+var LookupIPnetGen = cel.Function("net.LookupIP",
+	cel.Overload("net.LookupIP_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -26,8 +26,8 @@ var LookupIPnetGen = cel.Function("LookupIP",
 	),
 )
 
-var LookupIPsnetGen = cel.Function("LookupIPs",
-	cel.Overload("LookupIPs_interface{}",
+var LookupIPsnetGen = cel.Function("net.LookupIPs",
+	cel.Overload("net.LookupIPs_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -45,8 +45,8 @@ var LookupIPsnetGen = cel.Function("LookupIPs",
 	),
 )
 
-var LookupCNAMEnetGen = cel.Function("LookupCNAME",
-	cel.Overload("LookupCNAME_interface{}",
+var LookupCNAMEnetGen = cel.Function("net.LookupCNAME",
+	cel.Overload("net.LookupCNAME_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -64,8 +64,8 @@ var LookupCNAMEnetGen = cel.Function("LookupCNAME",
 	),
 )
 
-var LookupSRVnetGen = cel.Function("LookupSRV",
-	cel.Overload("LookupSRV_interface{}",
+var LookupSRVnetGen = cel.Function("net.LookupSRV",
+	cel.Overload("net.LookupSRV_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -83,8 +83,8 @@ var LookupSRVnetGen = cel.Function("LookupSRV",
 	),
 )
 
-var LookupSRVsnetGen = cel.Function("LookupSRVs",
-	cel.Overload("LookupSRVs_interface{}",
+var LookupSRVsnetGen = cel.Function("net.LookupSRVs",
+	cel.Overload("net.LookupSRVs_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -102,8 +102,8 @@ var LookupSRVsnetGen = cel.Function("LookupSRVs",
 	),
 )
 
-var LookupTXTnetGen = cel.Function("LookupTXT",
-	cel.Overload("LookupTXT_interface{}",
+var LookupTXTnetGen = cel.Function("net.LookupTXT",
+	cel.Overload("net.LookupTXT_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -121,8 +121,8 @@ var LookupTXTnetGen = cel.Function("LookupTXT",
 	),
 )
 
-var ParseIPnetGen = cel.Function("ParseIP",
-	cel.Overload("ParseIP_interface{}",
+var ParseIPnetGen = cel.Function("net.ParseIP",
+	cel.Overload("net.ParseIP_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -140,8 +140,8 @@ var ParseIPnetGen = cel.Function("ParseIP",
 	),
 )
 
-var ParseIPPrefixnetGen = cel.Function("ParseIPPrefix",
-	cel.Overload("ParseIPPrefix_interface{}",
+var ParseIPPrefixnetGen = cel.Function("net.ParseIPPrefix",
+	cel.Overload("net.ParseIPPrefix_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -159,8 +159,8 @@ var ParseIPPrefixnetGen = cel.Function("ParseIPPrefix",
 	),
 )
 
-var ParseIPRangenetGen = cel.Function("ParseIPRange",
-	cel.Overload("ParseIPRange_interface{}",
+var ParseIPRangenetGen = cel.Function("net.ParseIPRange",
+	cel.Overload("net.ParseIPRange_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -178,8 +178,8 @@ var ParseIPRangenetGen = cel.Function("ParseIPRange",
 	),
 )
 
-var StdParseIPnetGen = cel.Function("StdParseIP",
-	cel.Overload("StdParseIP_interface{}",
+var StdParseIPnetGen = cel.Function("net.StdParseIP",
+	cel.Overload("net.StdParseIP_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -197,8 +197,8 @@ var StdParseIPnetGen = cel.Function("StdParseIP",
 	),
 )
 
-var stdParseCIDRnetGen = cel.Function("stdParseCIDR",
-	cel.Overload("stdParseCIDR_interface{}",
+var stdParseCIDRnetGen = cel.Function("net.stdParseCIDR",
+	cel.Overload("net.stdParseCIDR_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -216,8 +216,8 @@ var stdParseCIDRnetGen = cel.Function("stdParseCIDR",
 	),
 )
 
-var StdParseCIDRnetGen = cel.Function("StdParseCIDR",
-	cel.Overload("StdParseCIDR_interface{}",
+var StdParseCIDRnetGen = cel.Function("net.StdParseCIDR",
+	cel.Overload("net.StdParseCIDR_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -235,8 +235,8 @@ var StdParseCIDRnetGen = cel.Function("StdParseCIDR",
 	),
 )
 
-var CidrHostnetGen = cel.Function("CidrHost",
-	cel.Overload("CidrHost_interface{}_interface{}",
+var CidrHostnetGen = cel.Function("net.CidrHost",
+	cel.Overload("net.CidrHost_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -254,8 +254,8 @@ var CidrHostnetGen = cel.Function("CidrHost",
 	),
 )
 
-var CidrNetmasknetGen = cel.Function("CidrNetmask",
-	cel.Overload("CidrNetmask_interface{}",
+var CidrNetmasknetGen = cel.Function("net.CidrNetmask",
+	cel.Overload("net.CidrNetmask_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -273,8 +273,8 @@ var CidrNetmasknetGen = cel.Function("CidrNetmask",
 	),
 )
 
-var CidrSubnetsnetGen = cel.Function("CidrSubnets",
-	cel.Overload("CidrSubnets_interface{}_interface{}",
+var CidrSubnetsnetGen = cel.Function("net.CidrSubnets",
+	cel.Overload("net.CidrSubnets_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,

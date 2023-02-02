@@ -8,8 +8,8 @@ import (
 	"github.com/google/cel-go/common/types/ref"
 )
 
-var ZoneNametimeGen = cel.Function("ZoneName",
-	cel.Overload("ZoneName_",
+var ZoneNametimeGen = cel.Function("time.ZoneName",
+	cel.Overload("time.ZoneName_",
 		nil,
 		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -22,8 +22,8 @@ var ZoneNametimeGen = cel.Function("ZoneName",
 	),
 )
 
-var ZoneOffsettimeGen = cel.Function("ZoneOffset",
-	cel.Overload("ZoneOffset_",
+var ZoneOffsettimeGen = cel.Function("time.ZoneOffset",
+	cel.Overload("time.ZoneOffset_",
 		nil,
 		cel.IntType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -36,8 +36,8 @@ var ZoneOffsettimeGen = cel.Function("ZoneOffset",
 	),
 )
 
-var ParsetimeGen = cel.Function("Parse",
-	cel.Overload("Parse_string_interface{}",
+var ParsetimeGen = cel.Function("time.Parse",
+	cel.Overload("time.Parse_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -55,8 +55,8 @@ var ParsetimeGen = cel.Function("Parse",
 	),
 )
 
-var ParseLocaltimeGen = cel.Function("ParseLocal",
-	cel.Overload("ParseLocal_string_interface{}",
+var ParseLocaltimeGen = cel.Function("time.ParseLocal",
+	cel.Overload("time.ParseLocal_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -74,8 +74,8 @@ var ParseLocaltimeGen = cel.Function("ParseLocal",
 	),
 )
 
-var ParseInLocationtimeGen = cel.Function("ParseInLocation",
-	cel.Overload("ParseInLocation_string_string_interface{}",
+var ParseInLocationtimeGen = cel.Function("time.ParseInLocation",
+	cel.Overload("time.ParseInLocation_string_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.StringType, cel.DynType,
@@ -93,8 +93,8 @@ var ParseInLocationtimeGen = cel.Function("ParseInLocation",
 	),
 )
 
-var NowtimeGen = cel.Function("Now",
-	cel.Overload("Now_",
+var NowtimeGen = cel.Function("time.Now",
+	cel.Overload("time.Now_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -107,8 +107,8 @@ var NowtimeGen = cel.Function("Now",
 	),
 )
 
-var UnixtimeGen = cel.Function("Unix",
-	cel.Overload("Unix_interface{}",
+var UnixtimeGen = cel.Function("time.Unix",
+	cel.Overload("time.Unix_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -126,8 +126,8 @@ var UnixtimeGen = cel.Function("Unix",
 	),
 )
 
-var NanosecondtimeGen = cel.Function("Nanosecond",
-	cel.Overload("Nanosecond_interface{}",
+var NanosecondtimeGen = cel.Function("time.Nanosecond",
+	cel.Overload("time.Nanosecond_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -143,8 +143,8 @@ var NanosecondtimeGen = cel.Function("Nanosecond",
 	),
 )
 
-var MicrosecondtimeGen = cel.Function("Microsecond",
-	cel.Overload("Microsecond_interface{}",
+var MicrosecondtimeGen = cel.Function("time.Microsecond",
+	cel.Overload("time.Microsecond_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -160,8 +160,8 @@ var MicrosecondtimeGen = cel.Function("Microsecond",
 	),
 )
 
-var MillisecondtimeGen = cel.Function("Millisecond",
-	cel.Overload("Millisecond_interface{}",
+var MillisecondtimeGen = cel.Function("time.Millisecond",
+	cel.Overload("time.Millisecond_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -177,8 +177,8 @@ var MillisecondtimeGen = cel.Function("Millisecond",
 	),
 )
 
-var SecondtimeGen = cel.Function("Second",
-	cel.Overload("Second_interface{}",
+var SecondtimeGen = cel.Function("time.Second",
+	cel.Overload("time.Second_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -194,8 +194,8 @@ var SecondtimeGen = cel.Function("Second",
 	),
 )
 
-var MinutetimeGen = cel.Function("Minute",
-	cel.Overload("Minute_interface{}",
+var MinutetimeGen = cel.Function("time.Minute",
+	cel.Overload("time.Minute_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -211,8 +211,8 @@ var MinutetimeGen = cel.Function("Minute",
 	),
 )
 
-var HourtimeGen = cel.Function("Hour",
-	cel.Overload("Hour_interface{}",
+var HourtimeGen = cel.Function("time.Hour",
+	cel.Overload("time.Hour_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -228,8 +228,8 @@ var HourtimeGen = cel.Function("Hour",
 	),
 )
 
-var ParseDurationtimeGen = cel.Function("ParseDuration",
-	cel.Overload("ParseDuration_interface{}",
+var ParseDurationtimeGen = cel.Function("time.ParseDuration",
+	cel.Overload("time.ParseDuration_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -247,8 +247,8 @@ var ParseDurationtimeGen = cel.Function("ParseDuration",
 	),
 )
 
-var SincetimeGen = cel.Function("Since",
-	cel.Overload("Since_gotime.Time",
+var SincetimeGen = cel.Function("time.Since",
+	cel.Overload("time.Since_gotime.Time",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -264,8 +264,8 @@ var SincetimeGen = cel.Function("Since",
 	),
 )
 
-var UntiltimeGen = cel.Function("Until",
-	cel.Overload("Until_gotime.Time",
+var UntiltimeGen = cel.Function("time.Until",
+	cel.Overload("time.Until_gotime.Time",
 
 		[]*cel.Type{
 			cel.DynType,

@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var IsIntmathGen = cel.Function("IsInt",
-	cel.Overload("IsInt_interface{}",
+var IsIntmathGen = cel.Function("math.IsInt",
+	cel.Overload("math.IsInt_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -24,8 +24,8 @@ var IsIntmathGen = cel.Function("IsInt",
 	),
 )
 
-var IsFloatmathGen = cel.Function("IsFloat",
-	cel.Overload("IsFloat_interface{}",
+var IsFloatmathGen = cel.Function("math.IsFloat",
+	cel.Overload("math.IsFloat_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -41,8 +41,8 @@ var IsFloatmathGen = cel.Function("IsFloat",
 	),
 )
 
-var IsNummathGen = cel.Function("IsNum",
-	cel.Overload("IsNum_interface{}",
+var IsNummathGen = cel.Function("math.IsNum",
+	cel.Overload("math.IsNum_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -58,8 +58,8 @@ var IsNummathGen = cel.Function("IsNum",
 	),
 )
 
-var AbsmathGen = cel.Function("Abs",
-	cel.Overload("Abs_interface{}",
+var AbsmathGen = cel.Function("math.Abs",
+	cel.Overload("math.Abs_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -75,8 +75,8 @@ var AbsmathGen = cel.Function("Abs",
 	),
 )
 
-var SubmathGen = cel.Function("Sub",
-	cel.Overload("Sub_interface{}_interface{}",
+var SubmathGen = cel.Function("math.Sub",
+	cel.Overload("math.Sub_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -92,8 +92,8 @@ var SubmathGen = cel.Function("Sub",
 	),
 )
 
-var DivmathGen = cel.Function("Div",
-	cel.Overload("Div_interface{}_interface{}",
+var DivmathGen = cel.Function("math.Div",
+	cel.Overload("math.Div_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -111,8 +111,8 @@ var DivmathGen = cel.Function("Div",
 	),
 )
 
-var RemmathGen = cel.Function("Rem",
-	cel.Overload("Rem_interface{}_interface{}",
+var RemmathGen = cel.Function("math.Rem",
+	cel.Overload("math.Rem_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -128,8 +128,8 @@ var RemmathGen = cel.Function("Rem",
 	),
 )
 
-var PowmathGen = cel.Function("Pow",
-	cel.Overload("Pow_interface{}_interface{}",
+var PowmathGen = cel.Function("math.Pow",
+	cel.Overload("math.Pow_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -145,8 +145,8 @@ var PowmathGen = cel.Function("Pow",
 	),
 )
 
-var CeilmathGen = cel.Function("Ceil",
-	cel.Overload("Ceil_interface{}",
+var CeilmathGen = cel.Function("math.Ceil",
+	cel.Overload("math.Ceil_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -162,8 +162,8 @@ var CeilmathGen = cel.Function("Ceil",
 	),
 )
 
-var FloormathGen = cel.Function("Floor",
-	cel.Overload("Floor_interface{}",
+var FloormathGen = cel.Function("math.Floor",
+	cel.Overload("math.Floor_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -179,8 +179,8 @@ var FloormathGen = cel.Function("Floor",
 	),
 )
 
-var RoundmathGen = cel.Function("Round",
-	cel.Overload("Round_interface{}",
+var RoundmathGen = cel.Function("math.Round",
+	cel.Overload("math.Round_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,

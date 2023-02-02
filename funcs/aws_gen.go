@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var EC2TagsawsGen = cel.Function("EC2Tags",
-	cel.Overload("EC2Tags_",
+var EC2TagsawsGen = cel.Function("aws.EC2Tags",
+	cel.Overload("aws.EC2Tags_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -23,8 +23,8 @@ var EC2TagsawsGen = cel.Function("EC2Tags",
 	),
 )
 
-var KMSEncryptawsGen = cel.Function("KMSEncrypt",
-	cel.Overload("KMSEncrypt_interface{}_interface{}",
+var KMSEncryptawsGen = cel.Function("aws.KMSEncrypt",
+	cel.Overload("aws.KMSEncrypt_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -42,8 +42,8 @@ var KMSEncryptawsGen = cel.Function("KMSEncrypt",
 	),
 )
 
-var KMSDecryptawsGen = cel.Function("KMSDecrypt",
-	cel.Overload("KMSDecrypt_interface{}",
+var KMSDecryptawsGen = cel.Function("aws.KMSDecrypt",
+	cel.Overload("aws.KMSDecrypt_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -61,8 +61,8 @@ var KMSDecryptawsGen = cel.Function("KMSDecrypt",
 	),
 )
 
-var UserIDawsGen = cel.Function("UserID",
-	cel.Overload("UserID_",
+var UserIDawsGen = cel.Function("aws.UserID",
+	cel.Overload("aws.UserID_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -77,8 +77,8 @@ var UserIDawsGen = cel.Function("UserID",
 	),
 )
 
-var AccountawsGen = cel.Function("Account",
-	cel.Overload("Account_",
+var AccountawsGen = cel.Function("aws.Account",
+	cel.Overload("aws.Account_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
@@ -93,8 +93,8 @@ var AccountawsGen = cel.Function("Account",
 	),
 )
 
-var ARNawsGen = cel.Function("ARN",
-	cel.Overload("ARN_",
+var ARNawsGen = cel.Function("aws.ARN",
+	cel.Overload("aws.ARN_",
 		nil,
 		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {

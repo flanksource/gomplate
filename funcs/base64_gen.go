@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var Encodebase64Gen = cel.Function("Encode",
-	cel.Overload("Encode_interface{}",
+var Encodebase64Gen = cel.Function("base64.Encode",
+	cel.Overload("base64.Encode_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -26,8 +26,8 @@ var Encodebase64Gen = cel.Function("Encode",
 	),
 )
 
-var Decodebase64Gen = cel.Function("Decode",
-	cel.Overload("Decode_interface{}",
+var Decodebase64Gen = cel.Function("base64.Decode",
+	cel.Overload("base64.Decode_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -45,8 +45,8 @@ var Decodebase64Gen = cel.Function("Decode",
 	),
 )
 
-var DecodeBytesbase64Gen = cel.Function("DecodeBytes",
-	cel.Overload("DecodeBytes_interface{}",
+var DecodeBytesbase64Gen = cel.Function("base64.DecodeBytes",
+	cel.Overload("base64.DecodeBytes_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,

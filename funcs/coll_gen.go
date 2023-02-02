@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var HascollGen = cel.Function("Has",
-	cel.Overload("Has_interface{}_string",
+var HascollGen = cel.Function("coll.Has",
+	cel.Overload("coll.Has_interface{}_string",
 
 		[]*cel.Type{
 			cel.DynType, cel.StringType,
@@ -24,8 +24,8 @@ var HascollGen = cel.Function("Has",
 	),
 )
 
-var AppendcollGen = cel.Function("Append",
-	cel.Overload("Append_interface{}_interface{}",
+var AppendcollGen = cel.Function("coll.Append",
+	cel.Overload("coll.Append_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -43,8 +43,8 @@ var AppendcollGen = cel.Function("Append",
 	),
 )
 
-var PrependcollGen = cel.Function("Prepend",
-	cel.Overload("Prepend_interface{}_interface{}",
+var PrependcollGen = cel.Function("coll.Prepend",
+	cel.Overload("coll.Prepend_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -62,8 +62,8 @@ var PrependcollGen = cel.Function("Prepend",
 	),
 )
 
-var UniqcollGen = cel.Function("Uniq",
-	cel.Overload("Uniq_interface{}",
+var UniqcollGen = cel.Function("coll.Uniq",
+	cel.Overload("coll.Uniq_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -81,8 +81,8 @@ var UniqcollGen = cel.Function("Uniq",
 	),
 )
 
-var ReversecollGen = cel.Function("Reverse",
-	cel.Overload("Reverse_interface{}",
+var ReversecollGen = cel.Function("coll.Reverse",
+	cel.Overload("coll.Reverse_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -100,8 +100,8 @@ var ReversecollGen = cel.Function("Reverse",
 	),
 )
 
-var JSONPathcollGen = cel.Function("JSONPath",
-	cel.Overload("JSONPath_string_interface{}",
+var JSONPathcollGen = cel.Function("coll.JSONPath",
+	cel.Overload("coll.JSONPath_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,

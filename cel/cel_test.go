@@ -23,7 +23,7 @@ func TestEnv(t *testing.T) {
 	env, err := cel.NewEnv(envopt...)
 	panIf(err)
 
-	expr := `Replace("flank", "rank", "flanksource")`
+	expr := `regexp.Replace("flank", "rank", "flanksource")`
 	ast, issues := env.Compile(expr)
 	if issues != nil && issues.Err() != nil {
 		panIf(err)
@@ -44,7 +44,7 @@ func TestMultipleReturns(t *testing.T) {
 	env, err := cel.NewEnv(funcs.CelEnvOption...)
 	panIf(err)
 
-	expr := `Encode("flanksource")`
+	expr := `base64.Encode("flanksource")`
 	ast, issues := env.Compile(expr)
 	if issues != nil && issues.Err() != nil {
 		panIf(err)

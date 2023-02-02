@@ -61,6 +61,12 @@ type funcDefTemplateView struct {
 	// cel environment.
 	FnName string
 
+	// FnNameWithNamespace is the name of the cel func inside the
+	// cel environment that's namespaced by the filename.
+	// Example: A function IsMax() inside the file math.go would have
+	// FnNameWithNamespace as math.IsMax.
+	FnNameWithNamespace string
+
 	// Args is the list of arguments of the go func
 	// that this cel func is encapsulating.
 	Args []Ident
@@ -96,8 +102,8 @@ const funcBodyTemplate = `
 `
 
 const funcDefTemplate = `
-var {{.IdentName}} = cel.Function("{{.FnName}}",
-	cel.Overload("{{.FnName}}_{{fnSuffix .Args}}",
+var {{.IdentName}} = cel.Function("{{.FnNameWithNamespace}}",
+	cel.Overload("{{.FnNameWithNamespace}}_{{fnSuffix .Args}}",
 	{{if .Args}}
 	[]*cel.Type{
 		{{ range $elem := .Args }} {{.Type}},	{{end}}

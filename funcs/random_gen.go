@@ -7,8 +7,8 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var ASCIIrandomGen = cel.Function("ASCII",
-	cel.Overload("ASCII_interface{}",
+var ASCIIrandomGen = cel.Function("random.ASCII",
+	cel.Overload("random.ASCII_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -26,8 +26,8 @@ var ASCIIrandomGen = cel.Function("ASCII",
 	),
 )
 
-var AlpharandomGen = cel.Function("Alpha",
-	cel.Overload("Alpha_interface{}",
+var AlpharandomGen = cel.Function("random.Alpha",
+	cel.Overload("random.Alpha_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -45,8 +45,8 @@ var AlpharandomGen = cel.Function("Alpha",
 	),
 )
 
-var AlphaNumrandomGen = cel.Function("AlphaNum",
-	cel.Overload("AlphaNum_interface{}",
+var AlphaNumrandomGen = cel.Function("random.AlphaNum",
+	cel.Overload("random.AlphaNum_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -64,8 +64,8 @@ var AlphaNumrandomGen = cel.Function("AlphaNum",
 	),
 )
 
-var ItemrandomGen = cel.Function("Item",
-	cel.Overload("Item_interface{}",
+var ItemrandomGen = cel.Function("random.Item",
+	cel.Overload("random.Item_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
