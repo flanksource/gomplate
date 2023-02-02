@@ -41,40 +41,6 @@ var ToBoolconvGen = cel.Function("ToBool",
 	),
 )
 
-var ToBoolsconvGen = cel.Function("ToBools",
-	cel.Overload("ToBools_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ConvFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.ToBools(args[0]))
-
-		}),
-	),
-)
-
-var SliceconvGen = cel.Function("Slice",
-	cel.Overload("Slice_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ConvFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.Slice(args[0]))
-
-		}),
-	),
-)
-
 var JoinconvGen = cel.Function("Join",
 	cel.Overload("Join_interface{}_string",
 
@@ -232,40 +198,6 @@ var ToIntconvGen = cel.Function("ToInt",
 	),
 )
 
-var ToInt64sconvGen = cel.Function("ToInt64s",
-	cel.Overload("ToInt64s_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ConvFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.ToInt64s(args[0]))
-
-		}),
-	),
-)
-
-var ToIntsconvGen = cel.Function("ToInts",
-	cel.Overload("ToInts_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ConvFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.ToInts(args[0]))
-
-		}),
-	),
-)
-
 var ToFloat64convGen = cel.Function("ToFloat64",
 	cel.Overload("ToFloat64_interface{}",
 
@@ -278,23 +210,6 @@ var ToFloat64convGen = cel.Function("ToFloat64",
 			var x ConvFuncs
 
 			return types.DefaultTypeAdapter.NativeToValue(x.ToFloat64(args[0]))
-
-		}),
-	),
-)
-
-var ToFloat64sconvGen = cel.Function("ToFloat64s",
-	cel.Overload("ToFloat64s_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ConvFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.ToFloat64s(args[0]))
 
 		}),
 	),
@@ -317,23 +232,6 @@ var ToStringconvGen = cel.Function("ToString",
 	),
 )
 
-var ToStringsconvGen = cel.Function("ToStrings",
-	cel.Overload("ToStrings_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ConvFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.ToStrings(args[0]))
-
-		}),
-	),
-)
-
 var DefaultconvGen = cel.Function("Default",
 	cel.Overload("Default_interface{}_interface{}",
 
@@ -346,25 +244,6 @@ var DefaultconvGen = cel.Function("Default",
 			var x ConvFuncs
 
 			return types.DefaultTypeAdapter.NativeToValue(x.Default(args[0], args[1]))
-
-		}),
-	),
-)
-
-var DictconvGen = cel.Function("Dict",
-	cel.Overload("Dict_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ConvFuncs
-			a0, a1 := x.Dict(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
 
 		}),
 	),

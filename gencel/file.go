@@ -49,6 +49,11 @@ func (t *File) handleFuncDecl(n *ast.FuncDecl) bool {
 
 	if n.Type.Params != nil {
 		for _, l := range n.Type.Params.List {
+			if _, ok := l.Type.(*ast.Ellipsis); ok {
+				log.Printf("Variadic function [%s] detected. Ignoring", n.Name.Name)
+				return false
+			}
+
 			for range l.Names {
 				decl.Args = append(decl.Args, l.Type)
 			}

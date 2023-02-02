@@ -7,63 +7,6 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var AsserttestGen = cel.Function("Assert",
-	cel.Overload("Assert_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x TestFuncs
-			a0, a1 := x.Assert(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var FailtestGen = cel.Function("Fail",
-	cel.Overload("Fail_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x TestFuncs
-			a0, a1 := x.Fail(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var RequiredtestGen = cel.Function("Required",
-	cel.Overload("Required_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x TestFuncs
-			a0, a1 := x.Required(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
 var TernarytestGen = cel.Function("Ternary",
 	cel.Overload("Ternary_interface{}_interface{}_interface{}",
 

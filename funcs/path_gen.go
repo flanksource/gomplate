@@ -92,23 +92,6 @@ var IsAbspathGen = cel.Function("IsAbs",
 	),
 )
 
-var JoinpathGen = cel.Function("Join",
-	cel.Overload("Join_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.StringType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x PathFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.Join(args[0]))
-
-		}),
-	),
-)
-
 var MatchpathGen = cel.Function("Match",
 	cel.Overload("Match_interface{}_interface{}",
 

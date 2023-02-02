@@ -291,22 +291,3 @@ var CidrSubnetsnetGen = cel.Function("CidrSubnets",
 		}),
 	),
 )
-
-var CidrSubnetSizesnetGen = cel.Function("CidrSubnetSizes",
-	cel.Overload("CidrSubnetSizes_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x NetFuncs
-			a0, a1 := x.CidrSubnetSizes(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)

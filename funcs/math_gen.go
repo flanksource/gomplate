@@ -41,23 +41,6 @@ var IsFloatmathGen = cel.Function("IsFloat",
 	),
 )
 
-var containsFloatmathGen = cel.Function("containsFloat",
-	cel.Overload("containsFloat_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.BoolType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x MathFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.containsFloat(args[0]))
-
-		}),
-	),
-)
-
 var IsNummathGen = cel.Function("IsNum",
 	cel.Overload("IsNum_interface{}",
 
@@ -87,40 +70,6 @@ var AbsmathGen = cel.Function("Abs",
 			var x MathFuncs
 
 			return types.DefaultTypeAdapter.NativeToValue(x.Abs(args[0]))
-
-		}),
-	),
-)
-
-var AddmathGen = cel.Function("Add",
-	cel.Overload("Add_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x MathFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.Add(args[0]))
-
-		}),
-	),
-)
-
-var MulmathGen = cel.Function("Mul",
-	cel.Overload("Mul_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x MathFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.Mul(args[0]))
 
 		}),
 	),
@@ -191,63 +140,6 @@ var PowmathGen = cel.Function("Pow",
 			var x MathFuncs
 
 			return types.DefaultTypeAdapter.NativeToValue(x.Pow(args[0], args[1]))
-
-		}),
-	),
-)
-
-var SeqmathGen = cel.Function("Seq",
-	cel.Overload("Seq_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x MathFuncs
-			a0, a1 := x.Seq(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var MaxmathGen = cel.Function("Max",
-	cel.Overload("Max_interface{}_interface{}",
-
-		[]*cel.Type{
-			cel.DynType, cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x MathFuncs
-			a0, a1 := x.Max(args[0], args[1])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var MinmathGen = cel.Function("Min",
-	cel.Overload("Min_interface{}_interface{}",
-
-		[]*cel.Type{
-			cel.DynType, cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x MathFuncs
-			a0, a1 := x.Min(args[0], args[1])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
 
 		}),
 	),

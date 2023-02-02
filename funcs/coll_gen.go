@@ -2,109 +2,23 @@
 // DO NOT EDIT.
 
 package funcs
+
 import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-
-var SlicecollGen = cel.Function("Slice",
-	cel.Overload("Slice_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			
-			return types.DefaultTypeAdapter.NativeToValue(x.Slice(args[0]))
-			
-		
-
-		}),
-	),
-)
-
 var HascollGen = cel.Function("Has",
 	cel.Overload("Has_interface{}_string",
-	
-	[]*cel.Type{
-		 cel.DynType,	 cel.StringType,	
-	},
-	cel.BoolType,
+
+		[]*cel.Type{
+			cel.DynType, cel.StringType,
+		},
+		cel.BoolType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CollFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.Has(args[0], args[1].Value().(string)))
-			
-		
-
-		}),
-	),
-)
-
-var DictcollGen = cel.Function("Dict",
-	cel.Overload("Dict_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Dict(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
-var KeyscollGen = cel.Function("Keys",
-	cel.Overload("Keys_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Keys(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
-var ValuescollGen = cel.Function("Values",
-	cel.Overload("Values_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Values(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
 
 		}),
 	),
@@ -112,20 +26,18 @@ var ValuescollGen = cel.Function("Values",
 
 var AppendcollGen = cel.Function("Append",
 	cel.Overload("Append_interface{}_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CollFuncs
 			a0, a1 := x.Append(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -133,20 +45,18 @@ var AppendcollGen = cel.Function("Append",
 
 var PrependcollGen = cel.Function("Prepend",
 	cel.Overload("Prepend_interface{}_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CollFuncs
 			a0, a1 := x.Prepend(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -154,20 +64,18 @@ var PrependcollGen = cel.Function("Prepend",
 
 var UniqcollGen = cel.Function("Uniq",
 	cel.Overload("Uniq_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CollFuncs
 			a0, a1 := x.Uniq(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -175,62 +83,18 @@ var UniqcollGen = cel.Function("Uniq",
 
 var ReversecollGen = cel.Function("Reverse",
 	cel.Overload("Reverse_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CollFuncs
 			a0, a1 := x.Reverse(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
-
-		}),
-	),
-)
-
-var MergecollGen = cel.Function("Merge",
-	cel.Overload("Merge__interface{}",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Merge(args[0].Value().(), args[1])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
-var SortcollGen = cel.Function("Sort",
-	cel.Overload("Sort_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Sort(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
 
 		}),
 	),
@@ -238,83 +102,18 @@ var SortcollGen = cel.Function("Sort",
 
 var JSONPathcollGen = cel.Function("JSONPath",
 	cel.Overload("JSONPath_string_interface{}",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CollFuncs
 			a0, a1 := x.JSONPath(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
-
-		}),
-	),
-)
-
-var FlattencollGen = cel.Function("Flatten",
-	cel.Overload("Flatten_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Flatten(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
-var PickcollGen = cel.Function("Pick",
-	cel.Overload("Pick_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Pick(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
-var OmitcollGen = cel.Function("Omit",
-	cel.Overload("Omit_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CollFuncs
-			a0, a1 := x.Omit(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
 
 		}),
 	),

@@ -7,25 +7,6 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var AbbrevstringsGen = cel.Function("Abbrev",
-	cel.Overload("Abbrev_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x StringFuncs
-			a0, a1 := x.Abbrev(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
 var ReplaceAllstringsGen = cel.Function("ReplaceAll",
 	cel.Overload("ReplaceAll_string_string_interface{}",
 
@@ -302,25 +283,6 @@ var TruncstringsGen = cel.Function("Trunc",
 	),
 )
 
-var IndentstringsGen = cel.Function("Indent",
-	cel.Overload("Indent_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x StringFuncs
-			a0, a1 := x.Indent(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
 var SlugstringsGen = cel.Function("Slug",
 	cel.Overload("Slug_interface{}",
 
@@ -438,44 +400,6 @@ var KebabCasestringsGen = cel.Function("KebabCase",
 
 			var x StringFuncs
 			a0, a1 := x.KebabCase(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var WordWrapstringsGen = cel.Function("WordWrap",
-	cel.Overload("WordWrap_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x StringFuncs
-			a0, a1 := x.WordWrap(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var RuneCountstringsGen = cel.Function("RuneCount",
-	cel.Overload("RuneCount_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x StringFuncs
-			a0, a1 := x.RuneCount(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

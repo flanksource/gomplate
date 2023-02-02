@@ -26,25 +26,6 @@ var FindregexpGen = cel.Function("Find",
 	),
 )
 
-var FindAllregexpGen = cel.Function("FindAll",
-	cel.Overload("FindAll_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ReFuncs
-			a0, a1 := x.FindAll(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
 var MatchregexpGen = cel.Function("Match",
 	cel.Overload("Match_interface{}_interface{}",
 
@@ -107,25 +88,6 @@ var ReplaceLiteralregexpGen = cel.Function("ReplaceLiteral",
 
 			var x ReFuncs
 			a0, a1 := x.ReplaceLiteral(args[0], args[1], args[2])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var SplitregexpGen = cel.Function("Split",
-	cel.Overload("Split_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x ReFuncs
-			a0, a1 := x.Split(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

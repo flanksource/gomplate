@@ -64,25 +64,6 @@ var AlphaNumrandomGen = cel.Function("AlphaNum",
 	),
 )
 
-var StringrandomGen = cel.Function("String",
-	cel.Overload("String_interface{}_interface{}",
-
-		[]*cel.Type{
-			cel.DynType, cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x RandomFuncs
-			a0, a1 := x.String(args[0], args[1])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
 var ItemrandomGen = cel.Function("Item",
 	cel.Overload("Item_interface{}",
 
@@ -94,44 +75,6 @@ var ItemrandomGen = cel.Function("Item",
 
 			var x RandomFuncs
 			a0, a1 := x.Item(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var NumberrandomGen = cel.Function("Number",
-	cel.Overload("Number_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x RandomFuncs
-			a0, a1 := x.Number(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
-		}),
-	),
-)
-
-var FloatrandomGen = cel.Function("Float",
-	cel.Overload("Float_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x RandomFuncs
-			a0, a1 := x.Float(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

@@ -109,23 +109,6 @@ var IsAbsfilepathGen = cel.Function("IsAbs",
 	),
 )
 
-var JoinfilepathGen = cel.Function("Join",
-	cel.Overload("Join_interface{}",
-
-		[]*cel.Type{
-			cel.DynType,
-		},
-		cel.StringType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-
-			var x FilePathFuncs
-
-			return types.DefaultTypeAdapter.NativeToValue(x.Join(args[0]))
-
-		}),
-	),
-)
-
 var MatchfilepathGen = cel.Function("Match",
 	cel.Overload("Match_interface{}_interface{}",
 

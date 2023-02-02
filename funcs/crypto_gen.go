@@ -2,48 +2,25 @@
 // DO NOT EDIT.
 
 package funcs
+
 import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-
-var PBKDF2cryptoGen = cel.Function("PBKDF2",
-	cel.Overload("PBKDF2_interface{}_interface{}_interface{}_interface{}_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	 cel.DynType,	 cel.DynType,	 cel.DynType,	 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CryptoFuncs
-			a0, a1 := x.PBKDF2(args[0], args[1], args[2], args[3], args[4])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
 var WPAPSKcryptoGen = cel.Function("WPAPSK",
 	cel.Overload("WPAPSK_interface{}_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.WPAPSK(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -51,19 +28,16 @@ var WPAPSKcryptoGen = cel.Function("WPAPSK",
 
 var SHA1cryptoGen = cel.Function("SHA1",
 	cel.Overload("SHA1_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.StringType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.SHA1(args[0]))
-			
-		
 
 		}),
 	),
@@ -71,19 +45,16 @@ var SHA1cryptoGen = cel.Function("SHA1",
 
 var SHA224cryptoGen = cel.Function("SHA224",
 	cel.Overload("SHA224_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.StringType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.SHA224(args[0]))
-			
-		
 
 		}),
 	),
@@ -91,19 +62,16 @@ var SHA224cryptoGen = cel.Function("SHA224",
 
 var SHA256cryptoGen = cel.Function("SHA256",
 	cel.Overload("SHA256_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.StringType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.SHA256(args[0]))
-			
-		
 
 		}),
 	),
@@ -111,19 +79,16 @@ var SHA256cryptoGen = cel.Function("SHA256",
 
 var SHA384cryptoGen = cel.Function("SHA384",
 	cel.Overload("SHA384_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.StringType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.SHA384(args[0]))
-			
-		
 
 		}),
 	),
@@ -131,19 +96,16 @@ var SHA384cryptoGen = cel.Function("SHA384",
 
 var SHA512cryptoGen = cel.Function("SHA512",
 	cel.Overload("SHA512_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.StringType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.SHA512(args[0]))
-			
-		
 
 		}),
 	),
@@ -151,19 +113,16 @@ var SHA512cryptoGen = cel.Function("SHA512",
 
 var SHA512_224cryptoGen = cel.Function("SHA512_224",
 	cel.Overload("SHA512_224_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.StringType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.SHA512_224(args[0]))
-			
-		
 
 		}),
 	),
@@ -171,19 +130,16 @@ var SHA512_224cryptoGen = cel.Function("SHA512_224",
 
 var SHA512_256cryptoGen = cel.Function("SHA512_256",
 	cel.Overload("SHA512_256_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.StringType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			
+
 			return types.DefaultTypeAdapter.NativeToValue(x.SHA512_256(args[0]))
-			
-		
 
 		}),
 	),
@@ -191,20 +147,18 @@ var SHA512_256cryptoGen = cel.Function("SHA512_256",
 
 var SHA1BytescryptoGen = cel.Function("SHA1Bytes",
 	cel.Overload("SHA1Bytes_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.SHA1Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -212,20 +166,18 @@ var SHA1BytescryptoGen = cel.Function("SHA1Bytes",
 
 var SHA224BytescryptoGen = cel.Function("SHA224Bytes",
 	cel.Overload("SHA224Bytes_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.SHA224Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -233,20 +185,18 @@ var SHA224BytescryptoGen = cel.Function("SHA224Bytes",
 
 var SHA256BytescryptoGen = cel.Function("SHA256Bytes",
 	cel.Overload("SHA256Bytes_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.SHA256Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -254,20 +204,18 @@ var SHA256BytescryptoGen = cel.Function("SHA256Bytes",
 
 var SHA384BytescryptoGen = cel.Function("SHA384Bytes",
 	cel.Overload("SHA384Bytes_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.SHA384Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -275,20 +223,18 @@ var SHA384BytescryptoGen = cel.Function("SHA384Bytes",
 
 var SHA512BytescryptoGen = cel.Function("SHA512Bytes",
 	cel.Overload("SHA512Bytes_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.SHA512Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -296,20 +242,18 @@ var SHA512BytescryptoGen = cel.Function("SHA512Bytes",
 
 var SHA512_224BytescryptoGen = cel.Function("SHA512_224Bytes",
 	cel.Overload("SHA512_224Bytes_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.SHA512_224Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
@@ -317,41 +261,18 @@ var SHA512_224BytescryptoGen = cel.Function("SHA512_224Bytes",
 
 var SHA512_256BytescryptoGen = cel.Function("SHA512_256Bytes",
 	cel.Overload("SHA512_256Bytes_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.SHA512_256Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
-
-		}),
-	),
-)
-
-var BcryptcryptoGen = cel.Function("Bcrypt",
-	cel.Overload("Bcrypt_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CryptoFuncs
-			a0, a1 := x.Bcrypt(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
 
 		}),
 	),
@@ -359,83 +280,56 @@ var BcryptcryptoGen = cel.Function("Bcrypt",
 
 var RSAEncryptcryptoGen = cel.Function("RSAEncrypt",
 	cel.Overload("RSAEncrypt_string_interface{}",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.DynType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.RSAEncrypt(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
 )
 
 var RSADecryptcryptoGen = cel.Function("RSADecrypt",
-	cel.Overload("RSADecrypt_string_",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.StringType,	
-	},
-	cel.DynType,
+	cel.Overload("RSADecrypt_string_[]byte",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			a0, a1 := x.RSADecrypt(args[0].Value().(string), args[1].Value().())
+			a0, a1 := x.RSADecrypt(args[0].Value().(string), args[1].Value().([]byte))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
 
 		}),
 	),
 )
 
 var RSADecryptBytescryptoGen = cel.Function("RSADecryptBytes",
-	cel.Overload("RSADecryptBytes_string_",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.StringType,	
-	},
-	cel.DynType,
+	cel.Overload("RSADecryptBytes_string_[]byte",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
-			a0, a1 := x.RSADecryptBytes(args[0].Value().(string), args[1].Value().())
+			a0, a1 := x.RSADecryptBytes(args[0].Value().(string), args[1].Value().([]byte))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
-
-		}),
-	),
-)
-
-var RSAGenerateKeycryptoGen = cel.Function("RSAGenerateKey",
-	cel.Overload("RSAGenerateKey_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CryptoFuncs
-			a0, a1 := x.RSAGenerateKey(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
 
 		}),
 	),
@@ -443,41 +337,18 @@ var RSAGenerateKeycryptoGen = cel.Function("RSAGenerateKey",
 
 var RSADerivePublicKeycryptoGen = cel.Function("RSADerivePublicKey",
 	cel.Overload("RSADerivePublicKey_string",
-	
-	[]*cel.Type{
-		 cel.StringType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.StringType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.RSADerivePublicKey(args[0].Value().(string))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
-
-		}),
-	),
-)
-
-var ECDSAGenerateKeycryptoGen = cel.Function("ECDSAGenerateKey",
-	cel.Overload("ECDSAGenerateKey_interface{}",
-	
-	[]*cel.Type{
-		 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CryptoFuncs
-			a0, a1 := x.ECDSAGenerateKey(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
 
 		}),
 	),
@@ -485,83 +356,18 @@ var ECDSAGenerateKeycryptoGen = cel.Function("ECDSAGenerateKey",
 
 var ECDSADerivePublicKeycryptoGen = cel.Function("ECDSADerivePublicKey",
 	cel.Overload("ECDSADerivePublicKey_string",
-	
-	[]*cel.Type{
-		 cel.StringType,	
-	},
-	cel.DynType,
+
+		[]*cel.Type{
+			cel.StringType,
+		},
+		cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
+
 			var x CryptoFuncs
 			a0, a1 := x.ECDSADerivePublicKey(args[0].Value().(string))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
-		
-
-		}),
-	),
-)
-
-var EncryptAEScryptoGen = cel.Function("EncryptAES",
-	cel.Overload("EncryptAES_string_interface{}",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CryptoFuncs
-			a0, a1 := x.EncryptAES(args[0].Value().(string), args[1])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
-var DecryptAEScryptoGen = cel.Function("DecryptAES",
-	cel.Overload("DecryptAES_string_interface{}",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CryptoFuncs
-			a0, a1 := x.DecryptAES(args[0].Value().(string), args[1])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
-
-		}),
-	),
-)
-
-var DecryptAESBytescryptoGen = cel.Function("DecryptAESBytes",
-	cel.Overload("DecryptAESBytes_string_interface{}",
-	
-	[]*cel.Type{
-		 cel.StringType,	 cel.DynType,	
-	},
-	cel.DynType,
-		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			
-		
-			var x CryptoFuncs
-			a0, a1 := x.DecryptAESBytes(args[0].Value().(string), args[1])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-		
 
 		}),
 	),
