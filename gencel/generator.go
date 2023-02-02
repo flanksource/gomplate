@@ -77,27 +77,33 @@ func (g *Generator) generateFile(file *File) {
 	g.printf("package %s", g.pkg.name)
 	g.printf("\n")
 	g.printf("import %s\n", `"github.com/google/cel-go/common/types"`)
-	g.printf("import %s\n", `"time"`)
+	// g.printf("import %s\n", `"time"`)
 	g.printf("import %s\n", `"github.com/google/cel-go/cel"`)
 	g.printf("import %s\n", `"github.com/google/cel-go/common/types/ref"`)
 	g.printf("\n")
 
-	ast.Inspect(file.file, file.genDecl)
+	ast.Inspect(file.file, file.visitor)
+
+	fileName := filepath.Base(file.path)
+	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
+
+	if len(file.decls) == 0 {
+		return
+	}
 
 	for _, decl := range file.decls {
 		v := funcDefTemplateView{
-			FnName:     decl.Name,
-			Args:       getCelArgs(decl.Args),
-			ReturnType: astToIdent(decl.ReturnType),
-			RecvType:   decl.RecvType,
+			ParentFileName: fileName,
+			FnName:         decl.Name,
+			Args:           getCelArgs(decl.Args),
+			ReturnTypes:    getCelArgs(decl.ReturnTypes),
+			RecvType:       decl.RecvType,
 		}
 
 		g.render(funcDefTemplate, v)
 	}
 
 	// Write to file.
-	fileName := filepath.Base(file.path)
-	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
 	outputName := filepath.Join(filepath.Dir(file.path), fmt.Sprintf("%s_gen.go", fileName))
 
 	log.Printf("Writing to [%s]", outputName)

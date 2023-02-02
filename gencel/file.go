@@ -18,12 +18,29 @@ type File struct {
 	decls []FuncDecl
 }
 
+// visitor visits all the ast nodes
+// and extracts function declarations that're suitable
+// for conversion.
+func (t *File) visitor(n ast.Node) bool {
+	switch v := n.(type) {
+	case *ast.FuncDecl:
+		return t.handleFuncDecl(v)
+	default:
+		return true
+	}
+}
+
 func (t *File) handleFuncDecl(n *ast.FuncDecl) bool {
 	for _, blf := range blacklistedFuncs {
 		if blf.MatchString(n.Name.Name) {
-			log.Println("Ignoring func", n.Name.Name)
+			log.Printf("Ignoring func [%s]. Blacklisted pattern", n.Name.Name)
 			return false
 		}
+	}
+
+	if n.Type.Results == nil || len(n.Type.Results.List) == 0 {
+		log.Printf("Ignoring func [%s]. Returns nothing", n.Name.Name)
+		return false
 	}
 
 	decl := FuncDecl{
@@ -38,16 +55,8 @@ func (t *File) handleFuncDecl(n *ast.FuncDecl) bool {
 		}
 	}
 
-	if n.Type.Results != nil {
-		if len(n.Type.Results.List) > 1 {
-			// NOTE: Multiple returns not supported by cel-go
-			log.Printf("Ignoring func [%s] because of multiple return values", n.Name.Name)
-			return false
-		}
-
-		for _, l := range n.Type.Results.List {
-			decl.ReturnType = l.Type
-		}
+	for _, l := range n.Type.Results.List {
+		decl.ReturnTypes = append(decl.ReturnTypes, l.Type)
 	}
 
 	if n.Recv != nil && n.Recv.List != nil {
@@ -69,13 +78,4 @@ func (t *File) handleFuncDecl(n *ast.FuncDecl) bool {
 	}
 
 	return true
-}
-
-func (t *File) genDecl(n ast.Node) bool {
-	switch v := n.(type) {
-	case *ast.FuncDecl:
-		return t.handleFuncDecl(v)
-	default:
-		return true
-	}
 }
