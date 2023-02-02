@@ -69,6 +69,11 @@ func (g *Generator) Generate() {
 // and write it out to a new file alongside the given file.
 // The new file will be suffixed with "_gen.go"
 func (g *Generator) generateFile(file *File) {
+	if strings.HasSuffix(file.path, "_gen.go") {
+		log.Println("Ignoring generation of gen file")
+		return
+	}
+
 	g.clearBuf()
 
 	// Print the header and package clause.

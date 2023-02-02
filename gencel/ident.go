@@ -1,6 +1,9 @@
 package gencel
 
-import "go/ast"
+import (
+	"fmt"
+	"go/ast"
+)
 
 type Ident struct {
 	Type   string
@@ -53,8 +56,12 @@ func astToIdent(a ast.Expr) Ident {
 	case *ast.Ellipsis:
 		return Ident{Type: "cel.DynType", GoType: "interface{}"}
 	case *ast.SelectorExpr:
-		return goTypeToIdent(astToIdent(v.X).GoType + "." + v.Sel.Name)
+		return goTypeToIdent(fmt.Sprintf("%s.%s", astToIdent(v.X).GoType, v.Sel.Name))
+	case *ast.ArrayType:
+		return Ident{Type: "cel.DynType", GoType: fmt.Sprintf("[]%s", astToIdent(v.Elt).GoType)}
+	case *ast.MapType:
+		return Ident{Type: "cel.DynType", GoType: fmt.Sprintf("map[%s]%s", astToIdent(v.Key).GoType, astToIdent(v.Value).GoType)}
 	default:
-		return Ident{Type: "cel.StringType", GoType: ""}
+		return Ident{Type: "cel.Unknown", GoType: "Unknown"}
 	}
 }
