@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var ExpandEnvenvGen = cel.Function("env.ExpandEnv",
+var envExpandEnvGen = cel.Function("env.ExpandEnv",
 	cel.Overload("env.ExpandEnv_interface{}",
 
 		[]*cel.Type{

@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var ReplaceAllstringsGen = cel.Function("strings.ReplaceAll",
+var stringsReplaceAllGen = cel.Function("strings.ReplaceAll",
 	cel.Overload("strings.ReplaceAll_string_string_interface{}",
 
 		[]*cel.Type{
@@ -24,7 +24,7 @@ var ReplaceAllstringsGen = cel.Function("strings.ReplaceAll",
 	),
 )
 
-var ContainsstringsGen = cel.Function("strings.Contains",
+var stringsContainsGen = cel.Function("strings.Contains",
 	cel.Overload("strings.Contains_string_interface{}",
 
 		[]*cel.Type{
@@ -41,7 +41,7 @@ var ContainsstringsGen = cel.Function("strings.Contains",
 	),
 )
 
-var HasPrefixstringsGen = cel.Function("strings.HasPrefix",
+var stringsHasPrefixGen = cel.Function("strings.HasPrefix",
 	cel.Overload("strings.HasPrefix_string_interface{}",
 
 		[]*cel.Type{
@@ -58,7 +58,7 @@ var HasPrefixstringsGen = cel.Function("strings.HasPrefix",
 	),
 )
 
-var HasSuffixstringsGen = cel.Function("strings.HasSuffix",
+var stringsHasSuffixGen = cel.Function("strings.HasSuffix",
 	cel.Overload("strings.HasSuffix_string_interface{}",
 
 		[]*cel.Type{
@@ -75,7 +75,7 @@ var HasSuffixstringsGen = cel.Function("strings.HasSuffix",
 	),
 )
 
-var RepeatstringsGen = cel.Function("strings.Repeat",
+var stringsRepeatGen = cel.Function("strings.Repeat",
 	cel.Overload("strings.Repeat_int_interface{}",
 
 		[]*cel.Type{
@@ -94,7 +94,7 @@ var RepeatstringsGen = cel.Function("strings.Repeat",
 	),
 )
 
-var SortstringsGen = cel.Function("strings.Sort",
+var stringsSortGen = cel.Function("strings.Sort",
 	cel.Overload("strings.Sort_interface{}",
 
 		[]*cel.Type{
@@ -113,7 +113,7 @@ var SortstringsGen = cel.Function("strings.Sort",
 	),
 )
 
-var SplitstringsGen = cel.Function("strings.Split",
+var stringsSplitGen = cel.Function("strings.Split",
 	cel.Overload("strings.Split_string_interface{}",
 
 		[]*cel.Type{
@@ -130,7 +130,7 @@ var SplitstringsGen = cel.Function("strings.Split",
 	),
 )
 
-var SplitNstringsGen = cel.Function("strings.SplitN",
+var stringsSplitNGen = cel.Function("strings.SplitN",
 	cel.Overload("strings.SplitN_string_int_interface{}",
 
 		[]*cel.Type{
@@ -147,7 +147,7 @@ var SplitNstringsGen = cel.Function("strings.SplitN",
 	),
 )
 
-var TrimstringsGen = cel.Function("strings.Trim",
+var stringsTrimGen = cel.Function("strings.Trim",
 	cel.Overload("strings.Trim_string_interface{}",
 
 		[]*cel.Type{
@@ -164,7 +164,7 @@ var TrimstringsGen = cel.Function("strings.Trim",
 	),
 )
 
-var TrimPrefixstringsGen = cel.Function("strings.TrimPrefix",
+var stringsTrimPrefixGen = cel.Function("strings.TrimPrefix",
 	cel.Overload("strings.TrimPrefix_string_interface{}",
 
 		[]*cel.Type{
@@ -181,7 +181,7 @@ var TrimPrefixstringsGen = cel.Function("strings.TrimPrefix",
 	),
 )
 
-var TrimSuffixstringsGen = cel.Function("strings.TrimSuffix",
+var stringsTrimSuffixGen = cel.Function("strings.TrimSuffix",
 	cel.Overload("strings.TrimSuffix_string_interface{}",
 
 		[]*cel.Type{
@@ -198,7 +198,7 @@ var TrimSuffixstringsGen = cel.Function("strings.TrimSuffix",
 	),
 )
 
-var TitlestringsGen = cel.Function("strings.Title",
+var stringsTitleGen = cel.Function("strings.Title",
 	cel.Overload("strings.Title_interface{}",
 
 		[]*cel.Type{
@@ -215,7 +215,7 @@ var TitlestringsGen = cel.Function("strings.Title",
 	),
 )
 
-var ToUpperstringsGen = cel.Function("strings.ToUpper",
+var stringsToUpperGen = cel.Function("strings.ToUpper",
 	cel.Overload("strings.ToUpper_interface{}",
 
 		[]*cel.Type{
@@ -232,7 +232,7 @@ var ToUpperstringsGen = cel.Function("strings.ToUpper",
 	),
 )
 
-var ToLowerstringsGen = cel.Function("strings.ToLower",
+var stringsToLowerGen = cel.Function("strings.ToLower",
 	cel.Overload("strings.ToLower_interface{}",
 
 		[]*cel.Type{
@@ -249,7 +249,7 @@ var ToLowerstringsGen = cel.Function("strings.ToLower",
 	),
 )
 
-var TrimSpacestringsGen = cel.Function("strings.TrimSpace",
+var stringsTrimSpaceGen = cel.Function("strings.TrimSpace",
 	cel.Overload("strings.TrimSpace_interface{}",
 
 		[]*cel.Type{
@@ -266,7 +266,7 @@ var TrimSpacestringsGen = cel.Function("strings.TrimSpace",
 	),
 )
 
-var TruncstringsGen = cel.Function("strings.Trunc",
+var stringsTruncGen = cel.Function("strings.Trunc",
 	cel.Overload("strings.Trunc_int_interface{}",
 
 		[]*cel.Type{
@@ -283,7 +283,7 @@ var TruncstringsGen = cel.Function("strings.Trunc",
 	),
 )
 
-var SlugstringsGen = cel.Function("strings.Slug",
+var stringsSlugGen = cel.Function("strings.Slug",
 	cel.Overload("strings.Slug_interface{}",
 
 		[]*cel.Type{
@@ -300,7 +300,7 @@ var SlugstringsGen = cel.Function("strings.Slug",
 	),
 )
 
-var QuotestringsGen = cel.Function("strings.Quote",
+var stringsQuoteGen = cel.Function("strings.Quote",
 	cel.Overload("strings.Quote_interface{}",
 
 		[]*cel.Type{
@@ -317,7 +317,7 @@ var QuotestringsGen = cel.Function("strings.Quote",
 	),
 )
 
-var ShellQuotestringsGen = cel.Function("strings.ShellQuote",
+var stringsShellQuoteGen = cel.Function("strings.ShellQuote",
 	cel.Overload("strings.ShellQuote_interface{}",
 
 		[]*cel.Type{
@@ -334,7 +334,7 @@ var ShellQuotestringsGen = cel.Function("strings.ShellQuote",
 	),
 )
 
-var SquotestringsGen = cel.Function("strings.Squote",
+var stringsSquoteGen = cel.Function("strings.Squote",
 	cel.Overload("strings.Squote_interface{}",
 
 		[]*cel.Type{
@@ -351,7 +351,7 @@ var SquotestringsGen = cel.Function("strings.Squote",
 	),
 )
 
-var SnakeCasestringsGen = cel.Function("strings.SnakeCase",
+var stringsSnakeCaseGen = cel.Function("strings.SnakeCase",
 	cel.Overload("strings.SnakeCase_interface{}",
 
 		[]*cel.Type{
@@ -370,7 +370,7 @@ var SnakeCasestringsGen = cel.Function("strings.SnakeCase",
 	),
 )
 
-var CamelCasestringsGen = cel.Function("strings.CamelCase",
+var stringsCamelCaseGen = cel.Function("strings.CamelCase",
 	cel.Overload("strings.CamelCase_interface{}",
 
 		[]*cel.Type{
@@ -389,7 +389,7 @@ var CamelCasestringsGen = cel.Function("strings.CamelCase",
 	),
 )
 
-var KebabCasestringsGen = cel.Function("strings.KebabCase",
+var stringsKebabCaseGen = cel.Function("strings.KebabCase",
 	cel.Overload("strings.KebabCase_interface{}",
 
 		[]*cel.Type{

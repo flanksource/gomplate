@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var TernarytestGen = cel.Function("test.Ternary",
+var testTernaryGen = cel.Function("test.Ternary",
 	cel.Overload("test.Ternary_interface{}_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -24,7 +24,7 @@ var TernarytestGen = cel.Function("test.Ternary",
 	),
 )
 
-var KindtestGen = cel.Function("test.Kind",
+var testKindGen = cel.Function("test.Kind",
 	cel.Overload("test.Kind_interface{}",
 
 		[]*cel.Type{
@@ -41,7 +41,7 @@ var KindtestGen = cel.Function("test.Kind",
 	),
 )
 
-var IsKindtestGen = cel.Function("test.IsKind",
+var testIsKindGen = cel.Function("test.IsKind",
 	cel.Overload("test.IsKind_string_interface{}",
 
 		[]*cel.Type{

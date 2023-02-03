@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var WPAPSKcryptoGen = cel.Function("crypto.WPAPSK",
+var cryptoWPAPSKGen = cel.Function("crypto.WPAPSK",
 	cel.Overload("crypto.WPAPSK_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -26,7 +26,7 @@ var WPAPSKcryptoGen = cel.Function("crypto.WPAPSK",
 	),
 )
 
-var SHA1cryptoGen = cel.Function("crypto.SHA1",
+var cryptoSHA1Gen = cel.Function("crypto.SHA1",
 	cel.Overload("crypto.SHA1_interface{}",
 
 		[]*cel.Type{
@@ -43,7 +43,7 @@ var SHA1cryptoGen = cel.Function("crypto.SHA1",
 	),
 )
 
-var SHA224cryptoGen = cel.Function("crypto.SHA224",
+var cryptoSHA224Gen = cel.Function("crypto.SHA224",
 	cel.Overload("crypto.SHA224_interface{}",
 
 		[]*cel.Type{
@@ -60,7 +60,7 @@ var SHA224cryptoGen = cel.Function("crypto.SHA224",
 	),
 )
 
-var SHA256cryptoGen = cel.Function("crypto.SHA256",
+var cryptoSHA256Gen = cel.Function("crypto.SHA256",
 	cel.Overload("crypto.SHA256_interface{}",
 
 		[]*cel.Type{
@@ -77,7 +77,7 @@ var SHA256cryptoGen = cel.Function("crypto.SHA256",
 	),
 )
 
-var SHA384cryptoGen = cel.Function("crypto.SHA384",
+var cryptoSHA384Gen = cel.Function("crypto.SHA384",
 	cel.Overload("crypto.SHA384_interface{}",
 
 		[]*cel.Type{
@@ -94,7 +94,7 @@ var SHA384cryptoGen = cel.Function("crypto.SHA384",
 	),
 )
 
-var SHA512cryptoGen = cel.Function("crypto.SHA512",
+var cryptoSHA512Gen = cel.Function("crypto.SHA512",
 	cel.Overload("crypto.SHA512_interface{}",
 
 		[]*cel.Type{
@@ -111,7 +111,7 @@ var SHA512cryptoGen = cel.Function("crypto.SHA512",
 	),
 )
 
-var SHA512_224cryptoGen = cel.Function("crypto.SHA512_224",
+var cryptoSHA512_224Gen = cel.Function("crypto.SHA512_224",
 	cel.Overload("crypto.SHA512_224_interface{}",
 
 		[]*cel.Type{
@@ -128,7 +128,7 @@ var SHA512_224cryptoGen = cel.Function("crypto.SHA512_224",
 	),
 )
 
-var SHA512_256cryptoGen = cel.Function("crypto.SHA512_256",
+var cryptoSHA512_256Gen = cel.Function("crypto.SHA512_256",
 	cel.Overload("crypto.SHA512_256_interface{}",
 
 		[]*cel.Type{
@@ -145,7 +145,7 @@ var SHA512_256cryptoGen = cel.Function("crypto.SHA512_256",
 	),
 )
 
-var SHA1BytescryptoGen = cel.Function("crypto.SHA1Bytes",
+var cryptoSHA1BytesGen = cel.Function("crypto.SHA1Bytes",
 	cel.Overload("crypto.SHA1Bytes_interface{}",
 
 		[]*cel.Type{
@@ -164,7 +164,7 @@ var SHA1BytescryptoGen = cel.Function("crypto.SHA1Bytes",
 	),
 )
 
-var SHA224BytescryptoGen = cel.Function("crypto.SHA224Bytes",
+var cryptoSHA224BytesGen = cel.Function("crypto.SHA224Bytes",
 	cel.Overload("crypto.SHA224Bytes_interface{}",
 
 		[]*cel.Type{
@@ -183,7 +183,7 @@ var SHA224BytescryptoGen = cel.Function("crypto.SHA224Bytes",
 	),
 )
 
-var SHA256BytescryptoGen = cel.Function("crypto.SHA256Bytes",
+var cryptoSHA256BytesGen = cel.Function("crypto.SHA256Bytes",
 	cel.Overload("crypto.SHA256Bytes_interface{}",
 
 		[]*cel.Type{
@@ -202,7 +202,7 @@ var SHA256BytescryptoGen = cel.Function("crypto.SHA256Bytes",
 	),
 )
 
-var SHA384BytescryptoGen = cel.Function("crypto.SHA384Bytes",
+var cryptoSHA384BytesGen = cel.Function("crypto.SHA384Bytes",
 	cel.Overload("crypto.SHA384Bytes_interface{}",
 
 		[]*cel.Type{
@@ -221,7 +221,7 @@ var SHA384BytescryptoGen = cel.Function("crypto.SHA384Bytes",
 	),
 )
 
-var SHA512BytescryptoGen = cel.Function("crypto.SHA512Bytes",
+var cryptoSHA512BytesGen = cel.Function("crypto.SHA512Bytes",
 	cel.Overload("crypto.SHA512Bytes_interface{}",
 
 		[]*cel.Type{
@@ -240,7 +240,7 @@ var SHA512BytescryptoGen = cel.Function("crypto.SHA512Bytes",
 	),
 )
 
-var SHA512_224BytescryptoGen = cel.Function("crypto.SHA512_224Bytes",
+var cryptoSHA512_224BytesGen = cel.Function("crypto.SHA512_224Bytes",
 	cel.Overload("crypto.SHA512_224Bytes_interface{}",
 
 		[]*cel.Type{
@@ -259,7 +259,7 @@ var SHA512_224BytescryptoGen = cel.Function("crypto.SHA512_224Bytes",
 	),
 )
 
-var SHA512_256BytescryptoGen = cel.Function("crypto.SHA512_256Bytes",
+var cryptoSHA512_256BytesGen = cel.Function("crypto.SHA512_256Bytes",
 	cel.Overload("crypto.SHA512_256Bytes_interface{}",
 
 		[]*cel.Type{
@@ -278,7 +278,7 @@ var SHA512_256BytescryptoGen = cel.Function("crypto.SHA512_256Bytes",
 	),
 )
 
-var RSAEncryptcryptoGen = cel.Function("crypto.RSAEncrypt",
+var cryptoRSAEncryptGen = cel.Function("crypto.RSAEncrypt",
 	cel.Overload("crypto.RSAEncrypt_string_interface{}",
 
 		[]*cel.Type{
@@ -297,7 +297,7 @@ var RSAEncryptcryptoGen = cel.Function("crypto.RSAEncrypt",
 	),
 )
 
-var RSADecryptcryptoGen = cel.Function("crypto.RSADecrypt",
+var cryptoRSADecryptGen = cel.Function("crypto.RSADecrypt",
 	cel.Overload("crypto.RSADecrypt_string_[]byte",
 
 		[]*cel.Type{
@@ -316,7 +316,7 @@ var RSADecryptcryptoGen = cel.Function("crypto.RSADecrypt",
 	),
 )
 
-var RSADecryptBytescryptoGen = cel.Function("crypto.RSADecryptBytes",
+var cryptoRSADecryptBytesGen = cel.Function("crypto.RSADecryptBytes",
 	cel.Overload("crypto.RSADecryptBytes_string_[]byte",
 
 		[]*cel.Type{
@@ -335,7 +335,7 @@ var RSADecryptBytescryptoGen = cel.Function("crypto.RSADecryptBytes",
 	),
 )
 
-var RSADerivePublicKeycryptoGen = cel.Function("crypto.RSADerivePublicKey",
+var cryptoRSADerivePublicKeyGen = cel.Function("crypto.RSADerivePublicKey",
 	cel.Overload("crypto.RSADerivePublicKey_string",
 
 		[]*cel.Type{
@@ -354,7 +354,7 @@ var RSADerivePublicKeycryptoGen = cel.Function("crypto.RSADerivePublicKey",
 	),
 )
 
-var ECDSADerivePublicKeycryptoGen = cel.Function("crypto.ECDSADerivePublicKey",
+var cryptoECDSADerivePublicKeyGen = cel.Function("crypto.ECDSADerivePublicKey",
 	cel.Overload("crypto.ECDSADerivePublicKey_string",
 
 		[]*cel.Type{

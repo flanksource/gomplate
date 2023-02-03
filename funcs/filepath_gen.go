@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var BasefilepathGen = cel.Function("filepath.Base",
+var filepathBaseGen = cel.Function("filepath.Base",
 	cel.Overload("filepath.Base_interface{}",
 
 		[]*cel.Type{
@@ -24,7 +24,7 @@ var BasefilepathGen = cel.Function("filepath.Base",
 	),
 )
 
-var CleanfilepathGen = cel.Function("filepath.Clean",
+var filepathCleanGen = cel.Function("filepath.Clean",
 	cel.Overload("filepath.Clean_interface{}",
 
 		[]*cel.Type{
@@ -41,7 +41,7 @@ var CleanfilepathGen = cel.Function("filepath.Clean",
 	),
 )
 
-var DirfilepathGen = cel.Function("filepath.Dir",
+var filepathDirGen = cel.Function("filepath.Dir",
 	cel.Overload("filepath.Dir_interface{}",
 
 		[]*cel.Type{
@@ -58,7 +58,7 @@ var DirfilepathGen = cel.Function("filepath.Dir",
 	),
 )
 
-var ExtfilepathGen = cel.Function("filepath.Ext",
+var filepathExtGen = cel.Function("filepath.Ext",
 	cel.Overload("filepath.Ext_interface{}",
 
 		[]*cel.Type{
@@ -75,7 +75,7 @@ var ExtfilepathGen = cel.Function("filepath.Ext",
 	),
 )
 
-var FromSlashfilepathGen = cel.Function("filepath.FromSlash",
+var filepathFromSlashGen = cel.Function("filepath.FromSlash",
 	cel.Overload("filepath.FromSlash_interface{}",
 
 		[]*cel.Type{
@@ -92,7 +92,7 @@ var FromSlashfilepathGen = cel.Function("filepath.FromSlash",
 	),
 )
 
-var IsAbsfilepathGen = cel.Function("filepath.IsAbs",
+var filepathIsAbsGen = cel.Function("filepath.IsAbs",
 	cel.Overload("filepath.IsAbs_interface{}",
 
 		[]*cel.Type{
@@ -109,7 +109,7 @@ var IsAbsfilepathGen = cel.Function("filepath.IsAbs",
 	),
 )
 
-var MatchfilepathGen = cel.Function("filepath.Match",
+var filepathMatchGen = cel.Function("filepath.Match",
 	cel.Overload("filepath.Match_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -128,7 +128,7 @@ var MatchfilepathGen = cel.Function("filepath.Match",
 	),
 )
 
-var RelfilepathGen = cel.Function("filepath.Rel",
+var filepathRelGen = cel.Function("filepath.Rel",
 	cel.Overload("filepath.Rel_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -147,7 +147,7 @@ var RelfilepathGen = cel.Function("filepath.Rel",
 	),
 )
 
-var SplitfilepathGen = cel.Function("filepath.Split",
+var filepathSplitGen = cel.Function("filepath.Split",
 	cel.Overload("filepath.Split_interface{}",
 
 		[]*cel.Type{
@@ -164,7 +164,7 @@ var SplitfilepathGen = cel.Function("filepath.Split",
 	),
 )
 
-var ToSlashfilepathGen = cel.Function("filepath.ToSlash",
+var filepathToSlashGen = cel.Function("filepath.ToSlash",
 	cel.Overload("filepath.ToSlash_interface{}",
 
 		[]*cel.Type{
@@ -181,7 +181,7 @@ var ToSlashfilepathGen = cel.Function("filepath.ToSlash",
 	),
 )
 
-var VolumeNamefilepathGen = cel.Function("filepath.VolumeName",
+var filepathVolumeNameGen = cel.Function("filepath.VolumeName",
 	cel.Overload("filepath.VolumeName_interface{}",
 
 		[]*cel.Type{

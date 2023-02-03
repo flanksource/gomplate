@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var BasepathGen = cel.Function("path.Base",
+var pathBaseGen = cel.Function("path.Base",
 	cel.Overload("path.Base_interface{}",
 
 		[]*cel.Type{
@@ -24,7 +24,7 @@ var BasepathGen = cel.Function("path.Base",
 	),
 )
 
-var CleanpathGen = cel.Function("path.Clean",
+var pathCleanGen = cel.Function("path.Clean",
 	cel.Overload("path.Clean_interface{}",
 
 		[]*cel.Type{
@@ -41,7 +41,7 @@ var CleanpathGen = cel.Function("path.Clean",
 	),
 )
 
-var DirpathGen = cel.Function("path.Dir",
+var pathDirGen = cel.Function("path.Dir",
 	cel.Overload("path.Dir_interface{}",
 
 		[]*cel.Type{
@@ -58,7 +58,7 @@ var DirpathGen = cel.Function("path.Dir",
 	),
 )
 
-var ExtpathGen = cel.Function("path.Ext",
+var pathExtGen = cel.Function("path.Ext",
 	cel.Overload("path.Ext_interface{}",
 
 		[]*cel.Type{
@@ -75,7 +75,7 @@ var ExtpathGen = cel.Function("path.Ext",
 	),
 )
 
-var IsAbspathGen = cel.Function("path.IsAbs",
+var pathIsAbsGen = cel.Function("path.IsAbs",
 	cel.Overload("path.IsAbs_interface{}",
 
 		[]*cel.Type{
@@ -92,7 +92,7 @@ var IsAbspathGen = cel.Function("path.IsAbs",
 	),
 )
 
-var MatchpathGen = cel.Function("path.Match",
+var pathMatchGen = cel.Function("path.Match",
 	cel.Overload("path.Match_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -111,7 +111,7 @@ var MatchpathGen = cel.Function("path.Match",
 	),
 )
 
-var SplitpathGen = cel.Function("path.Split",
+var pathSplitGen = cel.Function("path.Split",
 	cel.Overload("path.Split_interface{}",
 
 		[]*cel.Type{

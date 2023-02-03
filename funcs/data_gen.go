@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var JSONdataGen = cel.Function("data.JSON",
+var dataJSONGen = cel.Function("data.JSON",
 	cel.Overload("data.JSON_interface{}",
 
 		[]*cel.Type{
@@ -26,7 +26,7 @@ var JSONdataGen = cel.Function("data.JSON",
 	),
 )
 
-var JSONArraydataGen = cel.Function("data.JSONArray",
+var dataJSONArrayGen = cel.Function("data.JSONArray",
 	cel.Overload("data.JSONArray_interface{}",
 
 		[]*cel.Type{
@@ -45,7 +45,7 @@ var JSONArraydataGen = cel.Function("data.JSONArray",
 	),
 )
 
-var YAMLdataGen = cel.Function("data.YAML",
+var dataYAMLGen = cel.Function("data.YAML",
 	cel.Overload("data.YAML_interface{}",
 
 		[]*cel.Type{
@@ -64,7 +64,7 @@ var YAMLdataGen = cel.Function("data.YAML",
 	),
 )
 
-var YAMLArraydataGen = cel.Function("data.YAMLArray",
+var dataYAMLArrayGen = cel.Function("data.YAMLArray",
 	cel.Overload("data.YAMLArray_interface{}",
 
 		[]*cel.Type{
@@ -83,7 +83,7 @@ var YAMLArraydataGen = cel.Function("data.YAMLArray",
 	),
 )
 
-var TOMLdataGen = cel.Function("data.TOML",
+var dataTOMLGen = cel.Function("data.TOML",
 	cel.Overload("data.TOML_interface{}",
 
 		[]*cel.Type{
@@ -102,7 +102,7 @@ var TOMLdataGen = cel.Function("data.TOML",
 	),
 )
 
-var ToJSONdataGen = cel.Function("data.ToJSON",
+var dataToJSONGen = cel.Function("data.ToJSON",
 	cel.Overload("data.ToJSON_interface{}",
 
 		[]*cel.Type{
@@ -121,7 +121,7 @@ var ToJSONdataGen = cel.Function("data.ToJSON",
 	),
 )
 
-var ToJSONPrettydataGen = cel.Function("data.ToJSONPretty",
+var dataToJSONPrettyGen = cel.Function("data.ToJSONPretty",
 	cel.Overload("data.ToJSONPretty_string_interface{}",
 
 		[]*cel.Type{
@@ -140,7 +140,7 @@ var ToJSONPrettydataGen = cel.Function("data.ToJSONPretty",
 	),
 )
 
-var ToYAMLdataGen = cel.Function("data.ToYAML",
+var dataToYAMLGen = cel.Function("data.ToYAML",
 	cel.Overload("data.ToYAML_interface{}",
 
 		[]*cel.Type{
@@ -159,7 +159,7 @@ var ToYAMLdataGen = cel.Function("data.ToYAML",
 	),
 )
 
-var ToTOMLdataGen = cel.Function("data.ToTOML",
+var dataToTOMLGen = cel.Function("data.ToTOML",
 	cel.Overload("data.ToTOML_interface{}",
 
 		[]*cel.Type{

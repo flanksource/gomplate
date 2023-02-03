@@ -66,6 +66,28 @@ func TestMultipleReturns(t *testing.T) {
 	}
 }
 
+func TestVariadic(t *testing.T) {
+	env, err := cel.NewEnv(funcs.CelEnvOption...)
+	panIf(err)
+
+	expr := `math.Add([1,2,3,4,5])`
+	ast, issues := env.Compile(expr)
+	if issues != nil && issues.Err() != nil {
+		panIf(err)
+	}
+
+	prg, err := env.Program(ast)
+	panIf(err)
+
+	out, _, err := prg.Eval(map[string]any{})
+	panIf(err)
+
+	res := out.Value().(int64)
+	if res != 15 {
+		t.Fatalf("Expected 15 got %d\n", res)
+	}
+}
+
 type Person struct {
 	Name string
 }

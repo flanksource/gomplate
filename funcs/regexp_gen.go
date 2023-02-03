@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var FindregexpGen = cel.Function("regexp.Find",
+var regexpFindGen = cel.Function("regexp.Find",
 	cel.Overload("regexp.Find_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -26,7 +26,7 @@ var FindregexpGen = cel.Function("regexp.Find",
 	),
 )
 
-var MatchregexpGen = cel.Function("regexp.Match",
+var regexpMatchGen = cel.Function("regexp.Match",
 	cel.Overload("regexp.Match_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -43,7 +43,7 @@ var MatchregexpGen = cel.Function("regexp.Match",
 	),
 )
 
-var QuoteMetaregexpGen = cel.Function("regexp.QuoteMeta",
+var regexpQuoteMetaGen = cel.Function("regexp.QuoteMeta",
 	cel.Overload("regexp.QuoteMeta_interface{}",
 
 		[]*cel.Type{
@@ -60,7 +60,7 @@ var QuoteMetaregexpGen = cel.Function("regexp.QuoteMeta",
 	),
 )
 
-var ReplaceregexpGen = cel.Function("regexp.Replace",
+var regexpReplaceGen = cel.Function("regexp.Replace",
 	cel.Overload("regexp.Replace_interface{}_interface{}_interface{}",
 
 		[]*cel.Type{
@@ -77,7 +77,7 @@ var ReplaceregexpGen = cel.Function("regexp.Replace",
 	),
 )
 
-var ReplaceLiteralregexpGen = cel.Function("regexp.ReplaceLiteral",
+var regexpReplaceLiteralGen = cel.Function("regexp.ReplaceLiteral",
 	cel.Overload("regexp.ReplaceLiteral_interface{}_interface{}_interface{}",
 
 		[]*cel.Type{

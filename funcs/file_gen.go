@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var ReadfileGen = cel.Function("file.Read",
+var fileReadGen = cel.Function("file.Read",
 	cel.Overload("file.Read_interface{}",
 
 		[]*cel.Type{
@@ -26,7 +26,7 @@ var ReadfileGen = cel.Function("file.Read",
 	),
 )
 
-var StatfileGen = cel.Function("file.Stat",
+var fileStatGen = cel.Function("file.Stat",
 	cel.Overload("file.Stat_interface{}",
 
 		[]*cel.Type{
@@ -45,7 +45,7 @@ var StatfileGen = cel.Function("file.Stat",
 	),
 )
 
-var ExistsfileGen = cel.Function("file.Exists",
+var fileExistsGen = cel.Function("file.Exists",
 	cel.Overload("file.Exists_interface{}",
 
 		[]*cel.Type{
@@ -62,7 +62,7 @@ var ExistsfileGen = cel.Function("file.Exists",
 	),
 )
 
-var IsDirfileGen = cel.Function("file.IsDir",
+var fileIsDirGen = cel.Function("file.IsDir",
 	cel.Overload("file.IsDir_interface{}",
 
 		[]*cel.Type{
@@ -79,7 +79,7 @@ var IsDirfileGen = cel.Function("file.IsDir",
 	),
 )
 
-var ReadDirfileGen = cel.Function("file.ReadDir",
+var fileReadDirGen = cel.Function("file.ReadDir",
 	cel.Overload("file.ReadDir_interface{}",
 
 		[]*cel.Type{
@@ -98,7 +98,7 @@ var ReadDirfileGen = cel.Function("file.ReadDir",
 	),
 )
 
-var WalkfileGen = cel.Function("file.Walk",
+var fileWalkGen = cel.Function("file.Walk",
 	cel.Overload("file.Walk_interface{}",
 
 		[]*cel.Type{
@@ -117,7 +117,7 @@ var WalkfileGen = cel.Function("file.Walk",
 	),
 )
 
-var WritefileGen = cel.Function("file.Write",
+var fileWriteGen = cel.Function("file.Write",
 	cel.Overload("file.Write_interface{}_interface{}",
 
 		[]*cel.Type{

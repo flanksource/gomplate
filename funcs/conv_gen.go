@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var BoolconvGen = cel.Function("conv.Bool",
+var convBoolGen = cel.Function("conv.Bool",
 	cel.Overload("conv.Bool_interface{}",
 
 		[]*cel.Type{
@@ -24,7 +24,7 @@ var BoolconvGen = cel.Function("conv.Bool",
 	),
 )
 
-var ToBoolconvGen = cel.Function("conv.ToBool",
+var convToBoolGen = cel.Function("conv.ToBool",
 	cel.Overload("conv.ToBool_interface{}",
 
 		[]*cel.Type{
@@ -41,7 +41,7 @@ var ToBoolconvGen = cel.Function("conv.ToBool",
 	),
 )
 
-var JoinconvGen = cel.Function("conv.Join",
+var convJoinGen = cel.Function("conv.Join",
 	cel.Overload("conv.Join_interface{}_string",
 
 		[]*cel.Type{
@@ -60,7 +60,7 @@ var JoinconvGen = cel.Function("conv.Join",
 	),
 )
 
-var HasconvGen = cel.Function("conv.Has",
+var convHasGen = cel.Function("conv.Has",
 	cel.Overload("conv.Has_interface{}_string",
 
 		[]*cel.Type{
@@ -77,7 +77,7 @@ var HasconvGen = cel.Function("conv.Has",
 	),
 )
 
-var ParseIntconvGen = cel.Function("conv.ParseInt",
+var convParseIntGen = cel.Function("conv.ParseInt",
 	cel.Overload("conv.ParseInt_interface{}_int_int",
 
 		[]*cel.Type{
@@ -94,7 +94,7 @@ var ParseIntconvGen = cel.Function("conv.ParseInt",
 	),
 )
 
-var ParseFloatconvGen = cel.Function("conv.ParseFloat",
+var convParseFloatGen = cel.Function("conv.ParseFloat",
 	cel.Overload("conv.ParseFloat_interface{}_int",
 
 		[]*cel.Type{
@@ -111,7 +111,7 @@ var ParseFloatconvGen = cel.Function("conv.ParseFloat",
 	),
 )
 
-var ParseUintconvGen = cel.Function("conv.ParseUint",
+var convParseUintGen = cel.Function("conv.ParseUint",
 	cel.Overload("conv.ParseUint_interface{}_int_int",
 
 		[]*cel.Type{
@@ -128,7 +128,7 @@ var ParseUintconvGen = cel.Function("conv.ParseUint",
 	),
 )
 
-var AtoiconvGen = cel.Function("conv.Atoi",
+var convAtoiGen = cel.Function("conv.Atoi",
 	cel.Overload("conv.Atoi_interface{}",
 
 		[]*cel.Type{
@@ -145,7 +145,7 @@ var AtoiconvGen = cel.Function("conv.Atoi",
 	),
 )
 
-var URLconvGen = cel.Function("conv.URL",
+var convURLGen = cel.Function("conv.URL",
 	cel.Overload("conv.URL_interface{}",
 
 		[]*cel.Type{
@@ -164,7 +164,7 @@ var URLconvGen = cel.Function("conv.URL",
 	),
 )
 
-var ToInt64convGen = cel.Function("conv.ToInt64",
+var convToInt64Gen = cel.Function("conv.ToInt64",
 	cel.Overload("conv.ToInt64_interface{}",
 
 		[]*cel.Type{
@@ -181,7 +181,7 @@ var ToInt64convGen = cel.Function("conv.ToInt64",
 	),
 )
 
-var ToIntconvGen = cel.Function("conv.ToInt",
+var convToIntGen = cel.Function("conv.ToInt",
 	cel.Overload("conv.ToInt_interface{}",
 
 		[]*cel.Type{
@@ -198,7 +198,7 @@ var ToIntconvGen = cel.Function("conv.ToInt",
 	),
 )
 
-var ToFloat64convGen = cel.Function("conv.ToFloat64",
+var convToFloat64Gen = cel.Function("conv.ToFloat64",
 	cel.Overload("conv.ToFloat64_interface{}",
 
 		[]*cel.Type{
@@ -215,7 +215,7 @@ var ToFloat64convGen = cel.Function("conv.ToFloat64",
 	),
 )
 
-var ToStringconvGen = cel.Function("conv.ToString",
+var convToStringGen = cel.Function("conv.ToString",
 	cel.Overload("conv.ToString_interface{}",
 
 		[]*cel.Type{
@@ -232,7 +232,7 @@ var ToStringconvGen = cel.Function("conv.ToString",
 	),
 )
 
-var DefaultconvGen = cel.Function("conv.Default",
+var convDefaultGen = cel.Function("conv.Default",
 	cel.Overload("conv.Default_interface{}_interface{}",
 
 		[]*cel.Type{

@@ -7,7 +7,7 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
-var V1uuidGen = cel.Function("uuid.V1",
+var uuidV1Gen = cel.Function("uuid.V1",
 	cel.Overload("uuid.V1_",
 		nil,
 		cel.DynType,
@@ -23,7 +23,7 @@ var V1uuidGen = cel.Function("uuid.V1",
 	),
 )
 
-var V4uuidGen = cel.Function("uuid.V4",
+var uuidV4Gen = cel.Function("uuid.V4",
 	cel.Overload("uuid.V4_",
 		nil,
 		cel.DynType,
@@ -39,7 +39,7 @@ var V4uuidGen = cel.Function("uuid.V4",
 	),
 )
 
-var NiluuidGen = cel.Function("uuid.Nil",
+var uuidNilGen = cel.Function("uuid.Nil",
 	cel.Overload("uuid.Nil_",
 		nil,
 		cel.DynType,
@@ -55,7 +55,7 @@ var NiluuidGen = cel.Function("uuid.Nil",
 	),
 )
 
-var IsValiduuidGen = cel.Function("uuid.IsValid",
+var uuidIsValidGen = cel.Function("uuid.IsValid",
 	cel.Overload("uuid.IsValid_interface{}",
 
 		[]*cel.Type{
@@ -74,7 +74,7 @@ var IsValiduuidGen = cel.Function("uuid.IsValid",
 	),
 )
 
-var ParseuuidGen = cel.Function("uuid.Parse",
+var uuidParseGen = cel.Function("uuid.Parse",
 	cel.Overload("uuid.Parse_interface{}",
 
 		[]*cel.Type{

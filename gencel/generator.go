@@ -83,7 +83,9 @@ func (g *Generator) generateExports() {
 	g.printf("\n")
 	g.printf("package %s", g.pkg.name)
 	g.printf("\n")
+	g.printf("import %s\n", `"log"`)
 	g.printf("import %s\n", `"github.com/google/cel-go/cel"`)
+	g.printf("import %s\n", `"github.com/google/cel-go/common/types/ref"`)
 	g.printf("\n")
 
 	view := exportFuncsTemplateView{
@@ -134,7 +136,7 @@ func (g *Generator) generateFile(file *File) {
 
 	for _, decl := range file.decls {
 		v := funcDefTemplateView{
-			IdentName:           fmt.Sprintf("%s%sGen", decl.Name, fileName),
+			IdentName:           fmt.Sprintf("%s%sGen", fileName, decl.Name),
 			FnNameWithNamespace: fmt.Sprintf("%s.%s", fileName, decl.Name),
 			FnName:              decl.Name,
 			Args:                getCelArgs(decl.Args),

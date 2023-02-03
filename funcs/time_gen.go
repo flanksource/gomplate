@@ -8,7 +8,7 @@ import (
 	"github.com/google/cel-go/common/types/ref"
 )
 
-var ZoneNametimeGen = cel.Function("time.ZoneName",
+var timeZoneNameGen = cel.Function("time.ZoneName",
 	cel.Overload("time.ZoneName_",
 		nil,
 		cel.StringType,
@@ -22,7 +22,7 @@ var ZoneNametimeGen = cel.Function("time.ZoneName",
 	),
 )
 
-var ZoneOffsettimeGen = cel.Function("time.ZoneOffset",
+var timeZoneOffsetGen = cel.Function("time.ZoneOffset",
 	cel.Overload("time.ZoneOffset_",
 		nil,
 		cel.IntType,
@@ -36,7 +36,7 @@ var ZoneOffsettimeGen = cel.Function("time.ZoneOffset",
 	),
 )
 
-var ParsetimeGen = cel.Function("time.Parse",
+var timeParseGen = cel.Function("time.Parse",
 	cel.Overload("time.Parse_string_interface{}",
 
 		[]*cel.Type{
@@ -55,7 +55,7 @@ var ParsetimeGen = cel.Function("time.Parse",
 	),
 )
 
-var ParseLocaltimeGen = cel.Function("time.ParseLocal",
+var timeParseLocalGen = cel.Function("time.ParseLocal",
 	cel.Overload("time.ParseLocal_string_interface{}",
 
 		[]*cel.Type{
@@ -74,7 +74,7 @@ var ParseLocaltimeGen = cel.Function("time.ParseLocal",
 	),
 )
 
-var ParseInLocationtimeGen = cel.Function("time.ParseInLocation",
+var timeParseInLocationGen = cel.Function("time.ParseInLocation",
 	cel.Overload("time.ParseInLocation_string_string_interface{}",
 
 		[]*cel.Type{
@@ -93,7 +93,7 @@ var ParseInLocationtimeGen = cel.Function("time.ParseInLocation",
 	),
 )
 
-var NowtimeGen = cel.Function("time.Now",
+var timeNowGen = cel.Function("time.Now",
 	cel.Overload("time.Now_",
 		nil,
 		cel.DynType,
@@ -107,7 +107,7 @@ var NowtimeGen = cel.Function("time.Now",
 	),
 )
 
-var UnixtimeGen = cel.Function("time.Unix",
+var timeUnixGen = cel.Function("time.Unix",
 	cel.Overload("time.Unix_interface{}",
 
 		[]*cel.Type{
@@ -126,7 +126,7 @@ var UnixtimeGen = cel.Function("time.Unix",
 	),
 )
 
-var NanosecondtimeGen = cel.Function("time.Nanosecond",
+var timeNanosecondGen = cel.Function("time.Nanosecond",
 	cel.Overload("time.Nanosecond_interface{}",
 
 		[]*cel.Type{
@@ -143,7 +143,7 @@ var NanosecondtimeGen = cel.Function("time.Nanosecond",
 	),
 )
 
-var MicrosecondtimeGen = cel.Function("time.Microsecond",
+var timeMicrosecondGen = cel.Function("time.Microsecond",
 	cel.Overload("time.Microsecond_interface{}",
 
 		[]*cel.Type{
@@ -160,7 +160,7 @@ var MicrosecondtimeGen = cel.Function("time.Microsecond",
 	),
 )
 
-var MillisecondtimeGen = cel.Function("time.Millisecond",
+var timeMillisecondGen = cel.Function("time.Millisecond",
 	cel.Overload("time.Millisecond_interface{}",
 
 		[]*cel.Type{
@@ -177,7 +177,7 @@ var MillisecondtimeGen = cel.Function("time.Millisecond",
 	),
 )
 
-var SecondtimeGen = cel.Function("time.Second",
+var timeSecondGen = cel.Function("time.Second",
 	cel.Overload("time.Second_interface{}",
 
 		[]*cel.Type{
@@ -194,7 +194,7 @@ var SecondtimeGen = cel.Function("time.Second",
 	),
 )
 
-var MinutetimeGen = cel.Function("time.Minute",
+var timeMinuteGen = cel.Function("time.Minute",
 	cel.Overload("time.Minute_interface{}",
 
 		[]*cel.Type{
@@ -211,7 +211,7 @@ var MinutetimeGen = cel.Function("time.Minute",
 	),
 )
 
-var HourtimeGen = cel.Function("time.Hour",
+var timeHourGen = cel.Function("time.Hour",
 	cel.Overload("time.Hour_interface{}",
 
 		[]*cel.Type{
@@ -228,7 +228,7 @@ var HourtimeGen = cel.Function("time.Hour",
 	),
 )
 
-var ParseDurationtimeGen = cel.Function("time.ParseDuration",
+var timeParseDurationGen = cel.Function("time.ParseDuration",
 	cel.Overload("time.ParseDuration_interface{}",
 
 		[]*cel.Type{
@@ -247,7 +247,7 @@ var ParseDurationtimeGen = cel.Function("time.ParseDuration",
 	),
 )
 
-var SincetimeGen = cel.Function("time.Since",
+var timeSinceGen = cel.Function("time.Since",
 	cel.Overload("time.Since_gotime.Time",
 
 		[]*cel.Type{
@@ -264,7 +264,7 @@ var SincetimeGen = cel.Function("time.Since",
 	),
 )
 
-var UntiltimeGen = cel.Function("time.Until",
+var timeUntilGen = cel.Function("time.Until",
 	cel.Overload("time.Until_gotime.Time",
 
 		[]*cel.Type{
