@@ -12,9 +12,16 @@ var blacklistedFuncs = []regexp.Regexp{
 }
 
 type File struct {
-	pkg   *Package
-	path  string
-	file  *ast.File
+	pkg  *Package
+	file *ast.File
+
+	// filename is the name of the file
+	filename string
+
+	// path is the absolute path of this file.
+	path string
+
+	// decls is the list of all function declarations in this file.
 	decls []FuncDecl
 }
 
