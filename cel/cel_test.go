@@ -5,6 +5,7 @@ import (
 
 	"github.com/flanksource/gomplate/v3/funcs"
 	"github.com/google/cel-go/cel"
+	"gotest.tools/v3/assert"
 )
 
 func panIf(err error) {
@@ -13,15 +14,11 @@ func panIf(err error) {
 	}
 }
 
-func TestCelNamespace(t *testing.T) {
-	var envopt []cel.EnvOption
-	envopt = append(envopt, funcs.CelEnvOption...)
-
-	env, err := cel.NewEnv(envopt...)
+func executeTemplate(t *testing.T, i int, input string, output any) {
+	env, err := cel.NewEnv(funcs.CelEnvOption...)
 	panIf(err)
 
-	expr := `regexp.Replace("flank", "rank", "flanksource")`
-	ast, issues := env.Compile(expr)
+	ast, issues := env.Compile(input)
 	if issues != nil && issues.Err() != nil {
 		panIf(err)
 	}
@@ -32,55 +29,64 @@ func TestCelNamespace(t *testing.T) {
 	out, _, err := prg.Eval(map[string]any{})
 	panIf(err)
 
-	if out.Value() != "ranksource" {
-		t.Fatalf("Expected ranksource got %s\n", out)
+	assert.DeepEqual(t, out.Value(), output)
+}
+
+func TestCelNamespace(t *testing.T) {
+	testData := []struct {
+		Input  string
+		Output any
+	}{
+		{Input: `regexp.Replace("flank", "rank", "flanksource")`, Output: "ranksource"},
+		{Input: `regexp.Replace("nothing", "rank", "flanksource")`, Output: "flanksource"},
+		{Input: `regexp.Replace("", "", "flanksource")`, Output: "flanksource"},
+		{Input: `filepath.Join(["/home/flanksource", "projects", "gencel"])`, Output: "/home/flanksource/projects/gencel"},
+	}
+
+	for i, td := range testData {
+		executeTemplate(t, i, td.Input, td.Output)
 	}
 }
 
 func TestCelMultipleReturns(t *testing.T) {
-	env, err := cel.NewEnv(funcs.CelEnvOption...)
-	panIf(err)
-
-	expr := `base64.Encode("flanksource")`
-	ast, issues := env.Compile(expr)
-	if issues != nil && issues.Err() != nil {
-		panIf(err)
+	testData := []struct {
+		Input   string
+		Outputs []any
+	}{
+		{Input: `base64.Encode("flanksource")`, Outputs: []any{"Zmxhbmtzb3VyY2U=", nil}},
+		{Input: `base64.Decode("Zmxhbmtzb3VyY2U=")`, Outputs: []any{"flanksource", nil}},
+		{Input: `data.JSONArray("[\"name\",\"flanksource\"]")`, Outputs: []any{[]any{"name", "flanksource"}, nil}},
 	}
 
-	prg, err := env.Program(ast)
-	panIf(err)
-
-	out, _, err := prg.Eval(map[string]any{})
-	panIf(err)
-
-	res := out.Value().([]any)
-	if len(res) != 2 {
-		t.Fatalf("Expected ranksource got %s\n", out)
-	}
-
-	if res[0] != "Zmxhbmtzb3VyY2U=" {
-		t.Fatalf("Expected Zmxhbmtzb3VyY2U= got %s\n", res[0])
+	for i, td := range testData {
+		executeTemplate(t, i, td.Input, td.Outputs)
 	}
 }
 
 func TestCelVariadic(t *testing.T) {
-	env, err := cel.NewEnv(funcs.CelEnvOption...)
-	panIf(err)
-
-	expr := `math.Add([1,2,3,4,5])`
-	ast, issues := env.Compile(expr)
-	if issues != nil && issues.Err() != nil {
-		panIf(err)
+	testData := []struct {
+		Input  string
+		Output any
+	}{
+		{Input: `math.Add([1,2,3,4,5])`, Output: int64(15)},
+		{Input: `math.Mul([1,2,3,4,5])`, Output: int64(120)},
+		{Input: `coll.Slice([1,2,3,4,5])`, Output: []any{int64(1), int64(2), int64(3), int64(4), int64(5)}},
 	}
 
-	prg, err := env.Program(ast)
-	panIf(err)
+	for i, td := range testData {
+		executeTemplate(t, i, td.Input, td.Output)
+	}
+}
 
-	out, _, err := prg.Eval(map[string]any{})
-	panIf(err)
+func TestCelSliceReturn(t *testing.T) {
+	testData := []struct {
+		Input  string
+		Output any
+	}{
+		{Input: `strings.Split("-", "open-source")`, Output: []string{"open", "source"}},
+	}
 
-	res := out.Value().(int64)
-	if res != 15 {
-		t.Fatalf("Expected 15 got %d\n", res)
+	for i, td := range testData {
+		executeTemplate(t, i, td.Input, td.Output)
 	}
 }
