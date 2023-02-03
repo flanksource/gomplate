@@ -17,6 +17,7 @@ var randomASCIIGen = cel.Function("random.ASCII",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x RandomFuncs
+
 			a0, a1 := x.ASCII(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -36,6 +37,7 @@ var randomAlphaGen = cel.Function("random.Alpha",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x RandomFuncs
+
 			a0, a1 := x.Alpha(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -55,7 +57,29 @@ var randomAlphaNumGen = cel.Function("random.AlphaNum",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x RandomFuncs
+
 			a0, a1 := x.AlphaNum(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var randomStringGen = cel.Function("random.String",
+	cel.Overload("random.String_interface{}_interface{}",
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x RandomFuncs
+			list := transferSlice[interface{}](args[1].(ref.Val))
+
+			a0, a1 := x.String(args[0], list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -74,7 +98,50 @@ var randomItemGen = cel.Function("random.Item",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x RandomFuncs
+
 			a0, a1 := x.Item(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var randomNumberGen = cel.Function("random.Number",
+	cel.Overload("random.Number_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x RandomFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Number(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var randomFloatGen = cel.Function("random.Float",
+	cel.Overload("random.Float_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x RandomFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Float(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

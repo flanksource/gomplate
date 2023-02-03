@@ -7,6 +7,27 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
+var stringsAbbrevGen = cel.Function("strings.Abbrev",
+	cel.Overload("strings.Abbrev_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Abbrev(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var stringsReplaceAllGen = cel.Function("strings.ReplaceAll",
 	cel.Overload("strings.ReplaceAll_string_string_interface{}",
 
@@ -85,6 +106,7 @@ var stringsRepeatGen = cel.Function("strings.Repeat",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x StringFuncs
+
 			a0, a1 := x.Repeat(args[0].Value().(int), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -104,6 +126,7 @@ var stringsSortGen = cel.Function("strings.Sort",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x StringFuncs
+
 			a0, a1 := x.Sort(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -283,6 +306,27 @@ var stringsTruncGen = cel.Function("strings.Trunc",
 	),
 )
 
+var stringsIndentGen = cel.Function("strings.Indent",
+	cel.Overload("strings.Indent_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Indent(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var stringsSlugGen = cel.Function("strings.Slug",
 	cel.Overload("strings.Slug_interface{}",
 
@@ -361,6 +405,7 @@ var stringsSnakeCaseGen = cel.Function("strings.SnakeCase",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x StringFuncs
+
 			a0, a1 := x.SnakeCase(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -380,6 +425,7 @@ var stringsCamelCaseGen = cel.Function("strings.CamelCase",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x StringFuncs
+
 			a0, a1 := x.CamelCase(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -399,7 +445,50 @@ var stringsKebabCaseGen = cel.Function("strings.KebabCase",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x StringFuncs
+
 			a0, a1 := x.KebabCase(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var stringsWordWrapGen = cel.Function("strings.WordWrap",
+	cel.Overload("strings.WordWrap_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.WordWrap(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var stringsRuneCountGen = cel.Function("strings.RuneCount",
+	cel.Overload("strings.RuneCount_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.RuneCount(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

@@ -46,6 +46,7 @@ var timeParseGen = cel.Function("time.Parse",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x TimeFuncs
+
 			a0, a1 := x.Parse(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -65,6 +66,7 @@ var timeParseLocalGen = cel.Function("time.ParseLocal",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x TimeFuncs
+
 			a0, a1 := x.ParseLocal(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -84,6 +86,7 @@ var timeParseInLocationGen = cel.Function("time.ParseInLocation",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x TimeFuncs
+
 			a0, a1 := x.ParseInLocation(args[0].Value().(string), args[1].Value().(string), args[2])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -117,6 +120,7 @@ var timeUnixGen = cel.Function("time.Unix",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x TimeFuncs
+
 			a0, a1 := x.Unix(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -238,6 +242,7 @@ var timeParseDurationGen = cel.Function("time.ParseDuration",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x TimeFuncs
+
 			a0, a1 := x.ParseDuration(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

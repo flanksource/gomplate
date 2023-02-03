@@ -7,6 +7,90 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
+var awsEC2RegionGen = cel.Function("aws.EC2Region",
+	cel.Overload("aws.EC2Region_string",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x Funcs
+			list := transferSlice[string](args[0].(ref.Val))
+
+			a0, a1 := x.EC2Region(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var awsEC2MetaGen = cel.Function("aws.EC2Meta",
+	cel.Overload("aws.EC2Meta_string_string",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x Funcs
+			list := transferSlice[string](args[1].(ref.Val))
+
+			a0, a1 := x.EC2Meta(args[0].Value().(string), list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var awsEC2DynamicGen = cel.Function("aws.EC2Dynamic",
+	cel.Overload("aws.EC2Dynamic_string_string",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x Funcs
+			list := transferSlice[string](args[1].(ref.Val))
+
+			a0, a1 := x.EC2Dynamic(args[0].Value().(string), list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var awsEC2TagGen = cel.Function("aws.EC2Tag",
+	cel.Overload("aws.EC2Tag_string_string",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x Funcs
+			list := transferSlice[string](args[1].(ref.Val))
+
+			a0, a1 := x.EC2Tag(args[0].Value().(string), list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var awsEC2TagsGen = cel.Function("aws.EC2Tags",
 	cel.Overload("aws.EC2Tags_",
 		nil,
@@ -14,6 +98,7 @@ var awsEC2TagsGen = cel.Function("aws.EC2Tags",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Funcs
+
 			a0, a1 := x.EC2Tags()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -33,6 +118,7 @@ var awsKMSEncryptGen = cel.Function("aws.KMSEncrypt",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Funcs
+
 			a0, a1 := x.KMSEncrypt(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -52,6 +138,7 @@ var awsKMSDecryptGen = cel.Function("aws.KMSDecrypt",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Funcs
+
 			a0, a1 := x.KMSDecrypt(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -68,6 +155,7 @@ var awsUserIDGen = cel.Function("aws.UserID",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Funcs
+
 			a0, a1 := x.UserID()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -84,6 +172,7 @@ var awsAccountGen = cel.Function("aws.Account",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Funcs
+
 			a0, a1 := x.Account()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -100,6 +189,7 @@ var awsARNGen = cel.Function("aws.ARN",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Funcs
+
 			a0, a1 := x.ARN()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

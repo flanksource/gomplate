@@ -9,6 +9,12 @@ func getArgs(args []Ident) string {
 	var output []string
 	for i := range args {
 		var a string
+		if args[i].IsEllipsis {
+			a = "list..."
+			output = append(output, a)
+			continue
+		}
+
 		switch args[i].GoType {
 		case "interface{}":
 			a = fmt.Sprintf("args[%d]", i)
@@ -52,6 +58,22 @@ var tplFuncs = map[string]any{
 	},
 }
 
+type VariadicArg struct {
+	Pos int
+
+	Type string
+}
+
+func getVariadicArg(items []Ident) *VariadicArg {
+	for i, a := range items {
+		if a.IsEllipsis {
+			return &VariadicArg{Pos: i, Type: a.GoType}
+		}
+	}
+
+	return nil
+}
+
 type funcDefTemplateView struct {
 	// IdentName is the name of the exported cel func
 	// in this codebase.
@@ -78,25 +100,22 @@ type funcDefTemplateView struct {
 	// RecvType is the parent type of the member func
 	// that this cel func is encapsulating.
 	RecvType string
+
+	// VariadicArg indicates whether this func has any ellipsis argument.
+	VariadicArg *VariadicArg
 }
 
 const funcBodyTemplate = `
 {{define "body"}}
+		var x {{.RecvType}}
+		{{if .VariadicArg}}list := transferSlice[{{.VariadicArg.Type}}](args[{{.VariadicArg.Pos}}].(ref.Val)){{end}}
 		{{if gt (len .ReturnTypes) 1}}
-			var x {{.RecvType}}
 			{{getReturnIdentifiers .ReturnTypes}} := x.{{.FnName}}({{getArgs .Args}})
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				{{getReturnIdentifiers .ReturnTypes}},
 			})
 		{{else}}
-			var x {{.RecvType}}
-			{{if eq (index .ReturnTypes 0).Type "cel.DurationType"}}
-			return types.Duration{Duration: x.{{.FnName}}({{getArgs .Args}})}
-			{{else if eq (index .ReturnTypes 0).Type "cel.TimestampType"}}
-			return types.Timestamp{Time: x.{{.FnName}}({{getArgs .Args}})}
-			{{else}}
 			return types.DefaultTypeAdapter.NativeToValue(x.{{.FnName}}({{getArgs .Args}}))
-			{{end}}
 		{{end}}
 {{end}}
 `
@@ -121,6 +140,21 @@ type exportFuncsTemplateView struct {
 }
 
 const exportAllTemplate = `
+func transferSlice[K any](arg ref.Val) []K {
+	list, ok := arg.Value().([]ref.Val)
+	if !ok {
+		log.Printf("Not a list %T\n", arg.Value())
+		return nil
+	}
+
+	var out = make([]K, len(list))
+	for i, val := range list {
+		out[i] = val.Value().(K)
+	}
+
+	return out
+}
+
 var CelEnvOption = []cel.EnvOption{
 	{{range $fnName := .FnNames}}{{$fnName}},
 	{{end}}

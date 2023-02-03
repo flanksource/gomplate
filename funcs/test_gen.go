@@ -7,6 +7,69 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
+var testAssertGen = cel.Function("test.Assert",
+	cel.Overload("test.Assert_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x TestFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Assert(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var testFailGen = cel.Function("test.Fail",
+	cel.Overload("test.Fail_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x TestFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Fail(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var testRequiredGen = cel.Function("test.Required",
+	cel.Overload("test.Required_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x TestFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Required(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var testTernaryGen = cel.Function("test.Ternary",
 	cel.Overload("test.Ternary_interface{}_interface{}_interface{}",
 

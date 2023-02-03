@@ -17,6 +17,7 @@ var netLookupIPGen = cel.Function("net.LookupIP",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.LookupIP(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -36,6 +37,7 @@ var netLookupIPsGen = cel.Function("net.LookupIPs",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.LookupIPs(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -55,6 +57,7 @@ var netLookupCNAMEGen = cel.Function("net.LookupCNAME",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.LookupCNAME(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -74,6 +77,7 @@ var netLookupSRVGen = cel.Function("net.LookupSRV",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.LookupSRV(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -93,6 +97,7 @@ var netLookupSRVsGen = cel.Function("net.LookupSRVs",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.LookupSRVs(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -112,6 +117,7 @@ var netLookupTXTGen = cel.Function("net.LookupTXT",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.LookupTXT(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -131,6 +137,7 @@ var netParseIPGen = cel.Function("net.ParseIP",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.ParseIP(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -150,6 +157,7 @@ var netParseIPPrefixGen = cel.Function("net.ParseIPPrefix",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.ParseIPPrefix(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -169,6 +177,7 @@ var netParseIPRangeGen = cel.Function("net.ParseIPRange",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.ParseIPRange(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -188,6 +197,7 @@ var netStdParseIPGen = cel.Function("net.StdParseIP",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.StdParseIP(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -207,6 +217,7 @@ var netstdParseCIDRGen = cel.Function("net.stdParseCIDR",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.stdParseCIDR(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -226,6 +237,7 @@ var netStdParseCIDRGen = cel.Function("net.StdParseCIDR",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.StdParseCIDR(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -245,6 +257,7 @@ var netCidrHostGen = cel.Function("net.CidrHost",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.CidrHost(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -264,6 +277,7 @@ var netCidrNetmaskGen = cel.Function("net.CidrNetmask",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.CidrNetmask(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -283,7 +297,29 @@ var netCidrSubnetsGen = cel.Function("net.CidrSubnets",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x NetFuncs
+
 			a0, a1 := x.CidrSubnets(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var netCidrSubnetSizesGen = cel.Function("net.CidrSubnetSizes",
+	cel.Overload("net.CidrSubnetSizes_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x NetFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.CidrSubnetSizes(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

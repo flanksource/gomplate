@@ -17,6 +17,7 @@ var fileReadGen = cel.Function("file.Read",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x FileFuncs
+
 			a0, a1 := x.Read(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -36,6 +37,7 @@ var fileStatGen = cel.Function("file.Stat",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x FileFuncs
+
 			a0, a1 := x.Stat(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -89,6 +91,7 @@ var fileReadDirGen = cel.Function("file.ReadDir",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x FileFuncs
+
 			a0, a1 := x.ReadDir(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -108,6 +111,7 @@ var fileWalkGen = cel.Function("file.Walk",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x FileFuncs
+
 			a0, a1 := x.Walk(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -127,6 +131,7 @@ var fileWriteGen = cel.Function("file.Write",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x FileFuncs
+
 			a0, a1 := x.Write(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

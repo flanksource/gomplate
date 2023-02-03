@@ -1,13 +1,10 @@
 package cel
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
 
 	"github.com/flanksource/gomplate/v3/funcs"
 	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/ext"
 )
 
 func panIf(err error) {
@@ -16,7 +13,7 @@ func panIf(err error) {
 	}
 }
 
-func TestEnv(t *testing.T) {
+func TestCelNamespace(t *testing.T) {
 	var envopt []cel.EnvOption
 	envopt = append(envopt, funcs.CelEnvOption...)
 
@@ -40,7 +37,7 @@ func TestEnv(t *testing.T) {
 	}
 }
 
-func TestMultipleReturns(t *testing.T) {
+func TestCelMultipleReturns(t *testing.T) {
 	env, err := cel.NewEnv(funcs.CelEnvOption...)
 	panIf(err)
 
@@ -66,7 +63,7 @@ func TestMultipleReturns(t *testing.T) {
 	}
 }
 
-func TestVariadic(t *testing.T) {
+func TestCelVariadic(t *testing.T) {
 	env, err := cel.NewEnv(funcs.CelEnvOption...)
 	panIf(err)
 
@@ -85,36 +82,5 @@ func TestVariadic(t *testing.T) {
 	res := out.Value().(int64)
 	if res != 15 {
 		t.Fatalf("Expected 15 got %d\n", res)
-	}
-}
-
-type Person struct {
-	Name string
-}
-
-func (t *Person) Speak() string {
-	return fmt.Sprintf("HI %s", t.Name)
-}
-
-func TestEnvNative(t *testing.T) {
-	var p Person
-
-	env, err := cel.NewEnv(ext.NativeTypes(reflect.TypeOf(p)))
-	panIf(err)
-
-	expr := `(cel.Person{Name: "ranksource"}).Name`
-	ast, issues := env.Compile(expr)
-	if issues != nil && issues.Err() != nil {
-		panIf(issues.Err())
-	}
-
-	prg, err := env.Program(ast)
-	panIf(err)
-
-	out, _, err := prg.Eval(map[string]any{})
-	panIf(err)
-
-	if out.Value() != "ranksource" {
-		t.Fatalf("Expected ranksource got %s\n", out)
 	}
 }

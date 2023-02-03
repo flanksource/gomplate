@@ -14,6 +14,7 @@ var sockaddrGetAllInterfacesGen = cel.Function("sockaddr.GetAllInterfaces",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetAllInterfaces()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -30,6 +31,7 @@ var sockaddrGetDefaultInterfacesGen = cel.Function("sockaddr.GetDefaultInterface
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetDefaultInterfaces()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -46,6 +48,7 @@ var sockaddrGetPrivateInterfacesGen = cel.Function("sockaddr.GetPrivateInterface
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetPrivateInterfaces()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -62,6 +65,7 @@ var sockaddrGetPublicInterfacesGen = cel.Function("sockaddr.GetPublicInterfaces"
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetPublicInterfaces()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -81,6 +85,7 @@ var sockaddrSortGen = cel.Function("sockaddr.Sort",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Sort(args[0].Value().(string), args[1].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -100,6 +105,7 @@ var sockaddrExcludeGen = cel.Function("sockaddr.Exclude",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Exclude(args[0].Value().(string), args[1].Value().(string), args[2].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -119,6 +125,7 @@ var sockaddrIncludeGen = cel.Function("sockaddr.Include",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Include(args[0].Value().(string), args[1].Value().(string), args[2].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -138,6 +145,7 @@ var sockaddrAttrGen = cel.Function("sockaddr.Attr",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Attr(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -157,6 +165,7 @@ var sockaddrJoinGen = cel.Function("sockaddr.Join",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Join(args[0].Value().(string), args[1].Value().(string), args[2].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -176,6 +185,7 @@ var sockaddrLimitGen = cel.Function("sockaddr.Limit",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Limit(args[0].Value().(uint), args[1].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -195,6 +205,7 @@ var sockaddrOffsetGen = cel.Function("sockaddr.Offset",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Offset(args[0].Value().(int), args[1].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -214,6 +225,7 @@ var sockaddrUniqueGen = cel.Function("sockaddr.Unique",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Unique(args[0].Value().(string), args[1].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -233,6 +245,7 @@ var sockaddrMathGen = cel.Function("sockaddr.Math",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.Math(args[0].Value().(string), args[1].Value().(string), args[2].Value().(sockaddr.IfAddrs))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -249,6 +262,7 @@ var sockaddrGetPrivateIPGen = cel.Function("sockaddr.GetPrivateIP",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetPrivateIP()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -265,6 +279,7 @@ var sockaddrGetPrivateIPsGen = cel.Function("sockaddr.GetPrivateIPs",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetPrivateIPs()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -281,6 +296,7 @@ var sockaddrGetPublicIPGen = cel.Function("sockaddr.GetPublicIP",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetPublicIP()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -297,6 +313,7 @@ var sockaddrGetPublicIPsGen = cel.Function("sockaddr.GetPublicIPs",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetPublicIPs()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -316,6 +333,7 @@ var sockaddrGetInterfaceIPGen = cel.Function("sockaddr.GetInterfaceIP",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetInterfaceIP(args[0].Value().(string))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -335,6 +353,7 @@ var sockaddrGetInterfaceIPsGen = cel.Function("sockaddr.GetInterfaceIPs",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x SockaddrFuncs
+
 			a0, a1 := x.GetInterfaceIPs(args[0].Value().(string))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

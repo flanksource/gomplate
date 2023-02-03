@@ -17,6 +17,7 @@ var dataJSONGen = cel.Function("data.JSON",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.JSON(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -36,6 +37,7 @@ var dataJSONArrayGen = cel.Function("data.JSONArray",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.JSONArray(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -55,6 +57,7 @@ var dataYAMLGen = cel.Function("data.YAML",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.YAML(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -74,6 +77,7 @@ var dataYAMLArrayGen = cel.Function("data.YAMLArray",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.YAMLArray(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -93,7 +97,92 @@ var dataTOMLGen = cel.Function("data.TOML",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.TOML(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var dataCSVGen = cel.Function("data.CSV",
+	cel.Overload("data.CSV_string",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x DataFuncs
+			list := transferSlice[string](args[0].(ref.Val))
+
+			a0, a1 := x.CSV(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var dataCSVByRowGen = cel.Function("data.CSVByRow",
+	cel.Overload("data.CSVByRow_string",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x DataFuncs
+			list := transferSlice[string](args[0].(ref.Val))
+
+			a0, a1 := x.CSVByRow(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var dataCSVByColumnGen = cel.Function("data.CSVByColumn",
+	cel.Overload("data.CSVByColumn_string",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x DataFuncs
+			list := transferSlice[string](args[0].(ref.Val))
+
+			a0, a1 := x.CSVByColumn(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var dataToCSVGen = cel.Function("data.ToCSV",
+	cel.Overload("data.ToCSV_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x DataFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.ToCSV(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -112,6 +201,7 @@ var dataToJSONGen = cel.Function("data.ToJSON",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.ToJSON(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -131,6 +221,7 @@ var dataToJSONPrettyGen = cel.Function("data.ToJSONPretty",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.ToJSONPretty(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -150,6 +241,7 @@ var dataToYAMLGen = cel.Function("data.ToYAML",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.ToYAML(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -169,6 +261,7 @@ var dataToTOMLGen = cel.Function("data.ToTOML",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x DataFuncs
+
 			a0, a1 := x.ToTOML(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

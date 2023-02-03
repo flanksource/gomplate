@@ -7,6 +7,27 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
+var cryptoPBKDF2Gen = cel.Function("crypto.PBKDF2",
+	cel.Overload("crypto.PBKDF2_interface{}_interface{}_interface{}_interface{}_string",
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType, cel.DynType, cel.DynType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CryptoFuncs
+			list := transferSlice[string](args[4].(ref.Val))
+
+			a0, a1 := x.PBKDF2(args[0], args[1], args[2], args[3], list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var cryptoWPAPSKGen = cel.Function("crypto.WPAPSK",
 	cel.Overload("crypto.WPAPSK_interface{}_interface{}",
 
@@ -17,6 +38,7 @@ var cryptoWPAPSKGen = cel.Function("crypto.WPAPSK",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.WPAPSK(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -155,6 +177,7 @@ var cryptoSHA1BytesGen = cel.Function("crypto.SHA1Bytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.SHA1Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -174,6 +197,7 @@ var cryptoSHA224BytesGen = cel.Function("crypto.SHA224Bytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.SHA224Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -193,6 +217,7 @@ var cryptoSHA256BytesGen = cel.Function("crypto.SHA256Bytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.SHA256Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -212,6 +237,7 @@ var cryptoSHA384BytesGen = cel.Function("crypto.SHA384Bytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.SHA384Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -231,6 +257,7 @@ var cryptoSHA512BytesGen = cel.Function("crypto.SHA512Bytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.SHA512Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -250,6 +277,7 @@ var cryptoSHA512_224BytesGen = cel.Function("crypto.SHA512_224Bytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.SHA512_224Bytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -269,7 +297,29 @@ var cryptoSHA512_256BytesGen = cel.Function("crypto.SHA512_256Bytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.SHA512_256Bytes(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var cryptoBcryptGen = cel.Function("crypto.Bcrypt",
+	cel.Overload("crypto.Bcrypt_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CryptoFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Bcrypt(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -288,6 +338,7 @@ var cryptoRSAEncryptGen = cel.Function("crypto.RSAEncrypt",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.RSAEncrypt(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -307,6 +358,7 @@ var cryptoRSADecryptGen = cel.Function("crypto.RSADecrypt",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.RSADecrypt(args[0].Value().(string), args[1].Value().([]byte))
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -326,7 +378,29 @@ var cryptoRSADecryptBytesGen = cel.Function("crypto.RSADecryptBytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.RSADecryptBytes(args[0].Value().(string), args[1].Value().([]byte))
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var cryptoRSAGenerateKeyGen = cel.Function("crypto.RSAGenerateKey",
+	cel.Overload("crypto.RSAGenerateKey_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CryptoFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.RSAGenerateKey(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -345,7 +419,29 @@ var cryptoRSADerivePublicKeyGen = cel.Function("crypto.RSADerivePublicKey",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.RSADerivePublicKey(args[0].Value().(string))
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var cryptoECDSAGenerateKeyGen = cel.Function("crypto.ECDSAGenerateKey",
+	cel.Overload("crypto.ECDSAGenerateKey_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CryptoFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.ECDSAGenerateKey(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -364,7 +460,71 @@ var cryptoECDSADerivePublicKeyGen = cel.Function("crypto.ECDSADerivePublicKey",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CryptoFuncs
+
 			a0, a1 := x.ECDSADerivePublicKey(args[0].Value().(string))
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var cryptoEncryptAESGen = cel.Function("crypto.EncryptAES",
+	cel.Overload("crypto.EncryptAES_string_interface{}",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CryptoFuncs
+			list := transferSlice[interface{}](args[1].(ref.Val))
+
+			a0, a1 := x.EncryptAES(args[0].Value().(string), list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var cryptoDecryptAESGen = cel.Function("crypto.DecryptAES",
+	cel.Overload("crypto.DecryptAES_string_interface{}",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CryptoFuncs
+			list := transferSlice[interface{}](args[1].(ref.Val))
+
+			a0, a1 := x.DecryptAES(args[0].Value().(string), list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var cryptoDecryptAESBytesGen = cel.Function("crypto.DecryptAESBytes",
+	cel.Overload("crypto.DecryptAESBytes_string_interface{}",
+
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CryptoFuncs
+			list := transferSlice[interface{}](args[1].(ref.Val))
+
+			a0, a1 := x.DecryptAESBytes(args[0].Value().(string), list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

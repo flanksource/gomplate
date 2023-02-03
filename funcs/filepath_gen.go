@@ -109,6 +109,24 @@ var filepathIsAbsGen = cel.Function("filepath.IsAbs",
 	),
 )
 
+var filepathJoinGen = cel.Function("filepath.Join",
+	cel.Overload("filepath.Join_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x FilePathFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			return types.DefaultTypeAdapter.NativeToValue(x.Join(list...))
+
+		}),
+	),
+)
+
 var filepathMatchGen = cel.Function("filepath.Match",
 	cel.Overload("filepath.Match_interface{}_interface{}",
 
@@ -119,6 +137,7 @@ var filepathMatchGen = cel.Function("filepath.Match",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x FilePathFuncs
+
 			a0, a1 := x.Match(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -138,6 +157,7 @@ var filepathRelGen = cel.Function("filepath.Rel",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x FilePathFuncs
+
 			a0, a1 := x.Rel(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

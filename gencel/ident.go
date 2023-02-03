@@ -6,8 +6,9 @@ import (
 )
 
 type Ident struct {
-	Type   string
-	GoType string
+	Type       string
+	GoType     string
+	IsEllipsis bool
 }
 
 // getCelArgs converts native go types to cel-go types
@@ -54,7 +55,7 @@ func astToIdent(a ast.Expr) Ident {
 	case *ast.Ident:
 		return goTypeToIdent(v.Name)
 	case *ast.Ellipsis:
-		return Ident{Type: "cel.DynType", GoType: "interface{}"}
+		return Ident{Type: "cel.DynType", IsEllipsis: true, GoType: astToIdent(v.Elt).GoType}
 	case *ast.SelectorExpr:
 		return goTypeToIdent(fmt.Sprintf("%s.%s", astToIdent(v.X).GoType, v.Sel.Name))
 	case *ast.ArrayType:

@@ -135,13 +135,15 @@ func (g *Generator) generateFile(file *File) {
 	}
 
 	for _, decl := range file.decls {
+		args := getCelArgs(decl.Args)
 		v := funcDefTemplateView{
 			IdentName:           fmt.Sprintf("%s%sGen", fileName, decl.Name),
 			FnNameWithNamespace: fmt.Sprintf("%s.%s", fileName, decl.Name),
 			FnName:              decl.Name,
-			Args:                getCelArgs(decl.Args),
+			Args:                args,
 			ReturnTypes:         getCelArgs(decl.ReturnTypes),
 			RecvType:            decl.RecvType,
+			VariadicArg:         getVariadicArg(args),
 		}
 
 		g.generatedFuncNames = append(g.generatedFuncNames, v.IdentName)

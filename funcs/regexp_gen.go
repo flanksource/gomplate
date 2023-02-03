@@ -17,7 +17,29 @@ var regexpFindGen = cel.Function("regexp.Find",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x ReFuncs
+
 			a0, a1 := x.Find(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var regexpFindAllGen = cel.Function("regexp.FindAll",
+	cel.Overload("regexp.FindAll_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x ReFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.FindAll(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -87,7 +109,29 @@ var regexpReplaceLiteralGen = cel.Function("regexp.ReplaceLiteral",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x ReFuncs
+
 			a0, a1 := x.ReplaceLiteral(args[0], args[1], args[2])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var regexpSplitGen = cel.Function("regexp.Split",
+	cel.Overload("regexp.Split_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x ReFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Split(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

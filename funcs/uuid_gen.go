@@ -14,6 +14,7 @@ var uuidV1Gen = cel.Function("uuid.V1",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x UUIDFuncs
+
 			a0, a1 := x.V1()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -30,6 +31,7 @@ var uuidV4Gen = cel.Function("uuid.V4",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x UUIDFuncs
+
 			a0, a1 := x.V4()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -46,6 +48,7 @@ var uuidNilGen = cel.Function("uuid.Nil",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x UUIDFuncs
+
 			a0, a1 := x.Nil()
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -65,6 +68,7 @@ var uuidIsValidGen = cel.Function("uuid.IsValid",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x UUIDFuncs
+
 			a0, a1 := x.IsValid(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -84,6 +88,7 @@ var uuidParseGen = cel.Function("uuid.Parse",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x UUIDFuncs
+
 			a0, a1 := x.Parse(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

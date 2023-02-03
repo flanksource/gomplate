@@ -7,6 +7,24 @@ import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types/ref"
 
+var collSliceGen = cel.Function("coll.Slice",
+	cel.Overload("coll.Slice_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			return types.DefaultTypeAdapter.NativeToValue(x.Slice(list...))
+
+		}),
+	),
+)
+
 var collHasGen = cel.Function("coll.Has",
 	cel.Overload("coll.Has_interface{}_string",
 
@@ -24,6 +42,69 @@ var collHasGen = cel.Function("coll.Has",
 	),
 )
 
+var collDictGen = cel.Function("coll.Dict",
+	cel.Overload("coll.Dict_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Dict(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var collKeysGen = cel.Function("coll.Keys",
+	cel.Overload("coll.Keys_map[string]interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[map[string]interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Keys(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var collValuesGen = cel.Function("coll.Values",
+	cel.Overload("coll.Values_map[string]interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[map[string]interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Values(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var collAppendGen = cel.Function("coll.Append",
 	cel.Overload("coll.Append_interface{}_interface{}",
 
@@ -34,6 +115,7 @@ var collAppendGen = cel.Function("coll.Append",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CollFuncs
+
 			a0, a1 := x.Append(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -53,6 +135,7 @@ var collPrependGen = cel.Function("coll.Prepend",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CollFuncs
+
 			a0, a1 := x.Prepend(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -72,6 +155,7 @@ var collUniqGen = cel.Function("coll.Uniq",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CollFuncs
+
 			a0, a1 := x.Uniq(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -91,7 +175,50 @@ var collReverseGen = cel.Function("coll.Reverse",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CollFuncs
+
 			a0, a1 := x.Reverse(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var collMergeGen = cel.Function("coll.Merge",
+	cel.Overload("coll.Merge_map[string]interface{}_map[string]interface{}",
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[map[string]interface{}](args[1].(ref.Val))
+
+			a0, a1 := x.Merge(args[0].Value().(map[string]interface{}), list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var collSortGen = cel.Function("coll.Sort",
+	cel.Overload("coll.Sort_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Sort(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -110,7 +237,71 @@ var collJSONPathGen = cel.Function("coll.JSONPath",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x CollFuncs
+
 			a0, a1 := x.JSONPath(args[0].Value().(string), args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var collFlattenGen = cel.Function("coll.Flatten",
+	cel.Overload("coll.Flatten_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Flatten(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var collPickGen = cel.Function("coll.Pick",
+	cel.Overload("coll.Pick_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Pick(list...)
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var collOmitGen = cel.Function("coll.Omit",
+	cel.Overload("coll.Omit_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x CollFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.Omit(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

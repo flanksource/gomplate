@@ -17,6 +17,7 @@ var base64EncodeGen = cel.Function("base64.Encode",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Base64Funcs
+
 			a0, a1 := x.Encode(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -36,6 +37,7 @@ var base64DecodeGen = cel.Function("base64.Decode",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Base64Funcs
+
 			a0, a1 := x.Decode(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
@@ -55,6 +57,7 @@ var base64DecodeBytesGen = cel.Function("base64.DecodeBytes",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x Base64Funcs
+
 			a0, a1 := x.DecodeBytes(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,

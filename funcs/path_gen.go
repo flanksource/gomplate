@@ -92,6 +92,24 @@ var pathIsAbsGen = cel.Function("path.IsAbs",
 	),
 )
 
+var pathJoinGen = cel.Function("path.Join",
+	cel.Overload("path.Join_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.StringType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x PathFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			return types.DefaultTypeAdapter.NativeToValue(x.Join(list...))
+
+		}),
+	),
+)
+
 var pathMatchGen = cel.Function("path.Match",
 	cel.Overload("path.Match_interface{}_interface{}",
 
@@ -102,6 +120,7 @@ var pathMatchGen = cel.Function("path.Match",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x PathFuncs
+
 			a0, a1 := x.Match(args[0], args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
