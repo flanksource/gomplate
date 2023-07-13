@@ -13,7 +13,6 @@ import (
 
 	"github.com/Masterminds/goutils"
 	"github.com/flanksource/gomplate/v3/conv"
-	"github.com/flanksource/gomplate/v3/internal/deprecated"
 	"github.com/pkg/errors"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -49,7 +48,7 @@ func CreateStringFuncs(ctx context.Context) map[string]interface{} {
 	f["title"] = ns.Title
 	f["toUpper"] = ns.ToUpper
 	f["toLower"] = ns.ToLower
-	f["trimSpace"] = ns.TrimSpace
+	f["trim"] = ns.TrimSpace
 	f["indent"] = ns.Indent
 	f["quote"] = ns.Quote
 	f["shellQuote"] = ns.ShellQuote
@@ -59,9 +58,15 @@ func CreateStringFuncs(ctx context.Context) map[string]interface{} {
 	f["contains"] = strings.Contains
 	f["hasPrefix"] = strings.HasPrefix
 	f["hasSuffix"] = strings.HasSuffix
+	f["startsWith"] = strings.HasPrefix
+	f["endsWith"] = strings.HasSuffix
 	f["split"] = strings.Split
 	f["splitN"] = strings.SplitN
 	f["trim"] = strings.Trim
+	f["humanDuration"] = gompstrings.HumanDuration
+	f["humanSize"] = gompstrings.HumanBytes
+	f["semver"] = gompstrings.Semver
+	f["semverCompare"] = gompstrings.SemverCompare
 
 	return f
 }
@@ -134,7 +139,6 @@ func (StringFuncs) Repeat(count int, s interface{}) (string, error) {
 //
 // Deprecated: use coll.Sort instead
 func (f *StringFuncs) Sort(list interface{}) ([]string, error) {
-	deprecated.WarnDeprecated(f.ctx, "strings.Sort is deprecated - use coll.Sort instead")
 
 	switch v := list.(type) {
 	case []string:
