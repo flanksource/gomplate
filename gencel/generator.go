@@ -6,12 +6,12 @@ import (
 	"go/ast"
 	"go/format"
 	"go/types"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
+	"github.com/flanksource/commons/logger"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -21,10 +21,10 @@ type PkgImport struct {
 }
 
 type Package struct {
-	name  string
-	path  string
-	defs  map[*ast.Ident]types.Object
-	files []*File
+	name    string
+	baseDir string
+	defs    map[*ast.Ident]types.Object
+	files   []*File
 }
 
 type Generator struct {
@@ -42,10 +42,10 @@ func (g *Generator) ParsePkg(patterns ...string) {
 	}
 	pkgs, err := packages.Load(cfg, patterns...)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalf("failed to load packages: %v", err)
 	}
 	if len(pkgs) != 1 {
-		log.Fatalf("error: %d packages found", len(pkgs))
+		logger.Fatalf("expected 1 packages but found %d", len(pkgs))
 	}
 
 	g.addPackage(pkgs[0])
@@ -55,21 +55,27 @@ func (g *Generator) addPackage(pkg *packages.Package) {
 	g.pkg = &Package{
 		name:  pkg.Name,
 		defs:  pkg.TypesInfo.Defs,
-		files: make([]*File, len(pkg.Syntax)),
+		files: make([]*File, 0, len(pkg.Syntax)),
 	}
 
-	for _, goFile := range pkg.GoFiles {
-		g.pkg.path = goFile
-		break
+	if len(pkg.GoFiles) == 0 {
+		return
 	}
+
+	g.pkg.baseDir = filepath.Dir(pkg.GoFiles[0])
 
 	for i, astFile := range pkg.Syntax {
-		g.pkg.files[i] = &File{
+		if _, ok := exlusions[filepath.Base(pkg.GoFiles[i])]; ok {
+			logger.Infof("Excluding file: %s", pkg.GoFiles[i])
+			continue
+		}
+
+		g.pkg.files = append(g.pkg.files, &File{
 			file: astFile,
 			pkg:  g.pkg,
 			path: pkg.GoFiles[i],
 			name: filepath.Base(pkg.GoFiles[i]),
-		}
+		})
 	}
 }
 
@@ -96,13 +102,10 @@ func (g *Generator) generateExports() {
 	}
 	g.renderExport(view)
 
-	// Write to file.
-	outputName := filepath.Join(filepath.Dir(g.pkg.path), "cel_gen_exports.go")
-
-	log.Printf("Writing to [%s]", outputName)
+	outputName := filepath.Join(g.pkg.baseDir, "cel_gen_exports.go")
 	err := os.WriteFile(outputName, g.format(), 0644)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalf("error writing to file: %v", err)
 	}
 }
 
@@ -150,13 +153,10 @@ func (g *Generator) generateFile(file *File) {
 		g.render(v)
 	}
 
-	// Write to file.
 	outputName := filepath.Join(filepath.Dir(file.path), fmt.Sprintf("%s_gen.go", fileName))
-
-	log.Printf("Writing to [%s]", outputName)
 	err := os.WriteFile(outputName, g.format(), 0644)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalf("%v", err)
 	}
 }
 
@@ -183,7 +183,7 @@ func (g *Generator) renderHeader(pkgName string, imports ...PkgImport) {
 func (g *Generator) printf(format string, args ...interface{}) {
 	_, err := fmt.Fprintf(&g.buf, format, args...)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalf("fmt.Fprintf(): %v", err)
 	}
 }
 
@@ -192,12 +192,12 @@ func (g *Generator) renderExport(model interface{}) {
 
 	t, err := t.Parse(exportAllTemplate)
 	if err != nil {
-		log.Fatal("instance template parse: ", err)
+		logger.Fatalf("instance template parse: %v", err)
 	}
 
 	err = t.Execute(&g.buf, model)
 	if err != nil {
-		log.Fatal("Execute: ", err)
+		logger.Fatalf("Execute: %v", err)
 	}
 }
 
@@ -206,17 +206,17 @@ func (g *Generator) render(model interface{}) {
 
 	t, err := t.Parse(funcDefTemplate)
 	if err != nil {
-		log.Fatal("instance template parse: ", err)
+		logger.Fatalf("instance template parse: %v", err)
 	}
 
 	t, err = t.Parse(funcBodyTemplate)
 	if err != nil {
-		log.Fatal("instance template parse: ", err)
+		logger.Fatalf("instance template parse: %v", err)
 	}
 
 	err = t.Execute(&g.buf, model)
 	if err != nil {
-		log.Fatal("Execute: ", err)
+		logger.Fatalf("Execute: %v", err)
 		return
 	}
 }
@@ -224,8 +224,8 @@ func (g *Generator) render(model interface{}) {
 func (g *Generator) format() []byte {
 	src, err := format.Source(g.buf.Bytes())
 	if err != nil {
-		log.Printf("warning: internal error: invalid Go generated: %s", err)
-		log.Printf("warning: compile the package to analyze the error")
+		logger.Debugf("warning: internal error: invalid Go generated: %s", err)
+		logger.Debugf("warning: compile the package to analyze the error")
 		return g.buf.Bytes()
 	}
 	return src
@@ -234,4 +234,13 @@ func (g *Generator) format() []byte {
 var importConf = map[string][]PkgImport{
 	"time.go":     {{alias: "gotime", importPath: "time"}},
 	"sockaddr.go": {{alias: "sockaddr", importPath: "github.com/hashicorp/go-sockaddr"}},
+}
+
+// List of files that should be excluded.
+var exlusions = map[string]struct{}{
+	"aws.go":    {},
+	"base64.go": {},
+	"env.go":    {},
+	"gcp.go":    {},
+	"net.go":    {},
 }
