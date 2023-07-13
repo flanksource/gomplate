@@ -15,8 +15,8 @@ type File struct {
 	pkg  *Package
 	file *ast.File
 
-	// filename is the name of the file
-	filename string
+	// name of the file
+	name string
 
 	// path is the absolute path of this file.
 	path string

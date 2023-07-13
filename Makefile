@@ -196,7 +196,11 @@ ci-lint:
 
 .PHONY: gencel
 gencel:
-	go build -o ~/.local/bin/gencel -gcflags="all=-N -l" cmd/gencel.go
+	go build -o .bin/gencel -gcflags="all=-N -l" cmd/gencel.go
+
+.PHONY: gencel-gen
+gencel-gen: gencel
+	cd funcs/ && ../.bin/gencel
 
 .PHONY: cleancel
 cleancel:

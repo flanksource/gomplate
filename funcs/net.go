@@ -107,6 +107,10 @@ func (f NetFuncs) StdParseCIDR(prefix interface{}) (*stdnet.IPNet, error) {
 	return f.stdParseCIDR(prefix)
 }
 
+func (f NetFuncs) CIDRHost(hostnum interface{}, prefix interface{}) (*stdnet.IP, error) {
+	return f.CidrHost(hostnum, prefix)
+}
+
 // CidrHost -
 func (f NetFuncs) CidrHost(hostnum interface{}, prefix interface{}) (*stdnet.IP, error) {
 	network, err := f.stdParseCIDR(prefix)
@@ -119,6 +123,10 @@ func (f NetFuncs) CidrHost(hostnum interface{}, prefix interface{}) (*stdnet.IP,
 }
 
 // CidrNetmask -
+func (f NetFuncs) CIDRNetmask(prefix interface{}) (*stdnet.IP, error) {
+	return f.CidrNetmask(prefix)
+}
+
 func (f NetFuncs) CidrNetmask(prefix interface{}) (*stdnet.IP, error) {
 	network, err := f.stdParseCIDR(prefix)
 	if err != nil {
@@ -134,6 +142,10 @@ func (f NetFuncs) CidrNetmask(prefix interface{}) (*stdnet.IP, error) {
 }
 
 // CidrSubnets -
+func (f NetFuncs) CIDRSubnets(newbits interface{}, prefix interface{}) ([]*stdnet.IPNet, error) {
+	return f.CidrSubnets(newbits, prefix)
+}
+
 func (f NetFuncs) CidrSubnets(newbits interface{}, prefix interface{}) ([]*stdnet.IPNet, error) {
 	network, err := f.stdParseCIDR(prefix)
 	if err != nil {
@@ -159,6 +171,10 @@ func (f NetFuncs) CidrSubnets(newbits interface{}, prefix interface{}) ([]*stdne
 }
 
 // CidrSubnetSizes -
+func (f NetFuncs) CIDRSubnetSizes(args ...interface{}) ([]*stdnet.IPNet, error) {
+	return f.CidrSubnetSizes(args...)
+}
+
 func (f NetFuncs) CidrSubnetSizes(args ...interface{}) ([]*stdnet.IPNet, error) {
 	if len(args) < 2 {
 		return nil, errors.Errorf("wrong number of args: want 2 or more, got %d", len(args))

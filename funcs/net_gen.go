@@ -246,6 +246,26 @@ var netStdParseCIDRGen = cel.Function("net.StdParseCIDR",
 	),
 )
 
+var netCIDRHostGen = cel.Function("net.CIDRHost",
+	cel.Overload("net.CIDRHost_interface{}_interface{}",
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x NetFuncs
+
+			a0, a1 := x.CIDRHost(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var netCidrHostGen = cel.Function("net.CidrHost",
 	cel.Overload("net.CidrHost_interface{}_interface{}",
 
@@ -258,6 +278,26 @@ var netCidrHostGen = cel.Function("net.CidrHost",
 			var x NetFuncs
 
 			a0, a1 := x.CidrHost(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var netCIDRNetmaskGen = cel.Function("net.CIDRNetmask",
+	cel.Overload("net.CIDRNetmask_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x NetFuncs
+
+			a0, a1 := x.CIDRNetmask(args[0])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -286,6 +326,26 @@ var netCidrNetmaskGen = cel.Function("net.CidrNetmask",
 	),
 )
 
+var netCIDRSubnetsGen = cel.Function("net.CIDRSubnets",
+	cel.Overload("net.CIDRSubnets_interface{}_interface{}",
+
+		[]*cel.Type{
+			cel.DynType, cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x NetFuncs
+
+			a0, a1 := x.CIDRSubnets(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var netCidrSubnetsGen = cel.Function("net.CidrSubnets",
 	cel.Overload("net.CidrSubnets_interface{}_interface{}",
 
@@ -298,6 +358,27 @@ var netCidrSubnetsGen = cel.Function("net.CidrSubnets",
 			var x NetFuncs
 
 			a0, a1 := x.CidrSubnets(args[0], args[1])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var netCIDRSubnetSizesGen = cel.Function("net.CIDRSubnetSizes",
+	cel.Overload("net.CIDRSubnetSizes_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x NetFuncs
+			list := transferSlice[interface{}](args[0].(ref.Val))
+
+			a0, a1 := x.CIDRSubnetSizes(list...)
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})

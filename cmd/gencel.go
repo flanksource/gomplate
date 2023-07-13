@@ -2,14 +2,9 @@ package main
 
 import (
 	"flag"
-	"log"
-	"time"
 
+	"github.com/flanksource/commons/logger"
 	"github.com/flanksource/gomplate/v3/gencel"
-)
-
-var (
-	wait = flag.Bool("wait", false, "should wait")
 )
 
 func main() {
@@ -18,12 +13,7 @@ func main() {
 	if len(args) == 0 {
 		args = []string{"."}
 	}
-	log.Printf("Generating cel functions for %s\n", args)
-
-	// For debugging reason
-	if *wait {
-		time.Sleep(time.Second * 5)
-	}
+	logger.Infof("Generating cel functions for %s\n", args)
 
 	g := gencel.Generator{}
 	g.ParsePkg(args...)

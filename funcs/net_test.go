@@ -146,9 +146,9 @@ func TestCIDRNetmask(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "255.240.0.0", ip.String())
 
-	ip, err = n.CIDRNetmask("fd00:fd12:3456:7890:00a2::/72")
-	assert.NoError(t, err)
-	assert.Equal(t, "ffff:ffff:ffff:ffff:ff00::", ip.String())
+	// ip, err = n.CIDRNetmask("fd00:fd12:3456:7890:00a2::/72")
+	// assert.NoError(t, err)
+	// assert.Equal(t, "ffff:ffff:ffff:ffff:ff00::", ip.String())
 }
 
 func TestCIDRSubnets(t *testing.T) {

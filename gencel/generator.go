@@ -35,7 +35,7 @@ type Generator struct {
 }
 
 // ParsePkg loads and adds the Go packages named by the given patterns.
-func (t *Generator) ParsePkg(patterns ...string) {
+func (g *Generator) ParsePkg(patterns ...string) {
 	cfg := &packages.Config{
 		Mode:  packages.LoadSyntax,
 		Tests: false,
@@ -48,7 +48,7 @@ func (t *Generator) ParsePkg(patterns ...string) {
 		log.Fatalf("error: %d packages found", len(pkgs))
 	}
 
-	t.addPackage(pkgs[0])
+	g.addPackage(pkgs[0])
 }
 
 func (g *Generator) addPackage(pkg *packages.Package) {
@@ -65,10 +65,10 @@ func (g *Generator) addPackage(pkg *packages.Package) {
 
 	for i, astFile := range pkg.Syntax {
 		g.pkg.files[i] = &File{
-			file:     astFile,
-			pkg:      g.pkg,
-			path:     pkg.GoFiles[i],
-			filename: filepath.Base(pkg.GoFiles[i]),
+			file: astFile,
+			pkg:  g.pkg,
+			path: pkg.GoFiles[i],
+			name: filepath.Base(pkg.GoFiles[i]),
 		}
 	}
 }
@@ -119,7 +119,7 @@ func (g *Generator) generateFile(file *File) {
 		{importPath: "github.com/google/cel-go/common/types"},
 		{importPath: "github.com/google/cel-go/common/types/ref"},
 	}
-	if hardcodedImports, ok := importConf[file.filename]; ok {
+	if hardcodedImports, ok := importConf[file.name]; ok {
 		imports = append(imports, hardcodedImports...)
 	}
 
