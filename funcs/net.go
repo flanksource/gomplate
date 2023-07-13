@@ -4,12 +4,12 @@ import (
 	"context"
 	"math/big"
 	stdnet "net"
+	"net/netip"
 
 	"github.com/apparentlymart/go-cidr/cidr"
 	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/flanksource/gomplate/v3/net"
 	"github.com/pkg/errors"
-	"inet.af/netaddr"
 )
 
 // NetNS - the net namespace
@@ -70,18 +70,13 @@ func (f NetFuncs) LookupTXT(name interface{}) ([]string, error) {
 }
 
 // ParseIP -
-func (f NetFuncs) ParseIP(ip interface{}) (netaddr.IP, error) {
-	return netaddr.ParseIP(conv.ToString(ip))
+func (f NetFuncs) ParseIP(ip interface{}) (netip.Addr, error) {
+	return netip.ParseAddr(conv.ToString(ip))
 }
 
 // ParseIPPrefix -
-func (f NetFuncs) ParseIPPrefix(ipprefix interface{}) (netaddr.IPPrefix, error) {
-	return netaddr.ParseIPPrefix(conv.ToString(ipprefix))
-}
-
-// ParseIPRange -
-func (f NetFuncs) ParseIPRange(iprange interface{}) (netaddr.IPRange, error) {
-	return netaddr.ParseIPRange(conv.ToString(iprange))
+func (f NetFuncs) ParseIPPrefix(ipprefix interface{}) (netip.Prefix, error) {
+	return netip.ParsePrefix(conv.ToString(ipprefix))
 }
 
 // StdParseIP -
@@ -127,6 +122,7 @@ func (f NetFuncs) CIDRNetmask(prefix interface{}) (*stdnet.IP, error) {
 	return f.CidrNetmask(prefix)
 }
 
+// CidrNetmask -
 func (f NetFuncs) CidrNetmask(prefix interface{}) (*stdnet.IP, error) {
 	network, err := f.stdParseCIDR(prefix)
 	if err != nil {
@@ -146,6 +142,7 @@ func (f NetFuncs) CIDRSubnets(newbits interface{}, prefix interface{}) ([]*stdne
 	return f.CidrSubnets(newbits, prefix)
 }
 
+// CidrSubnets -
 func (f NetFuncs) CidrSubnets(newbits interface{}, prefix interface{}) ([]*stdnet.IPNet, error) {
 	network, err := f.stdParseCIDR(prefix)
 	if err != nil {
@@ -175,6 +172,7 @@ func (f NetFuncs) CIDRSubnetSizes(args ...interface{}) ([]*stdnet.IPNet, error) 
 	return f.CidrSubnetSizes(args...)
 }
 
+// CidrSubnetSizes -
 func (f NetFuncs) CidrSubnetSizes(args ...interface{}) ([]*stdnet.IPNet, error) {
 	if len(args) < 2 {
 		return nil, errors.Errorf("wrong number of args: want 2 or more, got %d", len(args))

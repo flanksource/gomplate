@@ -1,9 +1,10 @@
 module github.com/flanksource/gomplate/v3
 
-go 1.19
+go 1.20
 
 require (
 	github.com/Masterminds/goutils v1.1.1
+	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/Shopify/ejson v1.3.3
 	github.com/apparentlymart/go-cidr v1.1.0
 	github.com/aws/aws-sdk-go v1.44.234
@@ -15,6 +16,7 @@ require (
 	github.com/gosimple/slug v1.13.1
 	github.com/hairyhenderson/toml v0.4.2-0.20210923231440-40456b8e66cf
 	github.com/hashicorp/go-sockaddr v1.0.2
+	github.com/itchyny/gojq v0.12.10
 	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.0
@@ -25,9 +27,7 @@ require (
 	golang.org/x/crypto v0.7.0
 	golang.org/x/text v0.8.0
 	golang.org/x/tools v0.7.0
-	gotest.tools/v3 v3.3.0
-	inet.af/netaddr v0.0.0-20220811202034-502d2d690317
-	k8s.io/client-go v0.26.1
+	gotest.tools/v3 v3.4.0
 )
 
 // TODO: replace with gopkg.in/yaml.v3 after https://github.com/go-yaml/yaml/pull/862
@@ -40,6 +40,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v0.13.0 // indirect
 	cloud.google.com/go/storage v1.30.1 // indirect
+	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230331115716-d34776aa93ec // indirect
 	github.com/acomagu/bufpipe v1.0.4 // indirect
@@ -76,7 +77,9 @@ require (
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.15 // indirect
+	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
@@ -84,6 +87,8 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
@@ -97,8 +102,6 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	go4.org/intern v0.0.0-20220617035311-6925f38cc365 // indirect
-	go4.org/unsafe/assume-no-moving-gc v0.0.0-20220617031537-928513b29760 // indirect
 	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.6.0 // indirect
@@ -112,5 +115,3 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace k8s.io/client-go => k8s.io/client-go v0.24.4
