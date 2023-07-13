@@ -6,7 +6,7 @@ import (
 )
 
 func getArgs(args []Ident) string {
-	var output []string
+	output := make([]string, 0, len(args))
 	for i := range args {
 		var a string
 		if args[i].IsEllipsis {

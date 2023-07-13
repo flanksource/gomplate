@@ -37,7 +37,7 @@ type Generator struct {
 // ParsePkg loads and adds the Go packages named by the given patterns.
 func (g *Generator) ParsePkg(patterns ...string) {
 	cfg := &packages.Config{
-		Mode:  packages.LoadSyntax,
+		Mode:  packages.NeedSyntax | packages.NeedTypesInfo | packages.NeedTypes | packages.NeedTypesSizes | packages.NeedImports | packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles,
 		Tests: false,
 	}
 	pkgs, err := packages.Load(cfg, patterns...)
