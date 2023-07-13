@@ -6,8 +6,8 @@ import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/common/types/ref"
 
-var collSliceGen = cel.Function("coll.Slice",
-	cel.Overload("coll.Slice_interface{}",
+var collSliceGen = cel.Function("Slice",
+	cel.Overload("Slice_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -24,8 +24,8 @@ var collSliceGen = cel.Function("coll.Slice",
 	),
 )
 
-var collHasGen = cel.Function("coll.Has",
-	cel.Overload("coll.Has_interface{}_string",
+var collHasGen = cel.Function("Has",
+	cel.Overload("Has_interface{}_string",
 
 		[]*cel.Type{
 			cel.DynType, cel.StringType,
@@ -41,8 +41,8 @@ var collHasGen = cel.Function("coll.Has",
 	),
 )
 
-var collDictGen = cel.Function("coll.Dict",
-	cel.Overload("coll.Dict_interface{}",
+var collDictGen = cel.Function("Dict",
+	cel.Overload("Dict_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -62,8 +62,8 @@ var collDictGen = cel.Function("coll.Dict",
 	),
 )
 
-var collKeysGen = cel.Function("coll.Keys",
-	cel.Overload("coll.Keys_map[string]interface{}",
+var collKeysGen = cel.Function("Keys",
+	cel.Overload("Keys_map[string]interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -83,8 +83,8 @@ var collKeysGen = cel.Function("coll.Keys",
 	),
 )
 
-var collValuesGen = cel.Function("coll.Values",
-	cel.Overload("coll.Values_map[string]interface{}",
+var collValuesGen = cel.Function("Values",
+	cel.Overload("Values_map[string]interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -104,8 +104,8 @@ var collValuesGen = cel.Function("coll.Values",
 	),
 )
 
-var collAppendGen = cel.Function("coll.Append",
-	cel.Overload("coll.Append_interface{}_interface{}",
+var collAppendGen = cel.Function("Append",
+	cel.Overload("Append_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -124,8 +124,8 @@ var collAppendGen = cel.Function("coll.Append",
 	),
 )
 
-var collPrependGen = cel.Function("coll.Prepend",
-	cel.Overload("coll.Prepend_interface{}_interface{}",
+var collPrependGen = cel.Function("Prepend",
+	cel.Overload("Prepend_interface{}_interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -144,8 +144,8 @@ var collPrependGen = cel.Function("coll.Prepend",
 	),
 )
 
-var collUniqGen = cel.Function("coll.Uniq",
-	cel.Overload("coll.Uniq_interface{}",
+var collUniqGen = cel.Function("Uniq",
+	cel.Overload("Uniq_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -164,8 +164,8 @@ var collUniqGen = cel.Function("coll.Uniq",
 	),
 )
 
-var collReverseGen = cel.Function("coll.Reverse",
-	cel.Overload("coll.Reverse_interface{}",
+var collReverseGen = cel.Function("Reverse",
+	cel.Overload("Reverse_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -184,8 +184,8 @@ var collReverseGen = cel.Function("coll.Reverse",
 	),
 )
 
-var collMergeGen = cel.Function("coll.Merge",
-	cel.Overload("coll.Merge_map[string]interface{}_map[string]interface{}",
+var collMergeGen = cel.Function("Merge",
+	cel.Overload("Merge_map[string]interface{}_map[string]interface{}",
 
 		[]*cel.Type{
 			cel.DynType, cel.DynType,
@@ -205,8 +205,8 @@ var collMergeGen = cel.Function("coll.Merge",
 	),
 )
 
-var collSortGen = cel.Function("coll.Sort",
-	cel.Overload("coll.Sort_interface{}",
+var collSortGen = cel.Function("Sort",
+	cel.Overload("Sort_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -226,8 +226,8 @@ var collSortGen = cel.Function("coll.Sort",
 	),
 )
 
-var collJSONPathGen = cel.Function("coll.JSONPath",
-	cel.Overload("coll.JSONPath_string_interface{}",
+var collJQGen = cel.Function("JQ",
+	cel.Overload("JQ_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -237,7 +237,7 @@ var collJSONPathGen = cel.Function("coll.JSONPath",
 
 			var x CollFuncs
 
-			a0, a1 := x.JSONPath(args[0].Value().(string), args[1])
+			a0, a1 := x.JQ(args[0].Value().(string), args[1])
 			return types.DefaultTypeAdapter.NativeToValue([]any{
 				a0, a1,
 			})
@@ -246,8 +246,8 @@ var collJSONPathGen = cel.Function("coll.JSONPath",
 	),
 )
 
-var collFlattenGen = cel.Function("coll.Flatten",
-	cel.Overload("coll.Flatten_interface{}",
+var collFlattenGen = cel.Function("Flatten",
+	cel.Overload("Flatten_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -267,8 +267,8 @@ var collFlattenGen = cel.Function("coll.Flatten",
 	),
 )
 
-var collPickGen = cel.Function("coll.Pick",
-	cel.Overload("coll.Pick_interface{}",
+var collPickGen = cel.Function("Pick",
+	cel.Overload("Pick_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -288,8 +288,8 @@ var collPickGen = cel.Function("coll.Pick",
 	),
 )
 
-var collOmitGen = cel.Function("coll.Omit",
-	cel.Overload("coll.Omit_interface{}",
+var collOmitGen = cel.Function("Omit",
+	cel.Overload("Omit_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,

@@ -6,8 +6,8 @@ import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/common/types/ref"
 
-var stringsAbbrevGen = cel.Function("strings.Abbrev",
-	cel.Overload("strings.Abbrev_interface{}",
+var stringsAbbrevGen = cel.Function("Abbrev",
+	cel.Overload("Abbrev_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -27,8 +27,8 @@ var stringsAbbrevGen = cel.Function("strings.Abbrev",
 	),
 )
 
-var stringsReplaceAllGen = cel.Function("strings.ReplaceAll",
-	cel.Overload("strings.ReplaceAll_string_string_interface{}",
+var stringsReplaceAllGen = cel.Function("ReplaceAll",
+	cel.Overload("ReplaceAll_string_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.StringType, cel.DynType,
@@ -44,8 +44,8 @@ var stringsReplaceAllGen = cel.Function("strings.ReplaceAll",
 	),
 )
 
-var stringsContainsGen = cel.Function("strings.Contains",
-	cel.Overload("strings.Contains_string_interface{}",
+var stringsContainsGen = cel.Function("Contains",
+	cel.Overload("Contains_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -61,8 +61,8 @@ var stringsContainsGen = cel.Function("strings.Contains",
 	),
 )
 
-var stringsHasPrefixGen = cel.Function("strings.HasPrefix",
-	cel.Overload("strings.HasPrefix_string_interface{}",
+var stringsHasPrefixGen = cel.Function("HasPrefix",
+	cel.Overload("HasPrefix_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -78,8 +78,8 @@ var stringsHasPrefixGen = cel.Function("strings.HasPrefix",
 	),
 )
 
-var stringsHasSuffixGen = cel.Function("strings.HasSuffix",
-	cel.Overload("strings.HasSuffix_string_interface{}",
+var stringsHasSuffixGen = cel.Function("HasSuffix",
+	cel.Overload("HasSuffix_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -95,8 +95,8 @@ var stringsHasSuffixGen = cel.Function("strings.HasSuffix",
 	),
 )
 
-var stringsRepeatGen = cel.Function("strings.Repeat",
-	cel.Overload("strings.Repeat_int_interface{}",
+var stringsRepeatGen = cel.Function("Repeat",
+	cel.Overload("Repeat_int_interface{}",
 
 		[]*cel.Type{
 			cel.IntType, cel.DynType,
@@ -115,8 +115,8 @@ var stringsRepeatGen = cel.Function("strings.Repeat",
 	),
 )
 
-var stringsSortGen = cel.Function("strings.Sort",
-	cel.Overload("strings.Sort_interface{}",
+var stringsSortGen = cel.Function("Sort",
+	cel.Overload("Sort_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -135,8 +135,8 @@ var stringsSortGen = cel.Function("strings.Sort",
 	),
 )
 
-var stringsSplitGen = cel.Function("strings.Split",
-	cel.Overload("strings.Split_string_interface{}",
+var stringsSplitGen = cel.Function("Split",
+	cel.Overload("Split_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -152,8 +152,8 @@ var stringsSplitGen = cel.Function("strings.Split",
 	),
 )
 
-var stringsSplitNGen = cel.Function("strings.SplitN",
-	cel.Overload("strings.SplitN_string_int_interface{}",
+var stringsSplitNGen = cel.Function("SplitN",
+	cel.Overload("SplitN_string_int_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.IntType, cel.DynType,
@@ -169,8 +169,8 @@ var stringsSplitNGen = cel.Function("strings.SplitN",
 	),
 )
 
-var stringsTrimGen = cel.Function("strings.Trim",
-	cel.Overload("strings.Trim_string_interface{}",
+var stringsTrimGen = cel.Function("Trim",
+	cel.Overload("Trim_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -186,8 +186,8 @@ var stringsTrimGen = cel.Function("strings.Trim",
 	),
 )
 
-var stringsTrimPrefixGen = cel.Function("strings.TrimPrefix",
-	cel.Overload("strings.TrimPrefix_string_interface{}",
+var stringsTrimPrefixGen = cel.Function("TrimPrefix",
+	cel.Overload("TrimPrefix_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -203,8 +203,8 @@ var stringsTrimPrefixGen = cel.Function("strings.TrimPrefix",
 	),
 )
 
-var stringsTrimSuffixGen = cel.Function("strings.TrimSuffix",
-	cel.Overload("strings.TrimSuffix_string_interface{}",
+var stringsTrimSuffixGen = cel.Function("TrimSuffix",
+	cel.Overload("TrimSuffix_string_interface{}",
 
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
@@ -220,8 +220,8 @@ var stringsTrimSuffixGen = cel.Function("strings.TrimSuffix",
 	),
 )
 
-var stringsTitleGen = cel.Function("strings.Title",
-	cel.Overload("strings.Title_interface{}",
+var stringsTitleGen = cel.Function("Title",
+	cel.Overload("Title_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -237,8 +237,8 @@ var stringsTitleGen = cel.Function("strings.Title",
 	),
 )
 
-var stringsToUpperGen = cel.Function("strings.ToUpper",
-	cel.Overload("strings.ToUpper_interface{}",
+var stringsToUpperGen = cel.Function("ToUpper",
+	cel.Overload("ToUpper_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -254,8 +254,8 @@ var stringsToUpperGen = cel.Function("strings.ToUpper",
 	),
 )
 
-var stringsToLowerGen = cel.Function("strings.ToLower",
-	cel.Overload("strings.ToLower_interface{}",
+var stringsToLowerGen = cel.Function("ToLower",
+	cel.Overload("ToLower_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -271,8 +271,8 @@ var stringsToLowerGen = cel.Function("strings.ToLower",
 	),
 )
 
-var stringsTrimSpaceGen = cel.Function("strings.TrimSpace",
-	cel.Overload("strings.TrimSpace_interface{}",
+var stringsTrimSpaceGen = cel.Function("TrimSpace",
+	cel.Overload("TrimSpace_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -288,8 +288,8 @@ var stringsTrimSpaceGen = cel.Function("strings.TrimSpace",
 	),
 )
 
-var stringsTruncGen = cel.Function("strings.Trunc",
-	cel.Overload("strings.Trunc_int_interface{}",
+var stringsTruncGen = cel.Function("Trunc",
+	cel.Overload("Trunc_int_interface{}",
 
 		[]*cel.Type{
 			cel.IntType, cel.DynType,
@@ -305,8 +305,8 @@ var stringsTruncGen = cel.Function("strings.Trunc",
 	),
 )
 
-var stringsIndentGen = cel.Function("strings.Indent",
-	cel.Overload("strings.Indent_interface{}",
+var stringsIndentGen = cel.Function("Indent",
+	cel.Overload("Indent_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -326,8 +326,8 @@ var stringsIndentGen = cel.Function("strings.Indent",
 	),
 )
 
-var stringsSlugGen = cel.Function("strings.Slug",
-	cel.Overload("strings.Slug_interface{}",
+var stringsSlugGen = cel.Function("Slug",
+	cel.Overload("Slug_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -343,8 +343,8 @@ var stringsSlugGen = cel.Function("strings.Slug",
 	),
 )
 
-var stringsQuoteGen = cel.Function("strings.Quote",
-	cel.Overload("strings.Quote_interface{}",
+var stringsQuoteGen = cel.Function("Quote",
+	cel.Overload("Quote_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -360,8 +360,8 @@ var stringsQuoteGen = cel.Function("strings.Quote",
 	),
 )
 
-var stringsShellQuoteGen = cel.Function("strings.ShellQuote",
-	cel.Overload("strings.ShellQuote_interface{}",
+var stringsShellQuoteGen = cel.Function("ShellQuote",
+	cel.Overload("ShellQuote_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -377,8 +377,8 @@ var stringsShellQuoteGen = cel.Function("strings.ShellQuote",
 	),
 )
 
-var stringsSquoteGen = cel.Function("strings.Squote",
-	cel.Overload("strings.Squote_interface{}",
+var stringsSquoteGen = cel.Function("Squote",
+	cel.Overload("Squote_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -394,8 +394,8 @@ var stringsSquoteGen = cel.Function("strings.Squote",
 	),
 )
 
-var stringsSnakeCaseGen = cel.Function("strings.SnakeCase",
-	cel.Overload("strings.SnakeCase_interface{}",
+var stringsSnakeCaseGen = cel.Function("SnakeCase",
+	cel.Overload("SnakeCase_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -414,8 +414,8 @@ var stringsSnakeCaseGen = cel.Function("strings.SnakeCase",
 	),
 )
 
-var stringsCamelCaseGen = cel.Function("strings.CamelCase",
-	cel.Overload("strings.CamelCase_interface{}",
+var stringsCamelCaseGen = cel.Function("CamelCase",
+	cel.Overload("CamelCase_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -434,8 +434,8 @@ var stringsCamelCaseGen = cel.Function("strings.CamelCase",
 	),
 )
 
-var stringsKebabCaseGen = cel.Function("strings.KebabCase",
-	cel.Overload("strings.KebabCase_interface{}",
+var stringsKebabCaseGen = cel.Function("KebabCase",
+	cel.Overload("KebabCase_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -454,8 +454,8 @@ var stringsKebabCaseGen = cel.Function("strings.KebabCase",
 	),
 )
 
-var stringsWordWrapGen = cel.Function("strings.WordWrap",
-	cel.Overload("strings.WordWrap_interface{}",
+var stringsWordWrapGen = cel.Function("WordWrap",
+	cel.Overload("WordWrap_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,
@@ -475,8 +475,8 @@ var stringsWordWrapGen = cel.Function("strings.WordWrap",
 	),
 )
 
-var stringsRuneCountGen = cel.Function("strings.RuneCount",
-	cel.Overload("strings.RuneCount_interface{}",
+var stringsRuneCountGen = cel.Function("RuneCount",
+	cel.Overload("RuneCount_interface{}",
 
 		[]*cel.Type{
 			cel.DynType,

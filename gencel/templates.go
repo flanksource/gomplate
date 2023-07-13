@@ -87,6 +87,8 @@ type funcDefTemplateView struct {
 	// cel environment that's namespaced by the filename.
 	// Example: A function IsMax() inside the file math.go would have
 	// FnNameWithNamespace as math.IsMax.
+	//
+	// NOTE: There are some exceptions so not all function names are namespaced.
 	FnNameWithNamespace string
 
 	// Args is the list of arguments of the go func

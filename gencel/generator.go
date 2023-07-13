@@ -139,9 +139,15 @@ func (g *Generator) generateFile(file *File) {
 
 	for _, decl := range file.decls {
 		args := getCelArgs(decl.Args)
+
+		funcName := fmt.Sprintf("%s.%s", fileName, decl.Name)
+		if _, ok := notNamespaced[filepath.Base(file.path)]; ok {
+			funcName = decl.Name
+		}
+
 		v := funcDefTemplateView{
 			IdentName:           fmt.Sprintf("%s%sGen", fileName, decl.Name),
-			FnNameWithNamespace: fmt.Sprintf("%s.%s", fileName, decl.Name),
+			FnNameWithNamespace: funcName,
 			FnName:              decl.Name,
 			Args:                args,
 			ReturnTypes:         getCelArgs(decl.ReturnTypes),
@@ -231,16 +237,29 @@ func (g *Generator) format() []byte {
 	return src
 }
 
+// Some imports are difficult to infer.
+// We hardcode some imports for some files here.
 var importConf = map[string][]PkgImport{
 	"time.go":     {{alias: "gotime", importPath: "time"}},
 	"sockaddr.go": {{alias: "sockaddr", importPath: "github.com/hashicorp/go-sockaddr"}},
 }
 
 // List of files that should be excluded.
+// We don't generate cel functions for these files.
 var exlusions = map[string]struct{}{
 	"aws.go":    {},
 	"base64.go": {},
 	"env.go":    {},
 	"gcp.go":    {},
 	"net.go":    {},
+}
+
+// List of files that shouldn't be namespaced.
+//
+// The generated cel function are namespaced with the filename by default.
+// Example: time.ZoneName, regexp.FindAll
+// These files will not be namespaced
+var notNamespaced = map[string]struct{}{
+	"coll.go":    {},
+	"strings.go": {},
 }

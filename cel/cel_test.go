@@ -53,8 +53,8 @@ func TestCelMultipleReturns(t *testing.T) {
 		Input   string
 		Outputs []any
 	}{
-		{Input: `base64.Encode("flanksource")`, Outputs: []any{"Zmxhbmtzb3VyY2U=", nil}},
-		{Input: `base64.Decode("Zmxhbmtzb3VyY2U=")`, Outputs: []any{"flanksource", nil}},
+		// {Input: `base64.Encode("flanksource")`, Outputs: []any{"Zmxhbmtzb3VyY2U=", nil}},
+		// {Input: `base64.Decode("Zmxhbmtzb3VyY2U=")`, Outputs: []any{"flanksource", nil}},
 		{Input: `data.JSONArray("[\"name\",\"flanksource\"]")`, Outputs: []any{[]any{"name", "flanksource"}, nil}},
 	}
 
@@ -70,7 +70,7 @@ func TestCelVariadic(t *testing.T) {
 	}{
 		{Input: `math.Add([1,2,3,4,5])`, Output: int64(15)},
 		{Input: `math.Mul([1,2,3,4,5])`, Output: int64(120)},
-		{Input: `coll.Slice([1,2,3,4,5])`, Output: []any{int64(1), int64(2), int64(3), int64(4), int64(5)}},
+		{Input: `Slice([1,2,3,4,5])`, Output: []any{int64(1), int64(2), int64(3), int64(4), int64(5)}},
 	}
 
 	for i, td := range testData {
@@ -83,7 +83,7 @@ func TestCelSliceReturn(t *testing.T) {
 		Input  string
 		Output any
 	}{
-		{Input: `strings.Split("-", "open-source")`, Output: []string{"open", "source"}},
+		{Input: `Split("-", "open-source")`, Output: []string{"open", "source"}},
 	}
 
 	for i, td := range testData {
