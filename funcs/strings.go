@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/Masterminds/goutils"
+	"github.com/Masterminds/semver/v3"
 	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/pkg/errors"
 	"golang.org/x/text/cases"
@@ -69,6 +70,21 @@ func CreateStringFuncs(ctx context.Context) map[string]interface{} {
 	f["semverCompare"] = gompstrings.SemverCompare
 
 	return f
+}
+
+func (ns StringFuncs) HumanDuration(in interface{}) (string, error) {
+	return gompstrings.HumanDuration(in), nil
+}
+
+func (ns StringFuncs) HumanSize(in interface{}) (string, error) {
+	return gompstrings.HumanBytes(in), nil
+}
+func (ns StringFuncs) Semver(in string) (*semver.Version, error) {
+	return gompstrings.Semver(in)
+}
+
+func (ns StringFuncs) SemverCompare(v1, v2 string) (bool, error) {
+	return gompstrings.SemverCompare(v1, v2)
 }
 
 // StringFuncs -

@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"strings"
 	gotemplate "text/template"
+
+	"github.com/flanksource/gomplate/v3/funcs"
+	"github.com/google/cel-go/cel"
 )
 
 var funcMap gotemplate.FuncMap
@@ -77,15 +80,31 @@ func RunTemplate(environment map[string]interface{}, template Template) (string,
 
 	// exprv
 	if template.Expression != "" {
-		// program, err := expr.Compile(template.Expression, text.MakeExpressionOptions(environment)...)
-		// if err != nil {
-		// 	return "", err
-		// }
-		// output, err := expr.Run(program, text.MakeExpressionEnvs(environment))
-		// if err != nil {
-		// 	return "", err
-		// }
-		// return fmt.Sprint(output), nil
+
+		var opts = funcs.CelEnvOption
+		for k := range environment {
+			opts = append(opts, cel.Variable(k, cel.AnyType))
+		}
+
+		env, err := cel.NewEnv(opts...)
+		if err != nil {
+			return "", err
+		}
+
+		ast, issues := env.Compile(template.Expression)
+		if issues != nil && issues.Err() != nil {
+			return "", issues.Err()
+		}
+
+		prg, err := env.Program(ast, cel.Globals(environment))
+		if err != nil {
+			return "", err
+		}
+		out, _, err := prg.Eval(environment)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%v", out.Value()), nil
 	}
 	return "", nil
 }

@@ -27,6 +27,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/google/cel-go/common/types"
 )
 
 const (
@@ -56,6 +58,8 @@ func HumanBytes(size interface{}) string {
 	var bytes uint64
 	var err error
 	switch t := size.(type) {
+	case types.Int:
+		bytes = uint64(t)
 	case uint:
 		bytes = uint64(t)
 	case uint64:

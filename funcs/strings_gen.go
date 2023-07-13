@@ -6,6 +6,86 @@ import "github.com/google/cel-go/cel"
 import "github.com/google/cel-go/common/types"
 import "github.com/google/cel-go/common/types/ref"
 
+var stringsHumanDurationGen = cel.Function("HumanDuration",
+	cel.Overload("HumanDuration_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+
+			a0, a1 := x.HumanDuration(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var stringsHumanSizeGen = cel.Function("HumanSize",
+	cel.Overload("HumanSize_interface{}",
+
+		[]*cel.Type{
+			cel.DynType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+
+			a0, a1 := x.HumanSize(args[0])
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var stringsSemverGen = cel.Function("Semver",
+	cel.Overload("Semver_string",
+
+		[]*cel.Type{
+			cel.StringType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+
+			a0, a1 := x.Semver(args[0].Value().(string))
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
+var stringsSemverCompareGen = cel.Function("SemverCompare",
+	cel.Overload("SemverCompare_string_string",
+
+		[]*cel.Type{
+			cel.StringType, cel.StringType,
+		},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x StringFuncs
+
+			a0, a1 := x.SemverCompare(args[0].Value().(string), args[1].Value().(string))
+			return types.DefaultTypeAdapter.NativeToValue([]any{
+				a0, a1,
+			})
+
+		}),
+	),
+)
+
 var stringsAbbrevGen = cel.Function("Abbrev",
 	cel.Overload("Abbrev_interface{}",
 
