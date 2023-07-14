@@ -79,8 +79,27 @@ func (ns StringFuncs) HumanDuration(in interface{}) (string, error) {
 func (ns StringFuncs) HumanSize(in interface{}) (string, error) {
 	return gompstrings.HumanBytes(in), nil
 }
+
 func (ns StringFuncs) Semver(in string) (*semver.Version, error) {
 	return gompstrings.Semver(in)
+}
+
+func (ns StringFuncs) SemverMap(in string) (map[string]string, error) {
+	v, err := gompstrings.Semver(in)
+	if err != nil {
+		return nil, err
+	}
+
+	res := map[string]string{
+		"major":      fmt.Sprint(v.Major()),
+		"minor":      fmt.Sprint(v.Minor()),
+		"patch":      fmt.Sprint(v.Patch()),
+		"prerelease": v.Prerelease(),
+		"metadata":   v.Metadata(),
+		"original":   v.Original(),
+	}
+
+	return res, nil
 }
 
 func (ns StringFuncs) SemverCompare(v1, v2 string) (bool, error) {

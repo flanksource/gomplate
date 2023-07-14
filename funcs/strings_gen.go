@@ -2,9 +2,12 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
+import (
+	"github.com/flanksource/gomplate/v3/conv"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
+)
 
 var stringsHumanDurationGen = cel.Function("HumanDuration",
 	cel.Overload("HumanDuration_interface{}",
@@ -37,11 +40,8 @@ var stringsHumanSizeGen = cel.Function("HumanSize",
 
 			var x StringFuncs
 
-			a0, a1 := x.HumanSize(args[0])
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
-
+			a0, _ := x.HumanSize(conv.ToString(args[0])) // Never returns error
+			return types.String(a0)
 		}),
 	),
 )
@@ -57,11 +57,13 @@ var stringsSemverGen = cel.Function("Semver",
 
 			var x StringFuncs
 
-			a0, a1 := x.Semver(args[0].Value().(string))
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
+			a0, a1 := x.SemverMap(args[0].Value().(string))
+			if a1 != nil {
+				return types.String("")
+			}
 
+
+			return types.DefaultTypeAdapter.NativeToValue(a0)
 		}),
 	),
 )
@@ -78,9 +80,11 @@ var stringsSemverCompareGen = cel.Function("SemverCompare",
 			var x StringFuncs
 
 			a0, a1 := x.SemverCompare(args[0].Value().(string), args[1].Value().(string))
-			return types.DefaultTypeAdapter.NativeToValue([]any{
-				a0, a1,
-			})
+			if a1 != nil {
+				return types.Bool(false)
+			}
+
+			return types.DefaultTypeAdapter.NativeToValue(a0)
 
 		}),
 	),

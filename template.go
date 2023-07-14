@@ -78,9 +78,8 @@ func RunTemplate(environment map[string]interface{}, template Template) (string,
 		return strings.TrimSpace(buf.String()), nil
 	}
 
-	// exprv
+	// cel-go
 	if template.Expression != "" {
-
 		var opts = funcs.CelEnvOption
 		for k := range environment {
 			opts = append(opts, cel.Variable(k, cel.AnyType))
@@ -106,5 +105,6 @@ func RunTemplate(environment map[string]interface{}, template Template) (string,
 		}
 		return fmt.Sprintf("%v", out.Value()), nil
 	}
+
 	return "", nil
 }

@@ -1,10 +1,12 @@
 package k8s
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/flanksource/is-healthy/pkg/health"
 	"github.com/flanksource/is-healthy/pkg/lua"
+	"github.com/google/cel-go/common/types"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/yaml"
 )
@@ -15,6 +17,12 @@ type HealthStatus struct {
 	OK      bool   `json:"ok,omitempty"`
 }
 
+func GetUnstructuredMap(in interface{}) []byte {
+	x := GetUnstructured(in)
+	b, _ := json.Marshal(x)
+	return b
+}
+
 func GetUnstructured(in interface{}) *unstructured.Unstructured {
 	var err error
 	obj := make(map[string]interface{})
@@ -23,6 +31,8 @@ func GetUnstructured(in interface{}) *unstructured.Unstructured {
 	case string:
 		err = yaml.Unmarshal([]byte(v), &obj)
 	case []byte:
+		err = yaml.Unmarshal(v, &obj)
+	case types.Bytes:
 		err = yaml.Unmarshal(v, &obj)
 	case map[string]interface{}:
 		obj = v

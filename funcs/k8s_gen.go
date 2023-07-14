@@ -51,7 +51,7 @@ var k8sGetHealthGen = cel.Function("GetHealth",
 
 			var x KubernetesFuncs
 
-			return types.DefaultTypeAdapter.NativeToValue(x.GetHealth(args[0]))
+			return types.DefaultTypeAdapter.NativeToValue(x.GetHealthMap(args[0]))
 
 		}),
 	),
