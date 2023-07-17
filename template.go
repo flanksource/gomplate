@@ -10,6 +10,7 @@ import (
 	gotemplate "text/template"
 
 	"github.com/flanksource/gomplate/v3/funcs"
+	_ "github.com/flanksource/gomplate/v3/js"
 	"github.com/google/cel-go/cel"
 	"github.com/robertkrimen/otto"
 	"github.com/robertkrimen/otto/registry"
