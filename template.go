@@ -13,6 +13,7 @@ import (
 	_ "github.com/flanksource/gomplate/v3/js"
 	pkgStrings "github.com/flanksource/gomplate/v3/strings"
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/ext"
 	"github.com/robertkrimen/otto"
 	"github.com/robertkrimen/otto/registry"
 	_ "github.com/robertkrimen/otto/underscore"
@@ -83,6 +84,11 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 	if template.Expression != "" {
 		var opts = funcs.CelEnvOption
 		opts = append(opts, pkgStrings.CelEnvOption...)
+
+		// load other cel-go extensions that aren't available by default
+		extensions := []cel.EnvOption{ext.Math(), ext.Encoders(), ext.Strings()}
+		opts = append(opts, extensions...)
+
 		for k := range environment {
 			opts = append(opts, cel.Variable(k, cel.AnyType))
 		}
