@@ -40,6 +40,7 @@ func (d Duration) String() string {
 		u = -u
 	}
 
+	//nolint:gocritic
 	if u < uint64(Second) {
 		// Special case: if duration is smaller than a second,
 		// use smaller units, like 1.2ms
@@ -409,7 +410,7 @@ func parseDuration(s string) (Duration, error) {
 func HumanDuration(duration interface{}) string {
 	switch v := duration.(type) {
 	case int64:
-		return Duration(time.Duration(int64(v))).String()
+		return Duration(time.Duration(v)).String()
 	case float64:
 		return Duration(time.Duration(int64(v))).String()
 	case time.Duration:
