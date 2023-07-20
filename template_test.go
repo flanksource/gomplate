@@ -99,6 +99,8 @@ func TestCel(t *testing.T) {
 		{nil, `string(base64.decode("Zmxhbmtzb3VyY2U="))`, "flanksource"}, // encoding lib
 		{nil, `math.greatest(-42.0, -21.5, -100.0)`, "-21.5"},             // math lib
 		{nil, `"hello, world".replace("world", "team")`, "hello, team"},   // strings lib
+		{nil, `sets.contains([1, 2, 3, 4], [2, 3])`, "true"},              // sets lib
+		{nil, `[1,2,3,4].slice(1, 3)`, "[2 3]"},                           // lists lib
 	}
 
 	for _, tc := range tests {

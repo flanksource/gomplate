@@ -86,7 +86,7 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 		opts = append(opts, pkgStrings.CelEnvOption...)
 
 		// load other cel-go extensions that aren't available by default
-		extensions := []cel.EnvOption{ext.Math(), ext.Encoders(), ext.Strings()}
+		extensions := []cel.EnvOption{ext.Math(), ext.Encoders(), ext.Strings(), ext.Sets(), ext.Lists()}
 		opts = append(opts, extensions...)
 
 		for k := range environment {
