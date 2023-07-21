@@ -3,7 +3,6 @@ package gomplate
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"reflect"
@@ -15,6 +14,7 @@ import (
 	pkgStrings "github.com/flanksource/gomplate/v3/strings"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/ext"
+	"github.com/mitchellh/mapstructure"
 	"github.com/robertkrimen/otto"
 	"github.com/robertkrimen/otto/registry"
 	_ "github.com/robertkrimen/otto/underscore"
@@ -67,15 +67,8 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 			return "", err
 		}
 
-		// marshal data from any to map[string]any
-		data, _ := json.Marshal(environment)
-		unstructured := make(map[string]any)
-		if err := json.Unmarshal(data, &unstructured); err != nil {
-			return "", err
-		}
-
 		var buf bytes.Buffer
-		if err := tpl.Execute(&buf, unstructured); err != nil {
+		if err := tpl.Execute(&buf, serialize(environment)); err != nil {
 			return "", fmt.Errorf("error executing template %s: %v", strings.Split(template.Template, "\n")[0], err)
 		}
 		return strings.TrimSpace(buf.String()), nil
@@ -142,57 +135,25 @@ func serialize(in map[string]any) map[string]any {
 
 	newMap := make(map[string]any, len(in))
 	for k, v := range in {
-		if reflect.ValueOf(v).Kind() == reflect.Struct {
-			newMap[k] = structToMap(v)
-		} else {
+		if reflect.ValueOf(v).Kind() != reflect.Struct {
 			newMap[k] = v
+			continue
 		}
+
+		var vMap map[string]any
+		dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json", Result: &vMap})
+		if err != nil {
+			fmt.Printf("error creating new mapstructure decoder: %v\n", err)
+			continue
+		}
+
+		if err := dec.Decode(v); err != nil {
+			fmt.Printf("error decoding new mapstructure decoder: %v\n", err)
+			continue
+		}
+
+		newMap[k] = vMap
 	}
 
 	return newMap
-}
-
-func structToMap(i any) map[string]any {
-	data := make(map[string]any)
-	value := reflect.ValueOf(i)
-	typeOf := value.Type()
-
-	if value.Kind() == reflect.Ptr {
-		value = value.Elem()
-		typeOf = value.Type()
-	}
-
-	for i := 0; i < value.NumField(); i++ {
-		field := value.Field(i)
-		switch field.Kind() {
-		case reflect.Struct:
-			data[typeOf.Field(i).Name] = structToMap(field.Interface())
-		case reflect.Slice:
-			sliceData := make([]any, field.Len())
-			for j := 0; j < field.Len(); j++ {
-				sliceValue := field.Index(j)
-				if sliceValue.Kind() == reflect.Struct {
-					sliceData[j] = structToMap(sliceValue.Interface())
-				} else {
-					sliceData[j] = sliceValue.Interface()
-				}
-			}
-			data[typeOf.Field(i).Name] = sliceData
-		case reflect.Map:
-			mapData := make(map[string]any)
-			for _, key := range field.MapKeys() {
-				mapValue := field.MapIndex(key)
-				if mapValue.Kind() == reflect.Struct {
-					mapData[key.Interface().(string)] = structToMap(mapValue.Interface())
-				} else {
-					mapData[key.Interface().(string)] = mapValue.Interface()
-				}
-			}
-			data[typeOf.Field(i).Name] = mapData
-		default:
-			data[typeOf.Field(i).Name] = field.Interface()
-		}
-	}
-
-	return data
 }
