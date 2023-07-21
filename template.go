@@ -107,10 +107,23 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 		if err != nil {
 			return "", err
 		}
-		out, _, err := prg.Eval(environment)
+
+		// Convert environment to json otherwise structs will not be casted to cel-go's ref.Val
+		envJSONRaw, err := json.Marshal(environment)
+		if err != nil {
+			return "", fmt.Errorf("failed to marshal environment: %v", err)
+		}
+
+		var envJSON map[string]any
+		if err := json.Unmarshal(envJSONRaw, &envJSON); err != nil {
+			return "", fmt.Errorf("failed to unmarshal environment: %v", err)
+		}
+
+		out, _, err := prg.Eval(envJSON)
 		if err != nil {
 			return "", err
 		}
+
 		return fmt.Sprintf("%v", out.Value()), nil
 	}
 

@@ -67,6 +67,15 @@ func TestGomplate(t *testing.T) {
 }
 
 func TestCel(t *testing.T) {
+	type Address struct {
+		City string `json:"city"`
+	}
+
+	type Person struct {
+		Name    string  `json:"name"`
+		Address Address `json:"address"`
+	}
+
 	tests := []struct {
 		env        map[string]interface{}
 		expression string
@@ -101,6 +110,20 @@ func TestCel(t *testing.T) {
 		{nil, `"hello, world".replace("world", "team")`, "hello, team"},   // strings lib
 		{nil, `sets.contains([1, 2, 3, 4], [2, 3])`, "true"},              // sets lib
 		{nil, `[1,2,3,4].slice(1, 3)`, "[2 3]"},                           // lists lib
+
+		// Support structs as environment var (by default they are not)
+		{
+			map[string]any{
+				"results": Person{
+					Name: "Aditya",
+					Address: Address{
+						City: "Kathmandu",
+					},
+				},
+			},
+			`results.address.city == "Kathmandu" && results.name == "Aditya"`,
+			"true",
+		},
 	}
 
 	for _, tc := range tests {
