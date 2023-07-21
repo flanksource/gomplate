@@ -4,7 +4,9 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/flanksource/gomplate/v3/js"
 	"github.com/flanksource/gomplate/v3/k8s"
+	_ "github.com/robertkrimen/otto/underscore"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -67,15 +69,6 @@ func TestGomplate(t *testing.T) {
 }
 
 func TestCel(t *testing.T) {
-	type Address struct {
-		City string `json:"city"`
-	}
-
-	type Person struct {
-		Name    string  `json:"name"`
-		Address Address `json:"address"`
-	}
-
 	tests := []struct {
 		env        map[string]interface{}
 		expression string
@@ -121,7 +114,7 @@ func TestCel(t *testing.T) {
 					},
 				},
 			},
-			`results.address.city == "Kathmandu" && results.name == "Aditya"`,
+			`results.Address.City == "Kathmandu" && results.Name == "Aditya"`,
 			"true",
 		},
 	}
@@ -135,4 +128,44 @@ func TestCel(t *testing.T) {
 			assert.Equal(t, tc.out, out)
 		})
 	}
+}
+
+type Address struct {
+	City string
+}
+
+type Person struct {
+	Name     string
+	Address  Address
+	MetaData map[string]any
+	Codes    []string
+}
+
+func Test_structToMap(t *testing.T) {
+	sample := Person{
+		Name: "Aditya",
+		MetaData: map[string]any{
+			"foo": "bar",
+		},
+		Codes: []string{"1", "2"},
+		Address: Address{
+			City: "Kathmandu",
+		},
+	}
+
+	res := structToMap(sample)
+	assert.IsType(t, "", res["Name"])
+	assert.Equal(t, "Aditya", res["Name"])
+
+	assert.IsType(t, map[string]any{}, res["Address"])
+	if val, ok := res["Address"].(map[string]any); ok {
+		assert.IsType(t, "", val["City"])
+		assert.Equal(t, "Kathmandu", val["City"])
+	}
+
+	assert.IsType(t, map[string]any{}, res["MetaData"])
+	assert.Equal(t, map[string]any{"foo": "bar"}, res["MetaData"])
+
+	assert.IsType(t, []any{}, res["Codes"])
+	assert.Equal(t, []any{"1", "2"}, res["Codes"])
 }

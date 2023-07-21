@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	gotemplate "text/template"
 
@@ -108,18 +109,7 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 			return "", err
 		}
 
-		// Convert environment to json otherwise structs will not be casted to cel-go's ref.Val
-		envJSONRaw, err := json.Marshal(environment)
-		if err != nil {
-			return "", fmt.Errorf("failed to marshal environment: %v", err)
-		}
-
-		var envJSON map[string]any
-		if err := json.Unmarshal(envJSONRaw, &envJSON); err != nil {
-			return "", fmt.Errorf("failed to unmarshal environment: %v", err)
-		}
-
-		out, _, err := prg.Eval(envJSON)
+		out, _, err := prg.Eval(serialize(environment))
 		if err != nil {
 			return "", err
 		}
@@ -141,4 +131,68 @@ func LoadSharedLibrary(source string) error {
 	fmt.Printf("Loaded %s: \n%s\n", source, string(data))
 	registry.Register(func() string { return string(data) })
 	return nil
+}
+
+// serialize iterates over each key-value pair in the input map
+// serializes any struct value to map[string]any.
+func serialize(in map[string]any) map[string]any {
+	if in == nil {
+		return nil
+	}
+
+	newMap := make(map[string]any, len(in))
+	for k, v := range in {
+		if reflect.ValueOf(v).Kind() == reflect.Struct {
+			newMap[k] = structToMap(v)
+		} else {
+			newMap[k] = v
+		}
+	}
+
+	return newMap
+}
+
+func structToMap(i any) map[string]any {
+	data := make(map[string]any)
+	value := reflect.ValueOf(i)
+	typeOf := value.Type()
+
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+		typeOf = value.Type()
+	}
+
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Field(i)
+		switch field.Kind() {
+		case reflect.Struct:
+			data[typeOf.Field(i).Name] = structToMap(field.Interface())
+		case reflect.Slice:
+			sliceData := make([]any, field.Len())
+			for j := 0; j < field.Len(); j++ {
+				sliceValue := field.Index(j)
+				if sliceValue.Kind() == reflect.Struct {
+					sliceData[j] = structToMap(sliceValue.Interface())
+				} else {
+					sliceData[j] = sliceValue.Interface()
+				}
+			}
+			data[typeOf.Field(i).Name] = sliceData
+		case reflect.Map:
+			mapData := make(map[string]any)
+			for _, key := range field.MapKeys() {
+				mapValue := field.MapIndex(key)
+				if mapValue.Kind() == reflect.Struct {
+					mapData[key.Interface().(string)] = structToMap(mapValue.Interface())
+				} else {
+					mapData[key.Interface().(string)] = mapValue.Interface()
+				}
+			}
+			data[typeOf.Field(i).Name] = mapData
+		default:
+			data[typeOf.Field(i).Name] = field.Interface()
+		}
+	}
+
+	return data
 }
