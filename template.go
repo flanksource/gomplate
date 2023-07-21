@@ -67,8 +67,13 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 			return "", err
 		}
 
+		data, err := serialize(environment)
+		if err != nil {
+			return "", err
+		}
+
 		var buf bytes.Buffer
-		if err := tpl.Execute(&buf, serialize(environment)); err != nil {
+		if err := tpl.Execute(&buf, data); err != nil {
 			return "", fmt.Errorf("error executing template %s: %v", strings.Split(template.Template, "\n")[0], err)
 		}
 		return strings.TrimSpace(buf.String()), nil
@@ -102,7 +107,12 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 			return "", err
 		}
 
-		out, _, err := prg.Eval(serialize(environment))
+		data, err := serialize(environment)
+		if err != nil {
+			return "", err
+		}
+
+		out, _, err := prg.Eval(data)
 		if err != nil {
 			return "", err
 		}
@@ -128,9 +138,9 @@ func LoadSharedLibrary(source string) error {
 
 // serialize iterates over each key-value pair in the input map
 // serializes any struct value to map[string]any.
-func serialize(in map[string]any) map[string]any {
+func serialize(in map[string]any) (map[string]any, error) {
 	if in == nil {
-		return nil
+		return nil, nil
 	}
 
 	newMap := make(map[string]any, len(in))
@@ -143,17 +153,15 @@ func serialize(in map[string]any) map[string]any {
 		var vMap map[string]any
 		dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json", Result: &vMap})
 		if err != nil {
-			fmt.Printf("error creating new mapstructure decoder: %v\n", err)
-			continue
+			return nil, fmt.Errorf("error creating new mapstructure decoder: %w", err)
 		}
 
 		if err := dec.Decode(v); err != nil {
-			fmt.Printf("error decoding new mapstructure decoder: %v\n", err)
-			continue
+			return nil, fmt.Errorf("error decoding %T to map[string]any: %w", v, err)
 		}
 
 		newMap[k] = vMap
 	}
 
-	return newMap
+	return newMap, nil
 }
