@@ -122,13 +122,8 @@ func TestGomplate(t *testing.T) {
 		{structEnv, `{{.results.name}} {{.results.Address.city_name}}`, "Aditya Kathmandu"},
 		{
 			map[string]any{"results": junitEnv},
-			`
-			{{.results.passed}}
-			{{ range $r := .results.suites}}
-				{{$r.name}} ✅ {{$r.passed}} ❌ {{$r.failed}} in 🕑 {{$r.duration}}
-			{{end}}
-			`,
-			"1",
+			`{{.results.passed}}{{ range $r := .results.suites}}{{$r.name}} ✅ {{$r.passed}} ❌ {{$r.failed}} in 🕑 {{$r.duration}}{{end}}`,
+			"1hi ✅ 0 ❌ 2 in 🕑 0",
 		},
 		{
 			map[string]any{
@@ -233,9 +228,9 @@ func Test_serialize(t *testing.T) {
 				},
 			},
 			want: map[string]any{
-				"r": []any{
-					map[string]any{"city_name": "Kathmandu"},
-					map[string]any{"city_name": "Lalitpur"},
+				"r": []map[string]any{
+					{"city_name": "Kathmandu"},
+					{"city_name": "Lalitpur"},
 				},
 			},
 			wantErr: false,
