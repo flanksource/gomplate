@@ -17,7 +17,7 @@ var customCelFuncs = []cel.EnvOption{
 	toJSON(),
 	k8sHealth(),
 	k8sIsHealthy(),
-	k8sCpuAsMillicores(),
+	k8sCPUAsMillicores(),
 	k8sMemoryAsBytes(),
 }
 

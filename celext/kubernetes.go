@@ -35,7 +35,7 @@ func k8sIsHealthy() cel.EnvOption {
 	)
 }
 
-func k8sCpuAsMillicores() cel.EnvOption {
+func k8sCPUAsMillicores() cel.EnvOption {
 	return cel.Function("k8s.cpuAsMillicores",
 		cel.Overload("k8s.cpuAsMillicores_string",
 			[]*cel.Type{cel.StringType},
@@ -62,15 +62,17 @@ func k8sMemoryAsBytes() cel.EnvOption {
 			cel.UnaryBinding(func(obj ref.Val) ref.Val {
 				objVal := conv.ToString(obj.Value())
 				var memory int64
-				if strings.HasSuffix(objVal, "Gi") {
+				switch {
+				case strings.HasSuffix(objVal, "Gi"):
 					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "Gi", "")) * 1024 * 1024 * 1024)
-				} else if strings.HasSuffix(objVal, "Mi") {
+				case strings.HasSuffix(objVal, "Mi"):
 					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "Mi", "")) * 1024 * 1024)
-				} else if strings.HasSuffix(objVal, "Ki") {
+				case strings.HasSuffix(objVal, "Ki"):
 					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "Ki", "")) * 1024)
-				} else {
+				default:
 					memory = conv.ToInt64(objVal)
 				}
+
 				return types.Int(memory)
 			}),
 		),
