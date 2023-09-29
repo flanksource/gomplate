@@ -60,15 +60,15 @@ func k8sMemoryAsBytes() cel.EnvOption {
 			[]*cel.Type{cel.StringType},
 			cel.IntType,
 			cel.UnaryBinding(func(obj ref.Val) ref.Val {
-				objVal := conv.ToString(obj.Value())
+				objVal := strings.ToLower(conv.ToString(obj.Value()))
 				var memory int64
 				switch {
-				case strings.HasSuffix(objVal, "Gi"):
-					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "Gi", "")) * 1024 * 1024 * 1024)
-				case strings.HasSuffix(objVal, "Mi"):
-					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "Mi", "")) * 1024 * 1024)
-				case strings.HasSuffix(objVal, "Ki"):
-					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "Ki", "")) * 1024)
+				case strings.HasSuffix(objVal, "gi"):
+					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "gi", "")) * 1024 * 1024 * 1024)
+				case strings.HasSuffix(objVal, "mi"):
+					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "mi", "")) * 1024 * 1024)
+				case strings.HasSuffix(objVal, "ki"):
+					memory = int64(conv.ToFloat64(strings.ReplaceAll(objVal, "ki", "")) * 1024)
 				default:
 					memory = conv.ToInt64(objVal)
 				}
