@@ -164,6 +164,15 @@ func TestCelK8sMemoryResourceUnits(t *testing.T) {
 		{Input: `k8s.memoryAsBytes("1Gi")`, Output: int64(1073741824)},
 		{Input: `k8s.memoryAsBytes("1.234Gi")`, Output: int64(1324997410)},
 		{Input: `k8s.memoryAsBytes("5Gi")`, Output: int64(5368709120)},
+		{Input: `k8s.memoryAsBytes("10ki")`, Output: int64(10240)},
+		{Input: `k8s.memoryAsBytes("100ki")`, Output: int64(102400)},
+		{Input: `k8s.memoryAsBytes("1000ki")`, Output: int64(1024000)},
+		{Input: `k8s.memoryAsBytes("50mi")`, Output: int64(52428800)},
+		{Input: `k8s.memoryAsBytes("500mi")`, Output: int64(524288000)},
+		{Input: `k8s.memoryAsBytes("512mi")`, Output: int64(536870912)},
+		{Input: `k8s.memoryAsBytes("1gi")`, Output: int64(1073741824)},
+		{Input: `k8s.memoryAsBytes("1.234gi")`, Output: int64(1324997410)},
+		{Input: `k8s.memoryAsBytes("5gi")`, Output: int64(5368709120)},
 	}
 
 	for i, td := range testData {
