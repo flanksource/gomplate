@@ -11,6 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	gomplate.RegisterType(Person{})
+}
+
 func panIf(err error) {
 	if err != nil {
 		panic(err)
@@ -133,12 +137,12 @@ func TestAws(t *testing.T) {
 }
 
 func TestJQ(t *testing.T) {
+
 	person := Person{Name: "Aditya", Address: &Address{City: "Kathmandu"}}
 	persons := []interface{}{
 		Person{Name: "John", Address: &Address{City: "Kathmandu"}, Age: 20},
 		Person{Name: "Jane", Address: &Address{City: "Nepal"}, Age: 30},
 		Person{Name: "Jane", Address: &Address{City: "Kathmandu"}, Age: 35},
-
 		Person{Name: "Harry", Address: &Address{City: "Kathmandu"}, Age: 40},
 	}
 
@@ -172,16 +176,23 @@ func unstructure(o any) interface{} {
 func TestData(t *testing.T) {
 	person := Person{Name: "Aditya", Address: &Address{City: "Kathmandu"}}
 	runTests(t, []Test{
+		{nil, `dyn([{'name': 'John', 'age': 30}]).toJSON()`, `[{"age":30,"name":"John"}]`},
+		{nil, `[{'name': 'John'}].toJSON()`, `[{"name":"John"}]`},
+		{nil, `dyn({'name': 'John'}).toJSON()`, `{"name":"John"}`},
+		{nil, `{'name': 'John'}.toJSON()`, `{"name":"John"}`},
 		// {map[string]interface{}{"i": person}, "jq('.address.city_name', i)", "Aditya"},
 		{map[string]interface{}{"i": person}, "toJSONPretty(i)", "{\n  \"Address\": {\n    \"city_name\": \"Kathmandu\"\n  },\n  \"name\": \"Aditya\"\n}"},
+		// {map[string]interface{}{"i": person}, "i.toJSON()", "Aditya"},
+		{map[string]interface{}{"i": person}, "JSON(toJSONPretty(i)).name", "Aditya"},
 		{map[string]interface{}{"i": person}, "JSON(toJSON(i)).name", "Aditya"},
+		{map[string]interface{}{"i": person}, "JSON(i.toJSON()).name", "Aditya"},
 		{map[string]interface{}{"i": person}, "YAML(toYAML(i)).name", "Aditya"},
-		{map[string]interface{}{"i": person}, "TOML(toTOML(i)).name", "Aditya"},
+		{map[string]interface{}{"i": person}, "TOML(toTOML(i)).Name", "Aditya"},
 
-		{structEnv, `results.Address.city_name == "Kathmandu" && results.name == "Aditya"`, "true"},
+		{structEnv, `results.Address.City == "Kathmandu" && results.Name == "Aditya"`, "true"},
 		// Support structs as environment var (by default they are not)
-		{structEnv, `results.Address.city_name == "Kathmandu" && results.name == "Aditya"`, "true"},
-		{map[string]any{"results": junitEnv}, `results.passed`, "1"},
+		{structEnv, `results.Address.City == "Kathmandu" && results.Name == "Aditya"`, "true"},
+		{map[string]any{"results": junitEnv}, `results.Passed`, "1"},
 	})
 }
 
@@ -233,7 +244,12 @@ func TestStrings(t *testing.T) {
 }
 
 func TestDates(t *testing.T) {
+	timestamp, err := time.Parse(time.RFC3339Nano, "2020-01-01T14:30:33.456Z")
+	assert.NoError(t, err)
 	tests := []Test{
+		{map[string]interface{}{"t": timestamp}, "t.getMinutes()", "30"},
+		{map[string]interface{}{"t": timestamp}, "string(t)", "2020-01-01T14:30:33.456Z"},
+
 		// Durations
 		{map[string]interface{}{"age": 75 * time.Second}, "age", "1m15s"},
 		{nil, `HumanDuration(duration("1008h"))`, "6w0d0h"},
@@ -338,22 +354,6 @@ func TestCelK8s(t *testing.T) {
 	}
 	for i, td := range testData {
 		executeTemplate(t, i, td.Input, td.Output, environment)
-	}
-}
-
-func TestCelJSON(t *testing.T) {
-	testData := []struct {
-		Input  string
-		Output any
-	}{
-		{Input: `dyn([{'name': 'John', 'age': 30}]).toJSON()`, Output: `[{"age":30,"name":"John"}]`},
-		{Input: `[{'name': 'John'}].toJSON()`, Output: `[{"name":"John"}]`},
-		{Input: `dyn({'name': 'John'}).toJSON()`, Output: `{"name":"John"}`},
-		{Input: `{'name': 'John'}.toJSON()`, Output: `{"name":"John"}`},
-	}
-
-	for i, td := range testData {
-		executeTemplate(t, i, td.Input, td.Output, nil)
 	}
 }
 

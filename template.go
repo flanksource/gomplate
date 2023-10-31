@@ -42,7 +42,6 @@ func (t Template) IsEmpty() bool {
 
 func RunExpression(environment map[string]any, template Template) (any, error) {
 	funcs := GetCelEnv(environment)
-
 	for name, fn := range template.Functions {
 		_name := name
 		_fn := fn
@@ -71,14 +70,9 @@ func RunExpression(environment map[string]any, template Template) (any, error) {
 		return "", err
 	}
 
-	data, err := Serialize(environment)
+	out, _, err := prg.Eval(environment)
 	if err != nil {
-		return "", err
-	}
-
-	out, _, err := prg.Eval(data)
-	if err != nil {
-		return nil, errors.Wrapf(err, "error evaluating expression %s: %s, %+v", template.Expression, err, data)
+		return nil, errors.Wrapf(err, "error evaluating expression %s: %s", template.Expression, err)
 	}
 	return out.Value(), nil
 
