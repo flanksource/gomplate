@@ -11,10 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	gomplate.RegisterType(Person{})
-}
-
 func panIf(err error) {
 	if err != nil {
 		panic(err)
@@ -174,21 +170,23 @@ func unstructure(o any) interface{} {
 }
 
 func TestData(t *testing.T) {
-	person := Person{Name: "Aditya", Address: &Address{City: "Kathmandu"}}
+	person := Person{
+		Name:    "Aditya",
+		Address: &Address{City: "Kathmandu"}}
 	runTests(t, []Test{
+		{map[string]interface{}{"i": newFolderCheck(1)}, "i.files[0].modified", "Aditya"},
 		{nil, `dyn([{'name': 'John', 'age': 30}]).toJSON()`, `[{"age":30,"name":"John"}]`},
 		{nil, `[{'name': 'John'}].toJSON()`, `[{"name":"John"}]`},
 		{nil, `dyn({'name': 'John'}).toJSON()`, `{"name":"John"}`},
 		{nil, `{'name': 'John'}.toJSON()`, `{"name":"John"}`},
-		// {map[string]interface{}{"i": person}, "jq('.address.city_name', i)", "Aditya"},
+		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
 		{map[string]interface{}{"i": person}, "toJSONPretty(i)", "{\n  \"Address\": {\n    \"city_name\": \"Kathmandu\"\n  },\n  \"name\": \"Aditya\"\n}"},
-		// {map[string]interface{}{"i": person}, "i.toJSON()", "Aditya"},
 		{map[string]interface{}{"i": person}, "JSON(toJSONPretty(i)).name", "Aditya"},
 		{map[string]interface{}{"i": person}, "JSON(toJSON(i)).name", "Aditya"},
 		{map[string]interface{}{"i": person}, "JSON(i.toJSON()).name", "Aditya"},
 		{map[string]interface{}{"i": person}, "YAML(toYAML(i)).name", "Aditya"},
-		{map[string]interface{}{"i": person}, "TOML(toTOML(i)).Name", "Aditya"},
-
+		// TOML doesn't use JSON tags,
+		{map[string]interface{}{"i": person}, "TOML(toTOML(i)).Address.City", "Kathmandu"},
 		{structEnv, `results.Address.City == "Kathmandu" && results.Name == "Aditya"`, "true"},
 		// Support structs as environment var (by default they are not)
 		{structEnv, `results.Address.City == "Kathmandu" && results.Name == "Aditya"`, "true"},

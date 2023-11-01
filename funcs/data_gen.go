@@ -218,15 +218,14 @@ var (
 
 func toJson(val ref.Val) ref.Val {
 	var typeDesc reflect.Type
-	var result string
-	var err error
+
 	switch val.Type() {
 	case types.ListType:
 		typeDesc = listType
 	case types.MapType:
 		typeDesc = mapType
 	default:
-		if result, err = data.ToJSON2(val.Value());  err != nil {
+		if result, err := json.Marshal(val.Value());  err != nil {
 			return types.WrapErr(err)
 		} else {
 			return types.String(result)

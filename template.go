@@ -5,12 +5,10 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 	gotemplate "text/template"
 
 	_ "github.com/flanksource/gomplate/v3/js"
-	"github.com/flanksource/mapstructure"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
@@ -65,12 +63,17 @@ func RunExpression(environment map[string]any, template Template) (any, error) {
 		return "", issues.Err()
 	}
 
-	prg, err := env.Program(ast, cel.Globals(environment))
+	data, err := Serialize(environment)
 	if err != nil {
 		return "", err
 	}
 
-	out, _, err := prg.Eval(environment)
+	prg, err := env.Program(ast, cel.Globals(data))
+	if err != nil {
+		return "", err
+	}
+
+	out, _, err := prg.Eval(data)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error evaluating expression %s: %s", template.Expression, err)
 	}
@@ -165,60 +168,4 @@ func LoadSharedLibrary(source string) error {
 	fmt.Printf("Loaded %s: \n%s\n", source, string(data))
 	registry.Register(func() string { return string(data) })
 	return nil
-}
-
-// Serialize iterates over each key-value pair in the input map
-// serializes any struct value to map[string]any.
-func Serialize(in map[string]any) (map[string]any, error) {
-	if in == nil {
-		return nil, nil
-	}
-
-	newMap := make(map[string]any, len(in))
-	for k, v := range in {
-		var dec *mapstructure.Decoder
-		var err error
-
-		vt := reflect.TypeOf(v)
-		if vt.Kind() == reflect.Ptr {
-			vt = vt.Elem()
-		}
-
-		switch vt.Kind() {
-		case reflect.Struct:
-			var result map[string]any
-			dec, err = mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json", Result: &result, Squash: true, Deep: true})
-			if err != nil {
-				return nil, fmt.Errorf("error creating new mapstructure decoder: %w", err)
-			}
-
-			if err := dec.Decode(v); err != nil {
-				return nil, fmt.Errorf("error decoding %T to map[string]any: %w", v, err)
-			}
-
-			newMap[k] = result
-
-		case reflect.Slice:
-			var result any
-			if vt.Elem().Kind() == reflect.Struct {
-				result = make([]map[string]any, 0)
-			}
-
-			dec, err = mapstructure.NewDecoder(&mapstructure.DecoderConfig{TagName: "json", Result: &result, Squash: true, Deep: true})
-			if err != nil {
-				return nil, fmt.Errorf("error creating new mapstructure decoder: %w", err)
-			}
-			if err := dec.Decode(v); err != nil {
-				return nil, fmt.Errorf("error decoding %T to map[string]any: %w", v, err)
-			}
-
-			newMap[k] = result
-
-		default:
-			newMap[k] = v
-			continue
-		}
-	}
-
-	return newMap, nil
 }
