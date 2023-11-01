@@ -38,8 +38,14 @@ func (t Template) IsEmpty() bool {
 	return t.Template == "" && t.JSONPath == "" && t.Expression == "" && t.Javascript == ""
 }
 
-func RunExpression(environment map[string]any, template Template) (any, error) {
-	funcs := GetCelEnv(environment)
+func RunExpression(_environment map[string]any, template Template) (any, error) {
+
+	data, err := Serialize(_environment)
+	if err != nil {
+		return "", err
+	}
+
+	funcs := GetCelEnv(data)
 	for name, fn := range template.Functions {
 		_name := name
 		_fn := fn
@@ -61,11 +67,6 @@ func RunExpression(environment map[string]any, template Template) (any, error) {
 	ast, issues := env.Compile(strings.ReplaceAll(template.Expression, "\n", " "))
 	if issues != nil && issues.Err() != nil {
 		return "", issues.Err()
-	}
-
-	data, err := Serialize(environment)
-	if err != nil {
-		return "", err
 	}
 
 	prg, err := env.Program(ast, cel.Globals(data))

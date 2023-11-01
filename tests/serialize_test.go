@@ -36,12 +36,12 @@ func Test_serialize(t *testing.T) {
 						"mode":     "drwxr-xr-x",
 						"modified": testDateTime,
 						"name":     "test",
-						"size":     int64(10),
+						"size":     10.0,
 					},
 					"files": []map[string]any{
 						{
 							"name":     "test",
-							"size":     int64(10),
+							"size":     10.0,
 							"mode":     "drwxr-xr-x",
 							"modified": testDateTime,
 						},

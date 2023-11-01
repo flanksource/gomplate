@@ -174,7 +174,7 @@ func TestData(t *testing.T) {
 		Name:    "Aditya",
 		Address: &Address{City: "Kathmandu"}}
 	runTests(t, []Test{
-		{map[string]interface{}{"i": newFolderCheck(1)}, "i.files[0].modified", "Aditya"},
+		{map[string]interface{}{"i": newFolderCheck(1)}, "i.files[0].modified", testDate},
 		{nil, `dyn([{'name': 'John', 'age': 30}]).toJSON()`, `[{"age":30,"name":"John"}]`},
 		{nil, `[{'name': 'John'}].toJSON()`, `[{"name":"John"}]`},
 		{nil, `dyn({'name': 'John'}).toJSON()`, `{"name":"John"}`},
@@ -186,11 +186,11 @@ func TestData(t *testing.T) {
 		{map[string]interface{}{"i": person}, "JSON(i.toJSON()).name", "Aditya"},
 		{map[string]interface{}{"i": person}, "YAML(toYAML(i)).name", "Aditya"},
 		// TOML doesn't use JSON tags,
-		{map[string]interface{}{"i": person}, "TOML(toTOML(i)).Address.City", "Kathmandu"},
-		{structEnv, `results.Address.City == "Kathmandu" && results.Name == "Aditya"`, "true"},
+		{map[string]interface{}{"i": person}, "TOML(toTOML(i)).Address.city_name", "Kathmandu"},
+		{structEnv, `results.Address.city_name == "Kathmandu" && results.name == "Aditya"`, "true"},
 		// Support structs as environment var (by default they are not)
-		{structEnv, `results.Address.City == "Kathmandu" && results.Name == "Aditya"`, "true"},
-		{map[string]any{"results": junitEnv}, `results.Passed`, "1"},
+		{structEnv, `results.Address.city_name == "Kathmandu" && results.name == "Aditya"`, "true"},
+		{map[string]any{"results": junitEnv}, `results.passed`, "1"},
 	})
 }
 
