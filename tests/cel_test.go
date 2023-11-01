@@ -245,7 +245,7 @@ func TestDates(t *testing.T) {
 	timestamp, err := time.Parse(time.RFC3339Nano, "2020-01-01T14:30:33.456Z")
 	assert.NoError(t, err)
 	tests := []Test{
-		{map[string]interface{}{"t": timestamp}, "t.getMinutes()", "30"},
+		{map[string]interface{}{"t": timestamp}, "t.getSeconds()", "33"},
 		{map[string]interface{}{"t": timestamp}, "string(t)", "2020-01-01T14:30:33.456Z"},
 
 		// Durations
@@ -258,6 +258,11 @@ func TestDates(t *testing.T) {
 		// {map[string]interface{}{"t": "2020-01-01T00:00:00Z"}, `age(t) > duration('1h')`, "true"},
 		{map[string]interface{}{"t": "2020-01-01T00:00:00Z"}, `Age(t) > Duration('3d')`, "true"},
 		{nil, `duration('24h') > Duration('3d')`, "false"},
+
+		// {map[string]interface{}{"code": 200, "sslAge": time.Hour}, `code in [200,201,301] && sslAge > duration('59m')`, "true"},
+
+		{map[string]interface{}{"code": 200, "sslAge": time.Hour}, `sslAge`, "1h0m0s"},
+		{map[string]interface{}{"code": 200, "sslAge": time.Hour}, `sslAge < duration('2h')`, "true"},
 		{map[string]interface{}{"code": 200, "sslAge": time.Hour}, `code in [200,201,301] && sslAge > duration('59m')`, "true"},
 	}
 
@@ -324,7 +329,6 @@ func TestCelSliceReturn(t *testing.T) {
 }
 
 func TestCelK8sResources(t *testing.T) {
-
 	runTests(t, []Test{
 		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructuredMap(kubernetes.TestHealthy)}, "IsHealthy(healthySvc)", "true"},
 		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructuredMap(kubernetes.TestLuaStatus)}, "GetStatus(healthySvc)", "Degraded: found less than two generators, Merge requires two or more"},
