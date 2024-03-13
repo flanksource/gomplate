@@ -22,7 +22,7 @@ require (
 	github.com/ugorji/go/codec v1.2.12
 	golang.org/x/text v0.14.0
 	golang.org/x/tools v0.16.1
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/protobuf v1.33.0
 	gotest.tools/v3 v3.5.1
 	k8s.io/api v0.28.2
 	k8s.io/apimachinery v0.28.2
