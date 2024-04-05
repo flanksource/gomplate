@@ -16,7 +16,7 @@ func Library() []cel.EnvOption {
 		celPodProperties(),
 		celNodeProperties(),
 		celk8sLabels(),
-		celPodMaxMemoryBytes(),
-		celPodMaxCPUMillicores(),
+		celPodResourceLimits(),
+		celPodResourceRequests(),
 	}
 }
