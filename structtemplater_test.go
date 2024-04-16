@@ -10,6 +10,7 @@ type Test struct {
 	Template   string `template:"true"`
 	NoTemplate string
 	Inner      Inner
+	JSONMap    map[string]any    `template:"true"`
 	Labels     map[string]string `template:"true"`
 	LabelsRaw  map[string]string
 }
@@ -105,6 +106,48 @@ var tests = []test{
 			LabelsRaw: map[string]string{
 				"address":           "{{city}}, {{country}}",
 				"{{colorOf}} color": "light $(color)",
+			},
+		},
+	},
+	{
+		name: "deeply nested map",
+		StructTemplater: StructTemplater{
+			RequiredTag:    "template",
+			ValueFunctions: true,
+			Values: map[string]interface{}{
+				"msg": "world",
+			},
+		},
+		Input: &Test{
+			Template: "{{msg}}",
+			JSONMap: map[string]any{
+				"a": map[string]any{
+					"b": map[string]any{
+						"c": "{{msg}}",
+					},
+					"j": []map[string]any{
+						{
+							"l": "{{msg}}",
+						},
+					},
+				},
+				"e": "hello {{msg}}",
+			},
+		},
+		Output: &Test{
+			Template: "world",
+			JSONMap: map[string]any{
+				"a": map[string]any{
+					"b": map[string]any{
+						"c": "world",
+					},
+					"j": []any{
+						map[string]any{
+							"l": "world",
+						},
+					},
+				},
+				"e": "hello world",
 			},
 		},
 	},

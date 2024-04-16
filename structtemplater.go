@@ -1,6 +1,7 @@
 package gomplate
 
 import (
+	"encoding/json"
 	"reflect"
 	"strings"
 
@@ -60,13 +61,34 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 					return err
 				}
 
-				if val.Kind() == reflect.String {
-					newVal, err := w.Template(val.String())
+				concreteVal := reflect.ValueOf(val.Interface())
+				switch concreteVal.Kind() {
+				case reflect.String:
+					newVal, err := w.Template(concreteVal.String())
 					if err != nil {
 						return err
 					}
 					newMap.SetMapIndex(newKey, reflect.ValueOf(newVal))
-				} else {
+
+				case reflect.Map:
+					marshalled, err := json.Marshal(val.Interface())
+					if err != nil {
+						newMap.SetMapIndex(newKey, val)
+					} else {
+						templated, err := w.Template(string(marshalled))
+						if err != nil {
+							return err
+						}
+
+						var unmarshalled map[string]any
+						if err := json.Unmarshal([]byte(templated), &unmarshalled); err != nil {
+							newMap.SetMapIndex(newKey, val)
+						} else {
+							newMap.SetMapIndex(newKey, reflect.ValueOf(unmarshalled))
+						}
+					}
+
+				default:
 					newMap.SetMapIndex(newKey, val)
 				}
 			}
