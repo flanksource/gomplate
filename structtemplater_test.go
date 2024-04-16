@@ -151,6 +151,68 @@ var tests = []test{
 			},
 		},
 	},
+	{
+		name: "pod manifest",
+		StructTemplater: StructTemplater{
+			RequiredTag:    "template",
+			ValueFunctions: true,
+			Values: map[string]interface{}{
+				"msg": "world",
+			},
+		},
+		Input: &Test{
+			JSONMap: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name":      "httpbin-{{msg}}",
+					"namespace": "development",
+					"labels": map[string]any{
+						"app": "httpbin",
+					},
+				},
+				"spec": map[string]any{
+					"containers": []any{
+						map[string]any{
+							"name":  "httpbin",
+							"image": "kennethreitz/httpbin:latest",
+							"ports": []any{
+								map[string]any{
+									"containerPort": 80,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Output: &Test{
+			JSONMap: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name":      "httpbin-world",
+					"namespace": "development",
+					"labels": map[string]any{
+						"app": "httpbin",
+					},
+				},
+				"spec": map[string]any{
+					"containers": []any{
+						map[string]any{
+							"name":  "httpbin",
+							"image": "kennethreitz/httpbin:latest",
+							"ports": []any{
+								map[string]any{
+									"containerPort": float64(80),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 }
 
 func TestMain(t *testing.T) {
