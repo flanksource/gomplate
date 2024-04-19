@@ -32,7 +32,7 @@ var tests = []test{
 		name: "template and no template",
 		StructTemplater: StructTemplater{
 			RequiredTag: "template",
-			Values: map[string]interface{}{
+			Values: map[string]any{
 				"msg": "world",
 			},
 		},
@@ -52,7 +52,7 @@ var tests = []test{
 				{Left: "{{", Right: "}}"},
 				{Left: "$(", Right: ")"},
 			},
-			Values: map[string]interface{}{
+			Values: map[string]any{
 				"msg": "world",
 			},
 			ValueFunctions: true,
@@ -72,7 +72,7 @@ var tests = []test{
 				{Left: "{{", Right: "}}"},
 				{Left: "$(", Right: ")"},
 			},
-			Values: map[string]interface{}{
+			Values: map[string]any{
 				"name":    "James Bond",
 				"colorOf": "eye",
 				"color":   "blue",
@@ -114,7 +114,7 @@ var tests = []test{
 		StructTemplater: StructTemplater{
 			RequiredTag:    "template",
 			ValueFunctions: true,
-			Values: map[string]interface{}{
+			Values: map[string]any{
 				"msg": "world",
 			},
 		},
@@ -138,11 +138,11 @@ var tests = []test{
 			Template: "world",
 			JSONMap: map[string]any{
 				"a": map[string]any{
-					"b": map[string]any{
+					"b": map[any]any{
 						"c": "world",
 					},
 					"j": []any{
-						map[string]any{
+						map[any]any{
 							"l": "world",
 						},
 					},
@@ -156,7 +156,7 @@ var tests = []test{
 		StructTemplater: StructTemplater{
 			RequiredTag:    "template",
 			ValueFunctions: true,
-			Values: map[string]interface{}{
+			Values: map[string]any{
 				"msg": "world",
 			},
 		},
@@ -178,7 +178,7 @@ var tests = []test{
 							"image": "kennethreitz/httpbin:latest",
 							"ports": []any{
 								map[string]any{
-									"containerPort": 80,
+									"containerPort": 4,
 								},
 							},
 						},
@@ -193,18 +193,18 @@ var tests = []test{
 				"metadata": map[string]any{
 					"name":      "httpbin-world",
 					"namespace": "development",
-					"labels": map[string]any{
+					"labels": map[any]any{
 						"app": "httpbin",
 					},
 				},
 				"spec": map[string]any{
 					"containers": []any{
-						map[string]any{
+						map[any]any{
 							"name":  "httpbin",
 							"image": "kennethreitz/httpbin:latest",
 							"ports": []any{
-								map[string]any{
-									"containerPort": float64(80),
+								map[any]any{
+									"containerPort": 4,
 								},
 							},
 						},
@@ -215,7 +215,7 @@ var tests = []test{
 	},
 }
 
-func TestMain(t *testing.T) {
+func TestStructTemplater(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			i := test.Input

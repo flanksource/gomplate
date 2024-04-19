@@ -1,11 +1,11 @@
 package gomplate
 
 import (
-	"encoding/json"
 	"reflect"
 	"strings"
 
 	"github.com/mitchellh/reflectwalk"
+	"gopkg.in/yaml.v2"
 )
 
 type StructTemplater struct {
@@ -71,7 +71,7 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 					newMap.SetMapIndex(newKey, reflect.ValueOf(newVal))
 
 				case reflect.Map:
-					marshalled, err := json.Marshal(val.Interface())
+					marshalled, err := yaml.Marshal(val.Interface())
 					if err != nil {
 						newMap.SetMapIndex(newKey, val)
 					} else {
@@ -81,7 +81,7 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 						}
 
 						var unmarshalled map[string]any
-						if err := json.Unmarshal([]byte(templated), &unmarshalled); err != nil {
+						if err := yaml.Unmarshal([]byte(templated), &unmarshalled); err != nil {
 							newMap.SetMapIndex(newKey, val)
 						} else {
 							newMap.SetMapIndex(newKey, reflect.ValueOf(unmarshalled))
