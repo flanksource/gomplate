@@ -10,15 +10,15 @@ import (
 )
 
 func _k8sCPUAsMillicores(objVal string) int64 {
-	var cpu int64
 	if strings.HasSuffix(objVal, "m") {
-		cpu = conv.ToInt64(strings.ReplaceAll(objVal, "m", ""))
-	} else if strings.HasSuffix(objVal, "n") {
-		cpu = conv.ToInt64(strings.ReplaceAll(objVal, "n", "")) / (1000 * 1000)
-	} else {
-		cpu = int64(conv.ToFloat64(objVal) * 1000)
+		return conv.ToInt64(strings.ReplaceAll(objVal, "m", ""))
 	}
-	return cpu
+
+	if strings.HasSuffix(objVal, "n") {
+		return conv.ToInt64(strings.ReplaceAll(objVal, "n", "")) / (1000 * 1000)
+	}
+
+	return int64(conv.ToFloat64(objVal) * 1000)
 }
 
 func k8sCPUAsMillicores() cel.EnvOption {

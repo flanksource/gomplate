@@ -236,13 +236,16 @@ func TestCelJQ(t *testing.T) {
 func TestCelLists(t *testing.T) {
 	runTests(t, []Test{
 		{nil, "['a','b', 'c'].join(',')", "a,b,c"},
-
 		{nil, "['a', ['b','c'], 'd'].flatten().join(',')", "a,b,c,d"},
 		{nil, "['b', 'a', 'c'].sort().join(',')", "a,b,c"},
 		{nil, "['b', 'a', 'c'].sort().join(',')", "a,b,c"},
-		{nil, "['a', 'a', 'b', 'c'].uniq().join(',')", "a,b,c"},
 		{nil, "{'a': 1, 'b': 2}.keys().join(',')", "a,b"},
-		{nil, "{'a': 1, 'b': 2}.values().sum()", "3"},
+
+		{nil, "[1,2,3,3,4].uniq().sum()", "10"},
+		{nil, "['a', 'a', 'b', 'c'].uniq().join(',')", "a,b,c"},
+
+		{nil, "['h', 'b', 'a'].sort()", "[a b h]"},
+		{nil, "[3,2,1].sort()", "[1 2 3]"},
 	})
 }
 
@@ -276,7 +279,9 @@ func TestCelMaps(t *testing.T) {
 			},
 		},
 	}
+
 	runTests(t, []Test{
+		{nil, "{'a': 1, 'b': 2}.values().sum()", "3"},
 		{m, "x.a", "b"},
 		{m, "x.c", "1"},
 		{m, "x.d", "true"},
@@ -286,11 +291,39 @@ func TestCelMaps(t *testing.T) {
 		{nil, "{'a': 'c'}.merge({'b': 'd'}).keys().join(',')", "a,b"},
 		{nil, "{'a': '1', 'b': '2', 'c': '3'}.pick(['a', 'c']).keys()", "[a c]"},
 		{nil, "{'a': '1', 'b': '2', 'c': '3'}.omit(['b']).keys()", "[a c]"},
+		{nil, `{"first": "John", "last": "Doe"}.omit(["first"]).keys()`, "[last]"},
 		{map[string]interface{}{"x": map[string]string{
 			"a": "1",
 			"b": "2",
 			"c": "3",
 		}}, "x.pick(['a', 'c']).keys()", "[a c]"},
+	})
+
+	runTests(t, []Test{
+		{
+			map[string]any{
+				"a": map[string]any{"first": "John"},
+				"b": map[string]any{"last": "Doe"},
+			},
+			`a.merge(b).last`,
+			"Doe",
+		},
+		{
+			map[string]any{
+				"a": map[string]any{"first": 1},
+				"b": map[string]any{"last": 2},
+			},
+			`a.merge(b).last`,
+			"2",
+		},
+		{
+			map[string]any{
+				"a": map[string]any{"first": 1},
+				"b": map[string]any{"first": 2},
+			},
+			`a.merge(b).first`,
+			"2",
+		},
 	})
 }
 
