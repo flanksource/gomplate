@@ -17,7 +17,7 @@ import (
 
 var typeMapStringAny = reflect.TypeOf(map[string]interface{}{})
 
-// NOTE: Slice Makes no sense in cel-go because 
+// NOTE: Slice Makes no sense in cel-go because
 // cel-go doesn't support variadic functions.
 // https://github.com/google/cel-go/issues/476#issuecomment-1029172709
 // var collSliceGen = cel.Function("Slice",
@@ -103,10 +103,10 @@ var collKeysGen = cel.Function("keys",
 var collValuesGen = cel.Function("values",
 	cel.MemberOverload("map_values",
 
-	[]*cel.Type{
-		cel.MapType(cel.StringType, cel.AnyType),
-	},
-	cel.ListType(cel.AnyType),
+		[]*cel.Type{
+			cel.MapType(cel.StringType, cel.AnyType),
+		},
+		cel.ListType(cel.AnyType),
 		cel.UnaryBinding(func(arg ref.Val) ref.Val {
 			_map, err := convertMap(arg)
 			if err != nil {
@@ -160,13 +160,12 @@ var collPrependGen = cel.Function("Prepend",
 
 var collUniqGen = cel.Function("uniq",
 	cel.MemberOverload("uniq_interface{}",
-
 		[]*cel.Type{
-			cel.ListType(cel.StringType),
+			cel.ListType(cel.DynType),
 		},
-		cel.ListType(cel.StringType),
+		cel.ListType(cel.DynType),
 		cel.UnaryBinding(func(arg ref.Val) ref.Val {
-			list, _ := arg.ConvertToNative(reflect.TypeOf([]string{}))
+			list, _ := arg.ConvertToNative(reflect.TypeOf([]any{}))
 
 			result, err := coll.Uniq(list)
 			if err != nil {
@@ -177,6 +176,7 @@ var collUniqGen = cel.Function("uniq",
 		}),
 	),
 )
+
 var collReverseGen = cel.Function("reverse",
 	cel.MemberOverload("Reverse_interface{}",
 
@@ -202,7 +202,6 @@ var collReverseGen = cel.Function("reverse",
 
 var collMergeGen = cel.Function("merge",
 	cel.MemberOverload("merge_map[string]interface{}",
-
 		[]*cel.Type{
 			cel.MapType(cel.StringType, cel.DynType),
 			cel.MapType(cel.StringType, cel.DynType),
@@ -219,33 +218,33 @@ var collMergeGen = cel.Function("merge",
 				return types.WrapErr(err)
 			}
 
-
-			result, err := coll.Merge(_into.(map[string]interface{}), _from.(map[string]interface{}))
+			result, err := coll.Merge(_from.(map[string]interface{}), _into.(map[string]interface{}))
 			if err != nil {
 				return types.WrapErr(err)
 			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
-
 		}),
 	),
 )
 
 var collSortGen = cel.Function("sort",
 	cel.MemberOverload("sort_string_interface{}",
-
 		[]*cel.Type{
-			cel.ListType(cel.StringType),
+			cel.ListType(cel.DynType),
 		},
-		cel.ListType(cel.StringType),
+		cel.ListType(cel.DynType),
 		cel.UnaryBinding(func(arg ref.Val) ref.Val {
-			list, err := sliceToNative[string](arg)
+			list, err := sliceToNative[any](arg)
 			if err != nil {
 				return types.WrapErr(err)
 			}
-			sort.Strings(list)
 
-			return types.DefaultTypeAdapter.NativeToValue(list)
+			sorted, err := coll.Sort("", list)
+			if err != nil {
+				return types.WrapErr(err)
+			}
 
+			return types.DefaultTypeAdapter.NativeToValue(sorted)
 		}),
 	),
 )
@@ -293,12 +292,12 @@ var collJQGen = cel.Function("jq",
 				if err != nil {
 					return types.WrapErr(err)
 				}
-				if err  := json.Unmarshal(data, &input); err != nil {
+				if err := json.Unmarshal(data, &input); err != nil {
 					return types.WrapErr(err)
 				}
 			}
 
-			result, err := coll.JQ(context.Background(), query.Value().(string),input)
+			result, err := coll.JQ(context.Background(), query.Value().(string), input)
 			if err != nil {
 				return types.WrapErr(err)
 			}
@@ -337,17 +336,17 @@ var collFlattenGen = cel.Function("flatten",
 var collPickGen = cel.Function("pick",
 	cel.MemberOverload("pick_interface{}",
 		[]*cel.Type{
-			cel.AnyType,cel.ListType(cel.StringType),
+			cel.AnyType, cel.ListType(cel.StringType),
 		},
 		cel.AnyType,
 		cel.OverloadIsNonStrict(),
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			m, err :=  args[0].ConvertToNative(typeMapStringAny)
+			m, err := args[0].ConvertToNative(typeMapStringAny)
 			if err != nil {
 				return types.WrapErr(err)
 			}
 
-			list, err  := sliceToNative[string](args[1:]...)
+			list, err := sliceToNative[string](args[1:]...)
 			if err != nil {
 				return types.WrapErr(err)
 			}
@@ -360,18 +359,18 @@ var collPickGen = cel.Function("pick",
 
 var collOmitGen = cel.Function("omit",
 	cel.MemberOverload("omit_interface{}",
-	[]*cel.Type{
-		cel.MapType(cel.StringType, cel.AnyType),
-		cel.ListType(cel.StringType),
+		[]*cel.Type{
+			cel.MapType(cel.StringType, cel.AnyType),
+			cel.ListType(cel.StringType),
 		},
 		cel.MapType(cel.StringType, cel.AnyType),
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			m, err :=  args[0].ConvertToNative(typeMapStringAny)
+			m, err := args[0].ConvertToNative(typeMapStringAny)
 			if err != nil {
 				return types.WrapErr(err)
 			}
 
-			list, err  := sliceToNative[string](args[1:]...)
+			list, err := sliceToNative[string](args[1:]...)
 			if err != nil {
 				return types.WrapErr(err)
 			}

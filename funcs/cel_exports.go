@@ -19,6 +19,7 @@ var CelEnvOption = []cel.EnvOption{
 	collPrependGen,
 	collUniqGen,
 	collSortGen,
+	collSortByGen,
 	collJQGen,
 	collFlattenGen,
 	collPickGen,
