@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/Masterminds/goutils v1.1.1
 	github.com/Masterminds/semver/v3 v3.2.1
-	github.com/flanksource/is-healthy v1.0.17
+	github.com/flanksource/is-healthy v1.0.18
 	github.com/flanksource/kubectl-neat v1.0.4
 	github.com/google/cel-go v0.18.2
 	github.com/google/go-cmp v0.6.0
@@ -20,8 +20,8 @@ require (
 	github.com/robertkrimen/otto v0.2.1
 	github.com/stretchr/testify v1.8.4
 	github.com/ugorji/go/codec v1.2.12
-	golang.org/x/text v0.14.0
-	golang.org/x/tools v0.16.1
+	golang.org/x/text v0.16.0
+	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d
 	google.golang.org/protobuf v1.32.0
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/v3 v3.5.1
@@ -52,6 +52,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/samber/lo v1.44.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -62,9 +63,10 @@ require (
 	github.com/tidwall/sjson v1.0.4 // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
 	golang.org/x/exp v0.0.0-20231005195138-3e424a577f31 // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
