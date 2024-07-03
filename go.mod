@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/Masterminds/goutils v1.1.1
 	github.com/Masterminds/semver/v3 v3.2.1
-	github.com/flanksource/is-healthy v1.0.4
+	github.com/flanksource/is-healthy v1.0.17
 	github.com/flanksource/kubectl-neat v1.0.4
 	github.com/google/cel-go v0.18.2
 	github.com/google/go-cmp v0.6.0
@@ -63,8 +63,8 @@ require (
 	github.com/yuin/gopher-lua v1.1.0 // indirect
 	golang.org/x/exp v0.0.0-20231005195138-3e424a577f31 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
