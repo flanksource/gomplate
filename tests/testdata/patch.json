@@ -1,0 +1,29 @@
+{
+  "status": {
+    "containerStatuses": [
+      {
+        "name": "config-db",
+        "image": "public.ecr.aws/k4y9r6y5/config-db:v0.0.402",
+        "ready": true,
+        "state": {
+          "running": {
+            "startedAt": "2024-07-18T04:14:29Z"
+          }
+        },
+        "imageID": "public.ecr.aws/k4y9r6y5/config-db@sha256:47f05520faf95866d786565d58483c19da4f096a296a153a685fc05cab02eb8b",
+        "started": true,
+        "lastState": {
+          "terminated": {
+            "reason": "OOMKilled",
+            "exitCode": 137,
+            "startedAt": "2024-07-18T03:58:40Z",
+            "finishedAt": "2024-07-18T04:14:28Z",
+            "containerID": "containerd://566c6e5efa26baf882272fd3ad7bcac4ddeff3ba5acc4fb410c312a7ba72d37e"
+          }
+        },
+        "containerID": "containerd://db96071f8e461339da26314af32caa36801550f7631a7a12a9f3719399e551d2",
+        "restartCount": 28
+      }
+    ]
+  }
+}

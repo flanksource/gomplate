@@ -72,13 +72,13 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - structcheck
+    # - structcheck #  This linter is fully inactivated: it will not produce any reports.
     - stylecheck
     - typecheck
     - unconvert
     # - unparam
     # - unused FIXME:
-    - varcheck
+    # - varcheck  #  This linter is fully inactivated: it will not produce any reports.
     # - whitespace
     # - wsl
 

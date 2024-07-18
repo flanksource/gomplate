@@ -1,0 +1,52 @@
+{
+  "status": {
+    "conditions": [
+      {
+        "type": "Initialized",
+        "status": "True"
+      },
+      {
+        "type": "Ready",
+        "reason": "ContainersNotReady",
+        "status": "False",
+        "message": "containers with unready status: [crashloop-container]"
+      },
+      {
+        "type": "ContainersReady",
+        "reason": "ContainersNotReady",
+        "status": "False",
+        "message": "containers with unready status: [crashloop-container]"
+      },
+      {
+        "type": "PodScheduled",
+        "status": "True"
+      }
+    ],
+    "containerStatuses": [
+      {
+        "name": "crashloop-container",
+        "image": "docker.io/library/busybox:latest",
+        "ready": false,
+        "state": {
+          "waiting": {
+            "reason": "CrashLoopBackOff",
+            "message": "back-off 10s restarting failed container=crashloop-container pod=crashloop-demo-5df8d48d44-glmhl_default(5034e12d-238b-4ab8-96ff-c558596df255)"
+          }
+        },
+        "imageID": "docker.io/library/busybox@sha256:9ae97d36d26566ff84e8893c64a6dc4fe8ca6d1144bf5b87b2b85a32def253c7",
+        "started": false,
+        "lastState": {
+          "terminated": {
+            "reason": "Error",
+            "exitCode": 1,
+            "startedAt": "2024-07-18T05:27:53Z",
+            "finishedAt": "2024-07-18T05:27:54Z",
+            "containerID": "containerd://35ff2e589f135acec6f6913cadcc43c5249a02807d56921402c62175e833a72c"
+          }
+        },
+        "containerID": "containerd://35ff2e589f135acec6f6913cadcc43c5249a02807d56921402c62175e833a72c",
+        "restartCount": 1
+      }
+    ]
+  }
+}
