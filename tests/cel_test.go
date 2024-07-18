@@ -3,6 +3,7 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -16,6 +17,16 @@ func panIf(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func readTestData(name string) map[string]any {
+	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s.json", name))
+	panIf(err)
+
+	var output map[string]any
+	panIf(json.Unmarshal(data, &output))
+
+	return output
 }
 
 func executeTemplate(t *testing.T, i int, input string, expectedOutput any, environment map[string]any, jsonCompare bool) {
@@ -163,6 +174,7 @@ func TestCelJSON(t *testing.T) {
 		Name:    "Aditya",
 		Address: &Address{City: "Kathmandu"},
 	}
+
 	runTests(t, []Test{
 		{nil, `dyn([{'name': 'John', 'age': 30}]).toJSON()`, `[{"age":30,"name":"John"}]`},
 		{nil, `[{'name': 'John'}].toJSON()`, `[{"name":"John"}]`},
@@ -218,6 +230,8 @@ func TestCelJQ(t *testing.T) {
 	}
 
 	runTests(t, []Test{
+		{map[string]any{"patch": readTestData("patch")}, "jq('.status.containerStatuses[0].lastState.terminated.reason', patch) == 'OOMKilled'", "true"},
+		{map[string]any{"patch": readTestData("patch")}, "jq('.status.containerStatuses[0].restartCount', patch) > 244", "true"},
 		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
 		{map[string]interface{}{"i": persons}, "jq('.[] | .name', i)", "[John Jane Jane Harry]"},
 		{map[string]interface{}{"i": unstructure(persons)}, "jq('.[] | .name', i)", "[John Jane Jane Harry]"},
