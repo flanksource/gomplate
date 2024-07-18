@@ -10,8 +10,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/distribution/reference v0.5.0 h1:/FUIFXtfc/x2gpa5/VGfiGLuOIdYa1t65IKK2OFGvA0=
 github.com/distribution/reference v0.5.0/go.mod h1:BbU0aIcezP1/5jX/8MP0YiH4SdvB5Y4f/wlDRiLyi3E=
-github.com/flanksource/is-healthy v1.0.18 h1:ECOKpPZ6mPLDgQlnNm1XPB0QPxutESV760liBNVd5jo=
-github.com/flanksource/is-healthy v1.0.18/go.mod h1:eRPXZShZqaz3Mz+QeoCNbL3857lt9BgCt67jOUQXLOU=
+github.com/flanksource/is-healthy v1.0.19 h1:KeBsZJTYKkKuwVHfBP+g5yMltyW8KxYmd7uutB5YLS4=
+github.com/flanksource/is-healthy v1.0.19/go.mod h1:eRPXZShZqaz3Mz+QeoCNbL3857lt9BgCt67jOUQXLOU=
 github.com/flanksource/kubectl-neat v1.0.4 h1:t5/9CqgE84oEtB0KitgJ2+WIeLfD+RhXSxYrqb4X8yI=
 github.com/flanksource/kubectl-neat v1.0.4/go.mod h1:Un/Voyh3cmiZNKQrW/TkAl28nAA7vwnwDGVjRErKjOw=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
