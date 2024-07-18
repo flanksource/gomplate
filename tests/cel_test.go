@@ -229,9 +229,18 @@ func TestCelJQ(t *testing.T) {
 		Person{Name: "Harry", Address: &Address{City: "Kathmandu"}, Age: 40},
 	}
 
+	podCrashLoopExpr := "jq('.status.containerStatuses[0].restartCount', patch) != null && jq('.status.containerStatuses[0].restartCount', patch) > 0"
+
 	runTests(t, []Test{
+		// OOMKilled
 		{map[string]any{"patch": readTestData("patch")}, "jq('.status.containerStatuses[0].lastState.terminated.reason', patch) == 'OOMKilled'", "true"},
-		{map[string]any{"patch": readTestData("patch")}, "jq('.status.containerStatuses[0].restartCount', patch) > 244", "true"},
+		{map[string]any{"patch": readTestData("non-restart-patch")}, "jq('.status.containerStatuses[0].lastState.terminated.reason', patch) == 'OOMKilled'", "false"},
+
+		// PodCrashLooping
+		{map[string]any{"patch": readTestData("patch")}, podCrashLoopExpr, "true"},
+		{map[string]any{"patch": readTestData("crashloop-patch")}, podCrashLoopExpr, "true"},
+		{map[string]any{"patch": readTestData("non-restart-patch")}, podCrashLoopExpr, "false"},
+
 		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
 		{map[string]interface{}{"i": persons}, "jq('.[] | .name', i)", "[John Jane Jane Harry]"},
 		{map[string]interface{}{"i": unstructure(persons)}, "jq('.[] | .name', i)", "[John Jane Jane Harry]"},
