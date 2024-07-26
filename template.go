@@ -1,6 +1,7 @@
 package gomplate
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
@@ -203,6 +204,11 @@ func goTemplate(template Template, environment map[string]any) (string, error) {
 	}
 
 	if tpl == nil {
+		template, err := parseAndStripTemplateHeader(template)
+		if err != nil {
+			return "", err
+		}
+
 		tpl = gotemplate.New("")
 		if template.LeftDelim != "" {
 			tpl = tpl.Delims(template.LeftDelim, template.RightDelim)
@@ -215,7 +221,7 @@ func goTemplate(template Template, environment map[string]any) (string, error) {
 		for k, v := range template.Functions {
 			funcs[k] = v
 		}
-		var err error
+
 		tpl, err = tpl.Funcs(funcs).Parse(template.Template)
 		if err != nil {
 			return "", err
@@ -248,4 +254,60 @@ func LoadSharedLibrary(source string) error {
 	fmt.Printf("Loaded %s: \n%s\n", source, string(data))
 	registry.Register(func() string { return string(data) })
 	return nil
+}
+
+func parseAndStripTemplateHeader(template Template) (Template, error) {
+	header, content := extractHeaderAndContent(template.Template)
+	if header == "" {
+		return template, nil
+	}
+
+	template.Template = content
+
+	fields := strings.Fields(header)
+	for _, field := range fields {
+		split := strings.SplitN(field, "=", 2)
+		if len(split) != 2 {
+			return template, fmt.Errorf("invalid header: %s", field)
+		}
+
+		switch split[0] {
+		case "right-delim":
+			template.RightDelim = split[1]
+		case "left-delim":
+			template.LeftDelim = split[1]
+		}
+	}
+
+	return template, nil
+}
+
+const templateHeaderPrefix = "# gotemplate: "
+
+func extractHeaderAndContent(template string) (string, string) {
+	scanner := bufio.NewScanner(strings.NewReader(template))
+
+	// Loop through headers.
+	// There could be multiple, we look for the gotemplate header.
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if line == "---" {
+			// Special case for yaml where the header might not start from the first line.
+			continue
+		}
+
+		// end of headers.
+		isHeader := strings.HasPrefix(line, "#")
+		if !isHeader {
+			break
+		}
+
+		if strings.HasPrefix(line, templateHeaderPrefix) {
+			header := strings.TrimPrefix(line, templateHeaderPrefix)
+			return header, strings.Replace(template, fmt.Sprintf("%s\n", line), "", 1)
+		}
+	}
+
+	return "", template
 }

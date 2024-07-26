@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -79,4 +81,39 @@ func TestGomplate(t *testing.T) {
 			assert.Equal(t, tc.out, out)
 		})
 	}
+}
+
+func TestGomplateHeaders(t *testing.T) {
+	tests := []struct {
+		env       map[string]interface{}
+		template  string
+		out       string
+		expectErr bool
+	}{
+		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/template-multiple-headers.yaml"), readFile(t, "testdata/gotemplate/expected/template-multiple-headers.yaml"), false},
+		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/template-header.txt"), "Hello, world", false},
+		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/bad-template-header.txt"), "", true},
+		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/template-header-override.txt"), "Hello, world. This ${should} not be {{touched}}", false},
+	}
+
+	for i, tc := range tests {
+		t.Run(fmt.Sprintf("%d", i+1), func(t *testing.T) {
+			out, err := gomplate.RunTemplate(tc.env, gomplate.Template{
+				Template: tc.template,
+			})
+			if tc.expectErr {
+				assert.Error(t, err)
+			} else {
+				assert.ErrorIs(t, err, nil)
+				assert.Equal(t, tc.out, out)
+			}
+		})
+	}
+}
+
+func readFile(t *testing.T, filename string) string {
+	t.Helper()
+	data, err := os.ReadFile(filename)
+	assert.ErrorIs(t, err, nil)
+	return string(data)
 }
