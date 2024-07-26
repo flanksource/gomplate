@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"os"
 	"testing"
 	"time"
 
@@ -79,4 +80,31 @@ func TestGomplate(t *testing.T) {
 			assert.Equal(t, tc.out, out)
 		})
 	}
+}
+
+func TestGomplateHeaders(t *testing.T) {
+	tests := []struct {
+		env      map[string]interface{}
+		template string
+		out      string
+	}{
+		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/template-header.txt"), "Hello, world"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.template, func(t *testing.T) {
+			out, err := gomplate.RunTemplate(tc.env, gomplate.Template{
+				Template: tc.template,
+			})
+			assert.ErrorIs(t, err, nil)
+			assert.Equal(t, tc.out, out)
+		})
+	}
+}
+
+func readFile(t *testing.T, filename string) string {
+	t.Helper()
+	data, err := os.ReadFile(filename)
+	assert.ErrorIs(t, err, nil)
+	return string(data)
 }

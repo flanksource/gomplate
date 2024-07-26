@@ -1,6 +1,7 @@
 package gomplate
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
@@ -203,6 +204,11 @@ func goTemplate(template Template, environment map[string]any) (string, error) {
 	}
 
 	if tpl == nil {
+		template, err := parseAndStripTemplateHeader(template)
+		if err != nil {
+			return "", err
+		}
+
 		tpl = gotemplate.New("")
 		if template.LeftDelim != "" {
 			tpl = tpl.Delims(template.LeftDelim, template.RightDelim)
@@ -215,7 +221,7 @@ func goTemplate(template Template, environment map[string]any) (string, error) {
 		for k, v := range template.Functions {
 			funcs[k] = v
 		}
-		var err error
+
 		tpl, err = tpl.Funcs(funcs).Parse(template.Template)
 		if err != nil {
 			return "", err
@@ -248,4 +254,51 @@ func LoadSharedLibrary(source string) error {
 	fmt.Printf("Loaded %s: \n%s\n", source, string(data))
 	registry.Register(func() string { return string(data) })
 	return nil
+}
+
+func parseAndStripTemplateHeader(template Template) (Template, error) {
+	fm, content := extractFrontmatterAndContent(template.Template)
+	if fm == "" {
+		return template, nil
+	}
+
+	template.Template = content
+	scanner := bufio.NewScanner(strings.NewReader(fm))
+	for scanner.Scan() {
+		line := scanner.Text()
+		split := strings.SplitN(line, "=", 2)
+		if len(split) != 2 {
+			return template, fmt.Errorf("invalid header: %s", line)
+		}
+
+		switch split[0] {
+		case "right-delim":
+			template.RightDelim = split[1]
+		case "left-delim":
+			template.LeftDelim = split[1]
+		}
+	}
+
+	return template, nil
+}
+
+func extractFrontmatterAndContent(input string) (string, string) {
+	const delimiter = "---"
+
+	input = strings.TrimSpace(input)
+
+	if !strings.HasPrefix(input, delimiter) {
+		return "", input
+	}
+
+	endIndex := strings.Index(input[len(delimiter):], delimiter)
+	if endIndex == -1 {
+		return "", input
+	}
+
+	frontmatterEndIndex := endIndex + 2*len(delimiter)
+	frontmatter := strings.TrimSpace(input[len(delimiter) : endIndex+len(delimiter)])
+	content := strings.TrimSpace(input[frontmatterEndIndex:])
+
+	return frontmatter, content
 }
