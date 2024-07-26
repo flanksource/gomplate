@@ -257,18 +257,18 @@ func LoadSharedLibrary(source string) error {
 }
 
 func parseAndStripTemplateHeader(template Template) (Template, error) {
-	fm, content := extractFrontmatterAndContent(template.Template)
-	if fm == "" {
+	header, content := extractHeaderAndContent(template.Template)
+	if header == "" {
 		return template, nil
 	}
 
 	template.Template = content
-	scanner := bufio.NewScanner(strings.NewReader(fm))
-	for scanner.Scan() {
-		line := scanner.Text()
-		split := strings.SplitN(line, "=", 2)
+
+	fields := strings.Fields(header)
+	for _, field := range fields {
+		split := strings.SplitN(field, "=", 2)
 		if len(split) != 2 {
-			return template, fmt.Errorf("invalid header: %s", line)
+			return template, fmt.Errorf("invalid header: %s", field)
 		}
 
 		switch split[0] {
@@ -282,23 +282,32 @@ func parseAndStripTemplateHeader(template Template) (Template, error) {
 	return template, nil
 }
 
-func extractFrontmatterAndContent(input string) (string, string) {
-	const delimiter = "---"
+const templateHeaderPrefix = "# gotemplate: "
 
-	input = strings.TrimSpace(input)
+func extractHeaderAndContent(template string) (string, string) {
+	scanner := bufio.NewScanner(strings.NewReader(template))
 
-	if !strings.HasPrefix(input, delimiter) {
-		return "", input
+	// Loop through headers.
+	// There could be multiple, we look for the gotemplate header.
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if line == "---" {
+			// Special case for yaml where the header might not start from the first line.
+			continue
+		}
+
+		// end of headers.
+		isHeader := strings.HasPrefix(line, "#")
+		if !isHeader {
+			break
+		}
+
+		if strings.HasPrefix(line, templateHeaderPrefix) {
+			header := strings.TrimPrefix(line, templateHeaderPrefix)
+			return header, strings.Replace(template, fmt.Sprintf("%s\n", line), "", 1)
+		}
 	}
 
-	endIndex := strings.Index(input[len(delimiter):], delimiter)
-	if endIndex == -1 {
-		return "", input
-	}
-
-	frontmatterEndIndex := endIndex + 2*len(delimiter)
-	frontmatter := strings.TrimSpace(input[len(delimiter) : endIndex+len(delimiter)])
-	content := strings.TrimSpace(input[frontmatterEndIndex:])
-
-	return frontmatter, content
+	return "", template
 }

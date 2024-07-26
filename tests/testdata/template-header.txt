@@ -1,5 +1,0 @@
----
-left-delim=$[[
-right-delim=]]
----
-Hello, $[[.name]]

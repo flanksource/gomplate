@@ -1,0 +1,2 @@
+# gotemplate: left-delim=$[[ right-delim=]]
+Hello, $[[.name]]. This ${should} not be {{touched}}
