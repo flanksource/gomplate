@@ -48,7 +48,7 @@ jobs:
         run: |
           # Sleep to let index refresh
           sleep 60
-          go get github.com/flanksource/gomplate@v${{ needs.semantic-release.outputs.release-version }}
+          go get github.com/flanksource/gomplate/v3@v${{ needs.semantic-release.outputs.release-version }}
           go mod tidy
           if [ -d "hack/generate-schemas" ]; then
             cd hack/generate-schemas && go mod tidy
