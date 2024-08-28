@@ -136,7 +136,7 @@ func TestCelData(t *testing.T) {
 		Address: &Address{City: "Kathmandu"},
 	}
 	runTests(t, []Test{
-		{map[string]interface{}{"i": newFolderCheck(1)}, "i.files[0].modified", testDate},
+		{map[string]interface{}{"i": newFolderCheck(1)}, "i.files[0].modified", testDateTime.String()},
 		{map[string]interface{}{"i": person}, "YAML(toYAML(i)).name", "Aditya"},
 		// csv
 		{nil, `CSV(["Alice,30", "Bob,31"])[0][0]`, "Alice"},

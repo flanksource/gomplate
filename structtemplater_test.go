@@ -222,7 +222,7 @@ func TestStructTemplater(t *testing.T) {
 			if err := test.StructTemplater.Walk(i); err != nil {
 				t.Error(err)
 			} else if diff := cmp.Diff(i, test.Output); diff != "" {
-				t.Errorf(diff)
+				t.Error(diff)
 			}
 		})
 	}
