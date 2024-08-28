@@ -20,7 +20,7 @@ var opts = oj.Options{
 	KeyExact:     true,
 	NestEmbed:    false,
 	BytesAs:      ojg.BytesAsString,
-	TimeFormat:   time.RFC3339Nano,
+	TimeFormat:   "time",
 	WriteLimit:   1024,
 }
 
@@ -31,11 +31,12 @@ func Serialize(in map[string]any) (map[string]any, error) {
 		return nil, nil
 	}
 
-	// cel supports time.Time and time.Duration natively - save original and then replace it after decomposition
+	// cel supports time.Duration natively - save original and then replace it after decomposition
+	// FIXME: This does not work for anything inside Structs
 	nativeTypes := make(map[string]any, len(in))
 	jp.Walk(in, func(path jp.Expr, value any) {
 		switch v := value.(type) {
-		case time.Duration, time.Time:
+		case time.Duration:
 			nativeTypes[path.String()] = v
 		}
 	})
@@ -47,11 +48,9 @@ func Serialize(in map[string]any) (map[string]any, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		if err := expr.SetOne(out, v); err != nil {
 			return nil, err
 		}
 	}
-
 	return out, nil
 }
