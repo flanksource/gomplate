@@ -1,6 +1,10 @@
 linters-settings:
   govet:
     check-shadowing: true
+    disable:
+      # printf: non-constant format string in call to fmt.Errorf (govet)
+      # showing up since golangci-lint version 1.60.1
+      - printf
     # enable:
       # - fieldalignment FIXME:
   golint:
