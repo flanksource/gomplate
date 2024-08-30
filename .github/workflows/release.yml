@@ -32,7 +32,7 @@ jobs:
     if: needs.semantic-release.outputs.new-release-published == 'true'
     strategy:
       matrix:
-        repos: ["mission-control", "canary-checker", "commons", "config-db"]
+        repos: ["mission-control", "canary-checker", "commons", "config-db", "duty"]
     steps:
       - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
         with:
