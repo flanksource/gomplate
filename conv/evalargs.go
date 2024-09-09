@@ -18,7 +18,7 @@ func printableValue(v reflect.Value) (interface{}, bool) {
 		v, _ = indirect(v) // fmt.Fprint handles nil.
 	}
 	if !v.IsValid() {
-		return "<no value>", true
+		return "", true
 	}
 
 	if !v.Type().Implements(errorType) && !v.Type().Implements(fmtStringerType) {
