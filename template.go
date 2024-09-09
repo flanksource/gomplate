@@ -11,15 +11,17 @@ import (
 	gotemplate "text/template"
 	"time"
 
+	commonsContext "github.com/flanksource/commons/context"
+	"github.com/flanksource/commons/logger"
 	_ "github.com/flanksource/gomplate/v3/js"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
 	"github.com/patrickmn/go-cache"
-	"github.com/pkg/errors"
 	"github.com/robertkrimen/otto"
 	"github.com/robertkrimen/otto/registry"
 	_ "github.com/robertkrimen/otto/underscore"
+	"github.com/samber/oops"
 )
 
 var funcMap gotemplate.FuncMap
@@ -52,6 +54,50 @@ type Template struct {
 	// If any other function type is used, an error will be returned.
 	// Opt to CelEnvs for those cases.
 	Functions map[string]any `yaml:"-" json:"-"`
+}
+
+func (t Template) String() string {
+	if t.Template != "" {
+		return "gotemplate: " + t.Template
+	}
+	if t.Expression != "" {
+		return "cel: " + t.Expression
+	}
+	if t.Javascript != "" {
+		return "js: " + t.Javascript
+	}
+	if t.JSONPath != "" {
+		return "jsonpath: " + t.JSONPath
+	}
+	return ""
+}
+
+func (t Template) ShortString() string {
+	if t.Template != "" {
+		return "gotemplate: " + short(t.Template)
+	}
+	if t.Expression != "" {
+		return "cel: " + short(t.Expression)
+	}
+	if t.Javascript != "" {
+		return "js: " + short(t.Javascript)
+	}
+	if t.JSONPath != "" {
+		return "jsonpath: " + short(t.JSONPath)
+	}
+	return ""
+}
+
+func short(v string) string {
+	v = strings.TrimSpace(v)
+	if len(v) == 0 {
+		return ""
+	}
+	lines := strings.Split(v, "\n")
+	if len(lines) == 1 {
+		return lines[0]
+	}
+	return fmt.Sprintf("%s .. %d more lines", lines[0], len(lines)-1)
 }
 
 func (t Template) CacheKey(env map[string]any) string {
@@ -88,6 +134,10 @@ func (t Template) IsEmpty() bool {
 }
 
 func RunExpression(_environment map[string]any, template Template) (any, error) {
+	return RunExpressionContext(newContext(), _environment, template)
+}
+
+func RunExpressionContext(ctx commonsContext.Context, _environment map[string]any, template Template) (any, error) {
 	data, err := Serialize(_environment)
 	if err != nil {
 		return "", err
@@ -120,6 +170,7 @@ func RunExpression(_environment map[string]any, template Template) (any, error) 
 		cached, ok := celExpressionCache.Get(template.CacheKey(_environment))
 		if ok {
 			if cachedPrg, ok := cached.(*cel.Program); ok {
+				ctx.Logger.V(7).Infof("%s using cached cel program", template.ShortString())
 				prg = *cachedPrg
 			}
 		}
@@ -133,7 +184,7 @@ func RunExpression(_environment map[string]any, template Template) (any, error) 
 
 		ast, issues := env.Compile(strings.ReplaceAll(template.Expression, "\n", " "))
 		if issues != nil && issues.Err() != nil {
-			return "", issues.Err()
+			return "", oops.With("template", template.Expression).Errorf(issues.String())
 		}
 
 		prg, err = env.Program(ast, cel.Globals(data))
@@ -146,13 +197,23 @@ func RunExpression(_environment map[string]any, template Template) (any, error) 
 
 	out, _, err := prg.Eval(data)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error evaluating expression %s: %s", template.Expression, err)
+		return nil, oops.With("template", template.Expression).Wrap(err)
 	}
+	ctx.Logger.V(6).Infof("templated %s => %v", template.ShortString(), out)
 	return out.Value(), nil
 
 }
 
+func newContext() commonsContext.Context {
+	return commonsContext.NewContext(context.TODO(),
+		commonsContext.WithLogger(logger.GetLogger("gomplate")))
+}
+
 func RunTemplate(environment map[string]any, template Template) (string, error) {
+	return RunTemplateContext(newContext(), environment, template)
+}
+
+func RunTemplateContext(ctx commonsContext.Context, environment map[string]any, template Template) (string, error) {
 	// javascript
 	if template.Javascript != "" {
 		vm := otto.New()
@@ -176,12 +237,12 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 
 	// gotemplate
 	if template.Template != "" {
-		return goTemplate(template, environment)
+		return goTemplate(ctx, template, environment)
 	}
 
 	// cel-go
 	if template.Expression != "" {
-		out, err := RunExpression(environment, template)
+		out, err := RunExpressionContext(ctx, environment, template)
 		if err != nil {
 			return "", err
 		}
@@ -191,13 +252,14 @@ func RunTemplate(environment map[string]any, template Template) (string, error) 
 	return "", nil
 }
 
-func goTemplate(template Template, environment map[string]any) (string, error) {
+func goTemplate(ctx commonsContext.Context, template Template, environment map[string]any) (string, error) {
 	var tpl *gotemplate.Template
 
 	if template.IsCacheable() {
 		cached, ok := goTemplateCache.Get(template.CacheKey(nil))
 		if ok {
 			if cachedTpl, ok := cached.(*gotemplate.Template); ok {
+				ctx.Logger.V(7).Infof("%s using cached template", template.ShortString())
 				tpl = cachedTpl
 			}
 		}
@@ -224,7 +286,7 @@ func goTemplate(template Template, environment map[string]any) (string, error) {
 
 		tpl, err = tpl.Funcs(funcs).Parse(template.Template)
 		if err != nil {
-			return "", err
+			return "", oops.With("template", template.Template).Wrap(err)
 		}
 
 		goTemplateCache.SetDefault(template.CacheKey(nil), tpl)
@@ -232,15 +294,22 @@ func goTemplate(template Template, environment map[string]any) (string, error) {
 
 	data, err := Serialize(environment)
 	if err != nil {
-		return "", err
+		return "", oops.
+			//With("environment", environment)
+			Wrapf(err, "error serializing env")
 	}
 
 	var buf bytes.Buffer
 	if err := tpl.Execute(&buf, data); err != nil {
-		return "", fmt.Errorf("error executing template %s: %v", strings.Split(template.Template, "\n")[0], err)
+		return "", oops.
+			With("template", template.Template).
+			//With("environment", environment).
+			Wrap(err)
 	}
 
-	return strings.TrimSpace(buf.String()), nil
+	out := strings.TrimSpace(buf.String())
+	ctx.Logger.V(6).Infof("templated %s ==> %s", template.ShortString(), out)
+	return out, nil
 }
 
 // LoadSharedLibrary loads a shared library for Otto

@@ -37,6 +37,27 @@ func TestGomplateFunctions(t *testing.T) {
 	assert.Equal(t, "hi c", out)
 }
 
+func TestDelimeters(t *testing.T) {
+	tests := []struct {
+		env      map[string]interface{}
+		template string
+		out      string
+	}{
+		{map[string]interface{}{"hello": "world"}, "[[ .hello ]]", "world"},
+		{map[string]interface{}{"hello": "world"}, "$(.hello)", "$(.hello)"},
+	}
+
+	for _, tt := range tests {
+		out, err := gomplate.RunTemplate(tt.env, gomplate.Template{
+			Template:   tt.template,
+			RightDelim: "]]",
+			LeftDelim:  "[[",
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, tt.out, out)
+	}
+}
+
 func TestGomplate(t *testing.T) {
 	tests := []struct {
 		env      map[string]interface{}
