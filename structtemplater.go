@@ -4,12 +4,16 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/flanksource/commons/context"
+	"github.com/flanksource/commons/logger"
 	"github.com/mitchellh/reflectwalk"
+	"github.com/samber/oops"
 	"gopkg.in/yaml.v3"
 )
 
 type StructTemplater struct {
-	Values map[string]interface{}
+	Context context.Context
+	Values  map[string]interface{}
 	// IgnoreFields from walking where key is field name and value is field type
 	IgnoreFields map[string]string
 	Funcs        map[string]any
@@ -111,10 +115,15 @@ func (w StructTemplater) templateKey(v reflect.Value) (reflect.Value, error) {
 }
 
 func (w StructTemplater) Walk(object interface{}) error {
+	if w.Context.Logger == nil {
+		w.Context = newContext()
+	}
+	w.Context.Logger.V(7).Infof("walking %s", logger.Pretty(object))
 	return reflectwalk.Walk(object, w)
 }
 
 func (w StructTemplater) Template(val string) (string, error) {
+	in := val
 	if strings.TrimSpace(val) == "" {
 		return val, nil
 	}
@@ -129,14 +138,27 @@ func (w StructTemplater) Template(val string) (string, error) {
 			}
 		}
 	}
-	if len(w.DelimSets) == 0 {
-		w.DelimSets = []Delims{{Left: "{{", Right: "}}"}}
+
+	delimSets := w.DelimSets
+
+	// parse go-template headers and override the delim set, as otherwise the header get stripped out
+	// for the first set of delims and reverts back to the default for the subsequent delimeters
+	template, err := parseAndStripTemplateHeader(Template{Template: val})
+	if err != nil {
+		return "", err
 	}
 
-	var err error
+	val = template.Template
+	if template.LeftDelim != "" && template.RightDelim != "" {
+		delimSets = []Delims{{Left: template.LeftDelim, Right: template.RightDelim}}
+	}
 
-	for _, delims := range w.DelimSets {
-		val, err = goTemplate(Template{
+	if len(delimSets) == 0 {
+		delimSets = []Delims{{Left: "{{", Right: "}}"}}
+	}
+
+	for _, delims := range delimSets {
+		val, err = goTemplate(w.Context, Template{
 			Template:   val,
 			Functions:  w.Funcs,
 			RightDelim: delims.Right,
@@ -144,8 +166,12 @@ func (w StructTemplater) Template(val string) (string, error) {
 		}, w.Values)
 
 		if err != nil {
-			return val, err
+			return val, oops.With("template", val).Wrap(err)
 		}
 	}
-	return strings.TrimSpace(val), nil
+	val = strings.TrimSpace(val)
+	if strings.TrimSpace(val) != strings.TrimSpace(in) {
+		w.Context.Logger.V(6).Infof("==> %s", val)
+	}
+	return val, nil
 }
