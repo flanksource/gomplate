@@ -7,7 +7,6 @@ import (
 	"github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/logger"
 	"github.com/mitchellh/reflectwalk"
-	"github.com/samber/oops"
 	"gopkg.in/yaml.v3"
 )
 
@@ -123,6 +122,7 @@ func (w StructTemplater) Walk(object interface{}) error {
 }
 
 func (w StructTemplater) Template(val string) (string, error) {
+	w.Context.Logger.V(8).Infof("templating %s", val)
 	in := val
 	if strings.TrimSpace(val) == "" {
 		return val, nil
@@ -166,7 +166,7 @@ func (w StructTemplater) Template(val string) (string, error) {
 		}, w.Values)
 
 		if err != nil {
-			return val, oops.With("template", val).Wrap(err)
+			return val, err
 		}
 	}
 	val = strings.TrimSpace(val)

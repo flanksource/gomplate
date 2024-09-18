@@ -170,7 +170,9 @@ func RunExpressionContext(ctx commonsContext.Context, _environment map[string]an
 		cached, ok := celExpressionCache.Get(template.CacheKey(_environment))
 		if ok {
 			if cachedPrg, ok := cached.(*cel.Program); ok {
-				ctx.Logger.V(7).Infof("%s using cached cel program", template.ShortString())
+				if ctx.Logger != nil {
+					ctx.Logger.V(7).Infof("%s using cached cel program", template.ShortString())
+				}
 				prg = *cachedPrg
 			}
 		}
@@ -199,7 +201,9 @@ func RunExpressionContext(ctx commonsContext.Context, _environment map[string]an
 	if err != nil {
 		return nil, oops.With("template", template.Expression).Wrap(err)
 	}
-	ctx.Logger.V(6).Infof("templated %s => %v", template.ShortString(), out)
+	if ctx.Logger != nil && out.Value() != template.Expression {
+		ctx.Logger.V(6).Infof("templated %s => %v", template.ShortString(), out)
+	}
 	return out.Value(), nil
 
 }
@@ -259,7 +263,9 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 		cached, ok := goTemplateCache.Get(template.CacheKey(nil))
 		if ok {
 			if cachedTpl, ok := cached.(*gotemplate.Template); ok {
-				ctx.Logger.V(7).Infof("%s using cached template", template.ShortString())
+				if ctx.Logger != nil {
+					ctx.Logger.V(7).Infof("%s using cached template", template.ShortString())
+				}
 				tpl = cachedTpl
 			}
 		}
@@ -308,7 +314,9 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 	}
 
 	out := strings.TrimSpace(buf.String())
-	ctx.Logger.V(6).Infof("templated %s ==> %s", template.ShortString(), out)
+	if ctx.Logger != nil && out != template.Template {
+		ctx.Logger.V(6).Infof("templated %s ==> %s", template.ShortString(), out)
+	}
 	return out, nil
 }
 
