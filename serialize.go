@@ -3,6 +3,7 @@ package gomplate
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/ohler55/ojg"
 	"github.com/ohler55/ojg/alt"
 	"github.com/ohler55/ojg/jp"
@@ -24,6 +25,10 @@ var opts = oj.Options{
 	WriteLimit:   1024,
 }
 
+type AsMapper interface {
+	AsMap(fields ...string) map[string]any
+}
+
 // Serialize iterates over each key-value pair in the input map
 // serializes any struct value to map[string]any.
 func Serialize(in map[string]any) (map[string]any, error) {
@@ -36,6 +41,12 @@ func Serialize(in map[string]any) (map[string]any, error) {
 	nativeTypes := make(map[string]any, len(in))
 	jp.Walk(in, func(path jp.Expr, value any) {
 		switch v := value.(type) {
+		case AsMapper:
+			nativeTypes[path.String()] = v.AsMap()
+		case uuid.UUID:
+			nativeTypes[path.String()] = v.String()
+		case *uuid.UUID:
+			nativeTypes[path.String()] = v.String()
 		case time.Duration:
 			nativeTypes[path.String()] = v
 		}
