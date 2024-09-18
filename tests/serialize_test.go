@@ -9,6 +9,7 @@ import (
 	"github.com/flanksource/gomplate/v3/data"
 	_ "github.com/flanksource/gomplate/v3/js"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
 	_ "github.com/robertkrimen/otto/underscore"
 )
 
@@ -27,6 +28,18 @@ func Test_serialize(t *testing.T) {
 		want    map[string]any
 		wantErr bool
 	}{
+		{name: "nested uuid",
+			in: map[string]any{
+				"container": map[string]any{
+					"id": uuid.MustParse("962f999c-a9bd-40a4-80bf-47c84b1ad750"),
+				},
+			},
+			want: map[string]any{
+				"container": map[string]any{
+					"id": "962f999c-a9bd-40a4-80bf-47c84b1ad750",
+				},
+			},
+		},
 		{
 			name: "duration",
 			in: map[string]any{
