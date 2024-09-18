@@ -301,7 +301,7 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 	data, err := Serialize(environment)
 	if err != nil {
 		return "", oops.
-			//With("environment", environment)
+			// With("environment", environment)
 			Wrapf(err, "error serializing env")
 	}
 
@@ -309,7 +309,7 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 	if err := tpl.Execute(&buf, data); err != nil {
 		return "", oops.
 			With("template", template.Template).
-			//With("environment", environment).
+			// With("environment", environment).
 			Wrap(err)
 	}
 
