@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	gotemplate "text/template"
 	"time"
@@ -211,6 +212,20 @@ func RunExpressionContext(ctx commonsContext.Context, _environment map[string]an
 func newContext() commonsContext.Context {
 	return commonsContext.NewContext(context.TODO(),
 		commonsContext.WithLogger(logger.GetLogger("gomplate")))
+}
+
+func RunTemplateBool(environment map[string]any, template Template) (bool, error) {
+	output, err := RunTemplateContext(newContext(), environment, template)
+	if err != nil {
+		return false, err
+	}
+
+	result, err := strconv.ParseBool(output)
+	if err != nil {
+		return false, fmt.Errorf("failed to parse template output (%s) as bool: %w", output, err)
+	}
+
+	return result, nil
 }
 
 func RunTemplate(environment map[string]any, template Template) (string, error) {
