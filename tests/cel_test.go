@@ -175,6 +175,8 @@ func TestCelJSON(t *testing.T) {
 		Address: &Address{City: "Kathmandu"},
 	}
 
+	personJSONString, _ := json.Marshal(person)
+
 	runTests(t, []Test{
 		{nil, `dyn([{'name': 'John', 'age': 30}]).toJSON()`, `[{"age":30,"name":"John"}]`},
 		{nil, `[{'name': 'John'}].toJSON()`, `[{"name":"John"}]`},
@@ -188,10 +190,13 @@ func TestCelJSON(t *testing.T) {
 		{nil, `'{"name": "John"}'.JSON().name`, `John`},
 		{nil, `'{"name": "Alice", "age": 30}'.JSON().name`, `Alice`},
 		{nil, `'[1, 2, 3, 4, 5]'.JSONArray()[0]`, `1`},
-		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
 		{map[string]interface{}{"i": person}, "i.toJSONPretty('\t')", "{\n\t\"Address\": {\n\t\t\"city_name\": \"Kathmandu\"\n\t},\n\t\"name\": \"Aditya\"\n}"},
 		{nil, "[\"Alice\", 30].toJSONPretty('\t')", "[\n\t\"Alice\",\n\t30\n]"},
 		{nil, "{'name': 'aditya'}.toJSONPretty('\t')", "{\n\t\"name\": \"aditya\"\n}"},
+
+		// JQ
+		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
+		{map[string]interface{}{"i": personJSONString}, "jq('.Address.city_name', i)", "Kathmandu"},
 	})
 }
 

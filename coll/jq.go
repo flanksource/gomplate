@@ -22,6 +22,14 @@ func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error)
 		return nil, fmt.Errorf("jq type conversion: %w", err)
 	}
 
+	if inString, ok := in.(string); ok {
+		var v map[string]any
+		if err := json.Unmarshal([]byte(inString), &v); err == nil {
+			in = v
+		}
+
+	}
+
 	iter := query.RunWithContext(ctx, in)
 	var out interface{}
 	a := []interface{}{}
