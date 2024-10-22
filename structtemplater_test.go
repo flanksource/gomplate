@@ -1,6 +1,7 @@
 package gomplate
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -10,6 +11,7 @@ type Test struct {
 	Template   string `template:"true"`
 	NoTemplate string
 	Inner      Inner
+	Properties json.RawMessage   `template:"true"`
 	JSONMap    map[string]any    `template:"true"`
 	Labels     map[string]string `template:"true"`
 	LabelsRaw  map[string]string
@@ -29,6 +31,21 @@ type test struct {
 
 var tests = []test{
 	{
+		name: "template byte slice",
+		StructTemplater: StructTemplater{
+			RequiredTag: "template",
+			Values: map[string]any{
+				"msg": "world",
+			},
+		},
+		Input: &Test{
+			Properties: json.RawMessage(`{"name": "{{.msg}}"}`),
+		},
+		Output: &Test{
+			Properties: json.RawMessage(`{"name": "world"}`),
+		},
+	},
+	{
 		name: "template and no template",
 		StructTemplater: StructTemplater{
 			RequiredTag: "template",
@@ -43,6 +60,7 @@ var tests = []test{
 		Output: &Test{
 			Template:   "hello world",
 			NoTemplate: "hello {{.msg}}",
+			Properties: json.RawMessage{},
 		},
 	},
 	{
@@ -61,7 +79,8 @@ var tests = []test{
 			Template: "hello $(msg)",
 		},
 		Output: &Test{
-			Template: "hello world",
+			Template:   "hello world",
+			Properties: json.RawMessage{},
 		},
 	},
 	{
@@ -96,7 +115,8 @@ var tests = []test{
 			},
 		},
 		Output: &Test{
-			Template: "Special Agent - James Bond!",
+			Template:   "Special Agent - James Bond!",
+			Properties: json.RawMessage{},
 			Labels: map[string]string{
 				"address":   "London, UK",
 				"eye color": "light blue",
@@ -135,7 +155,8 @@ var tests = []test{
 			},
 		},
 		Output: &Test{
-			Template: "world",
+			Template:   "world",
+			Properties: json.RawMessage{},
 			JSONMap: map[string]any{
 				"a": map[string]any{
 					"b": map[string]any{
@@ -187,6 +208,7 @@ var tests = []test{
 			},
 		},
 		Output: &Test{
+			Properties: json.RawMessage{},
 			JSONMap: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",

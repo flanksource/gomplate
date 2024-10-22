@@ -54,6 +54,16 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 		}
 		v.SetString(val)
 
+	case reflect.Slice:
+		switch v.Type().Elem().Kind() {
+		case reflect.Uint8:
+			val, err := w.Template(string(v.Bytes()))
+			if err != nil {
+				return err
+			}
+			v.SetBytes([]byte(val))
+		}
+
 	case reflect.Map:
 		if len(v.MapKeys()) != 0 {
 			newMap := reflect.MakeMap(v.Type())
