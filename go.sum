@@ -16,8 +16,8 @@ github.com/distribution/reference v0.5.0 h1:/FUIFXtfc/x2gpa5/VGfiGLuOIdYa1t65IKK
 github.com/distribution/reference v0.5.0/go.mod h1:BbU0aIcezP1/5jX/8MP0YiH4SdvB5Y4f/wlDRiLyi3E=
 github.com/flanksource/commons v1.29.10 h1:T/S95Pl8kASEFvQjQ7fJjTUqeVdhxQXg1vfkULTYFJQ=
 github.com/flanksource/commons v1.29.10/go.mod h1:iTbrXOSp3Spv570Nly97D/U9cQjLZoVlmWCXqWzsvRU=
-github.com/flanksource/is-healthy v1.0.36 h1:VvMIsReWiUpXOO+JAMbP04d565AZ+JVVgaFmJN6FTx4=
-github.com/flanksource/is-healthy v1.0.36/go.mod h1:u3I+ceYl9Y/9x3XuINXePEUgVjY/WJ+O+GklOzpeMiQ=
+github.com/flanksource/is-healthy v1.0.37 h1:fpDmOj3bCPvMnFmWP3OuotBf1aOsQ9pPkm6VWppfFmQ=
+github.com/flanksource/is-healthy v1.0.37/go.mod h1:GBZXgvn5Jfn7lewRUky7uRHn16Q3LC9D583NyhwcMCc=
 github.com/flanksource/kubectl-neat v1.0.4 h1:t5/9CqgE84oEtB0KitgJ2+WIeLfD+RhXSxYrqb4X8yI=
 github.com/flanksource/kubectl-neat v1.0.4/go.mod h1:Un/Voyh3cmiZNKQrW/TkAl28nAA7vwnwDGVjRErKjOw=
 github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
