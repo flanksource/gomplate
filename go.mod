@@ -1,8 +1,8 @@
 module github.com/flanksource/gomplate/v3
 
-go 1.22.0
+go 1.22.5
 
-toolchain go1.22.8
+toolchain go1.23.2
 
 require (
 	github.com/Masterminds/goutils v1.1.1
@@ -71,9 +71,9 @@ require (
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stoewer/go-strcase v1.3.0 // indirect
-	github.com/tidwall/gjson v1.9.3 // indirect
+	github.com/tidwall/gjson v1.14.4 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
-	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.0.4 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
