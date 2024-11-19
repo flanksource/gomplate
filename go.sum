@@ -4,6 +4,8 @@ github.com/Masterminds/semver/v3 v3.2.1 h1:RN9w6+7QoMeJVGyfmbcgs28Br8cvmnucEXnY0
 github.com/Masterminds/semver/v3 v3.2.1/go.mod h1:qvl/7zhW3nngYb5+80sSMF+FG2BjYrf8m9wsX0PNOMQ=
 github.com/antlr4-go/antlr/v4 v4.13.0 h1:lxCg3LAv+EUK6t1i0y1V6/SLeUi0eKEKdhQAlS8TVTI=
 github.com/antlr4-go/antlr/v4 v4.13.0/go.mod h1:pfChB/xh/Unjila75QW7+VU4TSnWnnk9UTnmpPaOR2g=
+github.com/bmatcuk/doublestar/v4 v4.7.1 h1:fdDeAqgT47acgwd9bd9HxJRDmc9UAmPpc+2m0CXv75Q=
+github.com/bmatcuk/doublestar/v4 v4.7.1/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fTSPVIjEY1Wr7jzc=
 github.com/cert-manager/cert-manager v1.16.1 h1:1ceFMqTtwiqY2vyfaRT85CNiVmK7pJjt3GebYCx9awY=
 github.com/cert-manager/cert-manager v1.16.1/go.mod h1:MfLVTL45hFZsqmaT1O0+b2ugaNNQQZttSFV9hASHUb0=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
@@ -16,8 +18,8 @@ github.com/distribution/reference v0.5.0 h1:/FUIFXtfc/x2gpa5/VGfiGLuOIdYa1t65IKK
 github.com/distribution/reference v0.5.0/go.mod h1:BbU0aIcezP1/5jX/8MP0YiH4SdvB5Y4f/wlDRiLyi3E=
 github.com/flanksource/commons v1.29.10 h1:T/S95Pl8kASEFvQjQ7fJjTUqeVdhxQXg1vfkULTYFJQ=
 github.com/flanksource/commons v1.29.10/go.mod h1:iTbrXOSp3Spv570Nly97D/U9cQjLZoVlmWCXqWzsvRU=
-github.com/flanksource/is-healthy v1.0.37 h1:fpDmOj3bCPvMnFmWP3OuotBf1aOsQ9pPkm6VWppfFmQ=
-github.com/flanksource/is-healthy v1.0.37/go.mod h1:GBZXgvn5Jfn7lewRUky7uRHn16Q3LC9D583NyhwcMCc=
+github.com/flanksource/is-healthy v1.0.43 h1:pNVWu/rNzpt/IP0iFgTn/AueSLz2ReRFv2AtLA/0kBM=
+github.com/flanksource/is-healthy v1.0.43/go.mod h1:HQk8AMFv2IbzGEh5pRrV9mYMrABoq1vDrllvb60pk3s=
 github.com/flanksource/kubectl-neat v1.0.4 h1:t5/9CqgE84oEtB0KitgJ2+WIeLfD+RhXSxYrqb4X8yI=
 github.com/flanksource/kubectl-neat v1.0.4/go.mod h1:Un/Voyh3cmiZNKQrW/TkAl28nAA7vwnwDGVjRErKjOw=
 github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
