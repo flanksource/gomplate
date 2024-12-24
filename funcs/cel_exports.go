@@ -18,10 +18,8 @@ var CelEnvOption = []cel.EnvOption{
 	collAppendGen,
 	collPrependGen,
 	collUniqGen,
-	collSortGen,
 	collSortByGen,
 	collJQGen,
-	collFlattenGen,
 	collPickGen,
 	collOmitGen,
 	collMergeGen,
@@ -59,7 +57,7 @@ var CelEnvOption = []cel.EnvOption{
 	cryptoSHA512BytesGen,
 	cryptoSHA512_224BytesGen,
 	cryptoSHA512_256BytesGen,
-	
+
 	// JSON
 	dataJSONMemberGen,
 	dataToJSONGen,
@@ -76,14 +74,14 @@ var CelEnvOption = []cel.EnvOption{
 	dataCSVByRowGen,
 	dataCSVByColumnGen,
 	dataToCSVGen,
-	
+
 	// TOML
 	dataTOMLGen,
 	dataToTOMLGen,
-	
+
 	urlEncodeGen,
 	urlDecodeGen,
-	
+
 	regexpFindGen,
 	regexpFindAllGen,
 	regexpMatchGen,
@@ -128,7 +126,7 @@ var CelEnvOption = []cel.EnvOption{
 	randomItemGen,
 	randomNumberGen,
 	randomFloatGen,
-	
+
 	stringsHumanDurationGen,
 	stringsHumanSizeGen,
 	stringsSemverGen,

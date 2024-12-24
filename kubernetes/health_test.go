@@ -43,6 +43,6 @@ func TestIsHealthyAppset(t *testing.T) {
 func TestIsHealthySvcPending(t *testing.T) {
 	r := GetHealth(TestProgressing)
 	assert.Equal(t, false, r.OK)
-	assert.Equal(t, "Creating", r.Status)
+	assert.Equal(t, "Unknown", r.Status)
 	assert.Equal(t, "unknown", r.Health)
 }

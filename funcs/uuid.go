@@ -72,10 +72,10 @@ func (f UUIDFuncs) IsValid(in interface{}) (bool, error) {
 // urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx are decoded as well as the
 // Microsoft encoding {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx} and the raw hex
 // encoding: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
-func (UUIDFuncs) Parse(in interface{}) (uuid.UUID, error) {
+func (UUIDFuncs) Parse(in interface{}) (string, error) {
 	u, err := uuid.Parse(conv.ToString(in))
 	if err != nil {
-		return uuid.Nil, err
+		return "", err
 	}
-	return u, err
+	return u.String(), err
 }

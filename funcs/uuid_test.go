@@ -110,6 +110,6 @@ func TestParse(t *testing.T) {
 	for _, d := range testdata {
 		uid, err := u.Parse(d)
 		assert.NoError(t, err)
-		assert.Equal(t, in, uid.String())
+		assert.Equal(t, in, uid)
 	}
 }

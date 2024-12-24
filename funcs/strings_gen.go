@@ -4,7 +4,6 @@ package funcs
 
 import (
 	"sort"
-
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
@@ -171,19 +170,20 @@ var stringsRepeatGen = cel.Function("repeat",
 	),
 )
 
-var stringsSortGen = cel.Function("sort",
-	cel.MemberOverload("Sort_interface{}",
+var stringsSortGen = cel.Function("Sort",
+	cel.Overload("Sort_string",
+
 		[]*cel.Type{
 			cel.StringType,
 		},
-		cel.StringType,
-		cel.UnaryBinding(func(arg ref.Val) ref.Val {
-			slice := []byte(arg.Value().(string))
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			slice := []byte(args[0].Value().(string))
 			sort.Slice(slice, func(i, j int) bool {
 				return slice[i] < slice[j]
 			})
-
 			return types.DefaultTypeAdapter.NativeToValue(string(slice))
+
 		}),
 	),
 )
