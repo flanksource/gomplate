@@ -15,6 +15,7 @@ type Test struct {
 	JSONMap    map[string]any    `template:"true"`
 	Labels     map[string]string `template:"true"`
 	LabelsRaw  map[string]string
+	Slice      []string `template:"true"`
 }
 
 type Inner struct {
@@ -126,6 +127,27 @@ var tests = []test{
 			LabelsRaw: map[string]string{
 				"address":           "{{city}}, {{country}}",
 				"{{colorOf}} color": "light $(color)",
+			},
+		},
+	},
+
+	{
+		name: "slice",
+		StructTemplater: StructTemplater{
+			RequiredTag:    "template",
+			ValueFunctions: true,
+			Values: map[string]any{
+				"msg": "world",
+			},
+		},
+		Input: &Test{
+			Slice: []string{
+				"hello {{msg}}",
+			},
+		},
+		Output: &Test{
+			Slice: []string{
+				"hello world",
 			},
 		},
 	},
