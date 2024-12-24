@@ -83,6 +83,7 @@ func GetHealth(in interface{}) HealthStatus {
 	if obj == nil {
 		return HealthStatus{
 			OK:      false,
+			Health:  "unhealthy",
 			Status:  "Error",
 			Message: "Invalid spec",
 		}
@@ -99,9 +100,9 @@ func GetHealth(in interface{}) HealthStatus {
 
 	if _health == nil {
 		return HealthStatus{
-			OK:      false,
-			Status:  "Missing",
-			Message: "No health check found",
+			OK:     false,
+			Health: "unknown",
+			Ready:  true,
 		}
 	}
 
