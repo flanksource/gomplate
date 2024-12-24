@@ -417,7 +417,6 @@ spec:
     app: minio
     release: argo-artifacts
   sessionAffinity: None
-  type: LoadBalancer
 status:
   loadBalancer: {}
 `

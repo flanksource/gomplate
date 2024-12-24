@@ -411,7 +411,8 @@ func TestCelStrings(t *testing.T) {
 		{nil, `"hello there".slug()`, `hello-there`},
 		{map[string]interface{}{"s": "hello world"}, "s.snakeCase()", "hello_world"},
 		{map[string]interface{}{"s": "hello world"}, "s.shellQuote()", "'hello world'"},
-		{nil, `"hello".sort()`, `ehllo`},
+		// {nil, `"hello".sort()`, `ehllo`},
+		{nil, `Sort("hello")`, `ehllo`},
 		{map[string]interface{}{"s": "hello world"}, "s.split(' ')", "[hello world]"},
 		{map[string]interface{}{"s": "hello world"}, "s.squote()", "'hello world'"},
 		{nil, `"hello".startsWith("he")`, "true"},
@@ -632,6 +633,6 @@ func TestCelUUID(t *testing.T) {
 		{nil, "uuid.V1() != uuid.Nil()", "true"},
 		{nil, "uuid.V4() != uuid.Nil()", "true"},
 		{nil, "uuid.IsValid('2a42e576-c308-4db9-8525-0513af307586')", "true"},
-		{nil, "uuid.Parse('2a42e576-c308-4db9-8525-0513af307586')", "2a42e576-c308-4db9-8525-0513af307586"},
+		{nil, "string(uuid.Parse('2a42e576-c308-4db9-8525-0513af307586'))", "2a42e576-c308-4db9-8525-0513af307586"},
 	})
 }

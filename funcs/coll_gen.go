@@ -227,30 +227,9 @@ var collMergeGen = cel.Function("merge",
 	),
 )
 
-var collSortGen = cel.Function("sort",
-	cel.MemberOverload("sort_string_interface{}",
-		[]*cel.Type{
-			cel.ListType(cel.DynType),
-		},
-		cel.ListType(cel.DynType),
-		cel.UnaryBinding(func(arg ref.Val) ref.Val {
-			list, err := sliceToNative[any](arg)
-			if err != nil {
-				return types.WrapErr(err)
-			}
-
-			sorted, err := coll.Sort("", list)
-			if err != nil {
-				return types.WrapErr(err)
-			}
-
-			return types.DefaultTypeAdapter.NativeToValue(sorted)
-		}),
-	),
-)
 
 var collSortByGen = cel.Function("sortBy",
-	cel.MemberOverload("sort_interface{}",
+	cel.MemberOverload("sortBy_interface{}",
 
 		[]*cel.Type{
 			cel.ListType(cel.AnyType),
@@ -307,31 +286,6 @@ var collJQGen = cel.Function("jq",
 	),
 )
 
-var collFlattenGen = cel.Function("flatten",
-	cel.MemberOverload("flatten_list{}",
-
-		[]*cel.Type{
-			cel.ListType(cel.AnyType),
-		},
-		cel.ListType(cel.AnyType),
-		cel.UnaryBinding(func(arg ref.Val) ref.Val {
-
-			var x CollFuncs
-			list, err := sliceToNative[any](arg)
-			if err != nil {
-				return types.WrapErr(err)
-			}
-
-			result, err := x.Flatten(list)
-
-			if err != nil {
-				return types.WrapErr(err)
-			}
-			return types.DefaultTypeAdapter.NativeToValue(result)
-
-		}),
-	),
-)
 
 var collPickGen = cel.Function("pick",
 	cel.MemberOverload("pick_interface{}",
