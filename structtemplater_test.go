@@ -2,20 +2,47 @@ package gomplate
 
 import (
 	"encoding/json"
-	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/flanksource/commons/test/matchers"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
 type Test struct {
 	Template   string `template:"true"`
 	NoTemplate string
 	Inner      Inner
-	Properties json.RawMessage   `template:"true"`
+	Properties json.RawMessage   `template:"true" json:"properties,omitempty"`
 	JSONMap    map[string]any    `template:"true"`
 	Labels     map[string]string `template:"true"`
 	LabelsRaw  map[string]string
 	Slice      []string `template:"true"`
+}
+
+func (t *Test) Clone() Test {
+	return Test{
+		Template:   t.Template,
+		NoTemplate: t.NoTemplate,
+		Inner: Inner{
+			Template:   t.Inner.Template,
+			NoTemplate: t.Inner.NoTemplate,
+		},
+		Properties: append(json.RawMessage(nil), t.Properties...),
+		JSONMap:    cloneMap(t.JSONMap),
+		Labels:     cloneMap(t.Labels),
+		LabelsRaw:  cloneMap(t.LabelsRaw),
+		Slice:      append([]string(nil), t.Slice...),
+	}
+}
+func cloneMap[K comparable, V any](m map[K]V) map[K]V {
+	if m == nil {
+		return nil
+	}
+	result := make(map[K]V, len(m))
+	for k, v := range m {
+		result[k] = v
+	}
+	return result
 }
 
 type Inner struct {
@@ -62,6 +89,70 @@ var tests = []test{
 			Template:   "hello world",
 			NoTemplate: "hello {{.msg}}",
 			Properties: json.RawMessage{},
+		},
+	},
+
+	{
+		name: "pod manifest",
+		StructTemplater: StructTemplater{
+			RequiredTag:    "template",
+			ValueFunctions: true,
+			Values: map[string]any{
+				"msg": "world",
+			},
+		},
+		Input: &Test{
+			JSONMap: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name":      "httpbin-{{msg}}",
+					"namespace": "development",
+					"labels": map[string]any{
+						"app": "httpbin",
+					},
+				},
+				"spec": map[string]any{
+					"containers": []any{
+						map[string]any{
+							"name":  "httpbin",
+							"image": "kennethreitz/httpbin:latest",
+							"ports": []any{
+								map[string]any{
+									"containerPort": 80,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Output: &Test{
+			Properties: json.RawMessage{},
+			JSONMap: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name":      "httpbin-world",
+					"namespace": "development",
+					"labels": map[string]any{
+						"app": "httpbin",
+					},
+				},
+				"spec": map[string]any{
+					"containers": []any{
+						map[string]any{
+							"name":  "httpbin",
+							"image": "kennethreitz/httpbin:latest",
+							"ports": []any{
+								map[string]any{
+									"containerPort": 80,
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	},
 	{
@@ -142,7 +233,7 @@ var tests = []test{
 		},
 		Input: &Test{
 			Slice: []string{
-				"hello {{msg}}",
+				"hello {{.msg}}",
 			},
 		},
 		Output: &Test{
@@ -151,8 +242,8 @@ var tests = []test{
 			},
 		},
 	},
+
 	{
-		name: "deeply nested map",
 		StructTemplater: StructTemplater{
 			RequiredTag:    "template",
 			ValueFunctions: true,
@@ -160,6 +251,7 @@ var tests = []test{
 				"msg": "world",
 			},
 		},
+
 		Input: &Test{
 			Template: "{{msg}}",
 			JSONMap: map[string]any{
@@ -176,6 +268,7 @@ var tests = []test{
 				"e": "hello {{msg}}",
 			},
 		},
+
 		Output: &Test{
 			Template:   "world",
 			Properties: json.RawMessage{},
@@ -194,80 +287,17 @@ var tests = []test{
 			},
 		},
 	},
-	{
-		name: "pod manifest",
-		StructTemplater: StructTemplater{
-			RequiredTag:    "template",
-			ValueFunctions: true,
-			Values: map[string]any{
-				"msg": "world",
-			},
-		},
-		Input: &Test{
-			JSONMap: map[string]any{
-				"apiVersion": "v1",
-				"kind":       "Pod",
-				"metadata": map[string]any{
-					"name":      "httpbin-{{msg}}",
-					"namespace": "development",
-					"labels": map[string]any{
-						"app": "httpbin",
-					},
-				},
-				"spec": map[string]any{
-					"containers": []any{
-						map[string]any{
-							"name":  "httpbin",
-							"image": "kennethreitz/httpbin:latest",
-							"ports": []any{
-								map[string]any{
-									"containerPort": 80,
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		Output: &Test{
-			Properties: json.RawMessage{},
-			JSONMap: map[string]any{
-				"apiVersion": "v1",
-				"kind":       "Pod",
-				"metadata": map[string]any{
-					"name":      "httpbin-world",
-					"namespace": "development",
-					"labels": map[string]any{
-						"app": "httpbin",
-					},
-				},
-				"spec": map[string]any{
-					"containers": []any{
-						map[string]any{
-							"name":  "httpbin",
-							"image": "kennethreitz/httpbin:latest",
-							"ports": []any{
-								map[string]any{
-									"containerPort": 80,
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	},
 }
 
-func TestStructTemplater(t *testing.T) {
+var _ = Describe("StructTemplater", func() {
+
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			i := test.Input
-			if err := test.StructTemplater.Walk(i); err != nil {
-				t.Error(err)
-			} else if diff := cmp.Diff(i, test.Output); diff != "" {
-				t.Error(diff)
-			}
+		It(test.name, func() {
+			clone := test.Input.Clone()
+			err := test.Walk(&clone)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(clone).To(matchers.MatchJson(*test.Output))
 		})
+
 	}
-}
+})

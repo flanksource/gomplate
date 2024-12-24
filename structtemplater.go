@@ -30,16 +30,6 @@ type Delims struct {
 func (w StructTemplater) Struct(reflect.Value) error {
 	return nil
 }
-func (w StructTemplater) SliceElem(i int, v reflect.Value) error {
-	if v.Kind() == reflect.String {
-		val, err := w.Template(v.String())
-		if err != nil {
-			return err
-		}
-		v.SetString(val)
-	}
-	return nil
-}
 
 func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) error {
 	if !v.CanSet() {
@@ -57,6 +47,7 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 	}
 
 	switch v.Kind() {
+
 	case reflect.String:
 		val, err := w.Template(v.String())
 		if err != nil {
@@ -72,6 +63,41 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 				return err
 			}
 			v.SetBytes([]byte(val))
+		case reflect.String:
+			if v.Len() > 0 {
+				newSlice := reflect.MakeSlice(v.Type(), v.Len(), v.Cap())
+				for i := 0; i < v.Len(); i++ {
+					val := v.Index(i)
+					switch val.Kind() {
+					case reflect.String:
+						newVal, err := w.Template(val.String())
+						if err != nil {
+							return err
+						}
+						newSlice.Index(i).Set(reflect.ValueOf(newVal))
+					case reflect.Map:
+						marshalled, err := yaml.Marshal(val.Interface())
+						if err != nil {
+							newSlice.Index(i).Set(val)
+						} else {
+							templated, err := w.Template(string(marshalled))
+							if err != nil {
+								return err
+							}
+
+							var unmarshalled map[string]any
+							if err := yaml.Unmarshal([]byte(templated), &unmarshalled); err != nil {
+								newSlice.Index(i).Set(val)
+							} else {
+								newSlice.Index(i).Set(reflect.ValueOf(unmarshalled))
+							}
+						}
+					default:
+						newSlice.Index(i).Set(val)
+					}
+				}
+				v.Set(newSlice)
+			}
 		}
 
 	case reflect.Map:
@@ -116,42 +142,6 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 				}
 			}
 			v.Set(newMap)
-		}
-
-	case reflect.Slice:
-		if v.Len() > 0 {
-			newSlice := reflect.MakeSlice(v.Type(), v.Len(), v.Cap())
-			for i := 0; i < v.Len(); i++ {
-				val := v.Index(i)
-				switch val.Kind() {
-				case reflect.String:
-					newVal, err := w.Template(val.String())
-					if err != nil {
-						return err
-					}
-					newSlice.Index(i).Set(reflect.ValueOf(newVal))
-				case reflect.Map:
-					marshalled, err := yaml.Marshal(val.Interface())
-					if err != nil {
-						newSlice.Index(i).Set(val)
-					} else {
-						templated, err := w.Template(string(marshalled))
-						if err != nil {
-							return err
-						}
-
-						var unmarshalled map[string]any
-						if err := yaml.Unmarshal([]byte(templated), &unmarshalled); err != nil {
-							newSlice.Index(i).Set(val)
-						} else {
-							newSlice.Index(i).Set(reflect.ValueOf(unmarshalled))
-						}
-					}
-				default:
-					newSlice.Index(i).Set(val)
-				}
-			}
-			v.Set(newSlice)
 		}
 	}
 
