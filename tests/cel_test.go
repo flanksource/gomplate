@@ -190,13 +190,15 @@ func TestCelJSON(t *testing.T) {
 		{map[string]interface{}{"i": person}, "i.toJSONPretty('\t').JSON().addresses[0].country", "Nepal"},
 		{nil, "{'name': 'aditya'}.toJSONPretty('\t')", "{\n\t\"name\": \"aditya\"\n}"},
 
-		{map[string]interface{}{"i": person}, "jsonpath('$.addresses[-1:].city_name', i)[0]", "New York"},
-		{map[string]interface{}{"i": person}, "jmespath('addresses[*].city_name', i)[0]", "Kathmandu"},
+		{map[string]interface{}{"i": person}, "jsonpath('$.addresses[-1:].city_name', i)", "New York"},
+		{map[string]interface{}{"i": person}, "jmespath('addresses[*].city_name | [0]', i)", "Kathmandu"},
 		//FIXME: jmespath function return a parse error
 		{map[string]interface{}{"i": person}, "jmespath('length(addresses)', i)", "3"},
 		{map[string]interface{}{"i": person}, "jmespath('ceil(`1.2`)', i)", "2"},
 		//FIXME: jmespath always returns a list
 		{map[string]interface{}{"i": person}, "jmespath('name', i)", "John Doe"},
+		{map[string]interface{}{"i": person}, "jmespath('Address.country', i)", ""},
+		{map[string]interface{}{"i": person}, "jsonpath('Address.country', i)", ""},
 
 		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
 		{map[string]interface{}{"i": person}, "jq('.Address.country', i)", ""},
