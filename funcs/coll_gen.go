@@ -4,6 +4,7 @@ package funcs
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"sort"
 
@@ -335,3 +336,40 @@ var collOmitGen = cel.Function("omit",
 		}),
 	),
 )
+
+var collKeyValToMapGen = cel.Function("keyValToMap",
+	cel.Overload("keyValToMap_interface{}",
+		[]*cel.Type{
+			cel.AnyType,
+		},
+		cel.MapType(cel.StringType, cel.AnyType),
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			result, err := coll.KeyValToMap(fmt.Sprintf("%s",args[0].Value()))
+			if err != nil {
+				return types.WrapErr(err)
+			}
+
+			return types.DefaultTypeAdapter.NativeToValue(result)
+		}),
+	),
+)
+
+var collMapToKeyValGen = cel.Function("mapToKeyVal",
+	cel.Overload("mapToKeyVal_interface{}",
+		[]*cel.Type{
+			cel.MapType(cel.StringType, cel.AnyType),
+		},
+		cel.StringType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			m, err := args[0].ConvertToNative(typeMapStringAny)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+
+			result := coll.MapToKeyVal(m.(map[string]interface{}))
+
+			return types.DefaultTypeAdapter.NativeToValue(result)
+		}),
+	),
+)
+
