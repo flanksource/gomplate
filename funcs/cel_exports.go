@@ -26,6 +26,8 @@ var CelEnvOption = []cel.EnvOption{
 
 	collKeyValToMapGen,
 	collMapToKeyValGen,
+	collJmesPathGen,
+	collJsonPathGen,
 	// NOTE: Conv Bool, int, Float, String are not needed
 	// as cel-go has native support for it.
 	// Slice, ToStrings are meaningless since

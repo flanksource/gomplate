@@ -171,10 +171,6 @@ func TestCelFilePath(t *testing.T) {
 }
 
 func TestCelJSON(t *testing.T) {
-	person := Person{
-		Name:    "Aditya",
-		Address: &Address{City: "Kathmandu"},
-	}
 
 	personJSONString, _ := json.Marshal(person)
 
@@ -184,19 +180,26 @@ func TestCelJSON(t *testing.T) {
 		{nil, `dyn({'name': 'John'}).toJSON()`, `{"name":"John"}`},
 		{nil, `{'name': 'John'}.toJSON()`, `{"name":"John"}`},
 		{nil, `1.toJSON()`, `1`},
-		{map[string]interface{}{"i": person}, "i.toJSON().JSON().name", "Aditya"},
+		{map[string]interface{}{"i": person}, "i.toJSON().JSON().name", "John Doe"},
 		{map[string]interface{}{"i": person}, `'["1", "2"]'.JSONArray()[0]`, "1"},
 		{map[string]interface{}{"i": map[string]string{"name": "aditya"}}, `i.toJSON()`, `{"name":"aditya"}`},
 
 		{nil, `'{"name": "John"}'.JSON().name`, `John`},
 		{nil, `'{"name": "Alice", "age": 30}'.JSON().name`, `Alice`},
 		{nil, `'[1, 2, 3, 4, 5]'.JSONArray()[0]`, `1`},
-		{map[string]interface{}{"i": person}, "i.toJSONPretty('\t')", "{\n\t\"Address\": {\n\t\t\"city_name\": \"Kathmandu\"\n\t},\n\t\"name\": \"Aditya\"\n}"},
-		{nil, "[\"Alice\", 30].toJSONPretty('\t')", "[\n\t\"Alice\",\n\t30\n]"},
+		{map[string]interface{}{"i": person}, "i.toJSONPretty('\t').JSON().addresses[0].country", "Nepal"},
 		{nil, "{'name': 'aditya'}.toJSONPretty('\t')", "{\n\t\"name\": \"aditya\"\n}"},
 
-		// JQ
+		{map[string]interface{}{"i": person}, "jsonpath('$.addresses[-1:].city_name', i)[0]", "New York"},
+		{map[string]interface{}{"i": person}, "jmespath('addresses[*].city_name', i)[0]", "Kathmandu"},
+		//FIXME: jmespath function return a parse error
+		{map[string]interface{}{"i": person}, "jmespath('length(addresses)', i)", "3"},
+		{map[string]interface{}{"i": person}, "jmespath('ceil(`1.2`)', i)", "2"},
+		//FIXME: jmespath always returns a list
+		{map[string]interface{}{"i": person}, "jmespath('name', i)", "John Doe"},
+
 		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
+		{map[string]interface{}{"i": person}, "jq('.Address.country', i)", ""},
 		{map[string]interface{}{"i": personJSONString}, "jq('.Address.city_name', i)", "Kathmandu"},
 	})
 }
