@@ -11,6 +11,8 @@ import (
 	"github.com/ohler55/ojg/jp"
 )
 
+const NullValue = "NULL_VALUE"
+
 // JQ -
 func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error) {
 	query, err := gojq.Parse(jqExpr)
@@ -50,6 +52,9 @@ func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error)
 	} else {
 		out = a
 	}
+	if out == NullValue || out == nil {
+		out = ""
+	}
 
 	return out, nil
 }
@@ -67,13 +72,16 @@ func JMESPath(jmesPath string, in interface{}) (interface{}, error) {
 			in = v
 		}
 	}
-	result, err := jmespath.Search(jmesPath, in)
+	out, err := jmespath.Search(jmesPath, in)
 
 	if err != nil {
 		return nil, fmt.Errorf("%+w", err)
 	}
+	if out == nil || out == NullValue || out == "" {
+		out = ""
+	}
 
-	return result, nil
+	return out, nil
 }
 
 func JSONPath(jsonPath string, in interface{}) (interface{}, error) {
@@ -94,7 +102,18 @@ func JSONPath(jsonPath string, in interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return x.Get(in), nil
+	out := x.Get(in)
+
+	if len(out) == 1 {
+		if out[0] == NullValue || out[0] == nil {
+			return "", nil
+		}
+		return out[0], nil
+	}
+	if len(out) == 0 {
+		return "", nil
+	}
+	return out, nil
 }
 
 func isSupportableType(in interface{}) bool {
