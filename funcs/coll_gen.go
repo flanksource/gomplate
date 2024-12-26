@@ -287,6 +287,72 @@ var collJQGen = cel.Function("jq",
 	),
 )
 
+var collJsonPathGen = cel.Function("jsonpath",
+	cel.Overload("jsonpath_string_interface{}",
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.BinaryBinding(func(query, object ref.Val) ref.Val {
+
+			var input interface{}
+			switch v := object.Value().(type) {
+			case string, []byte:
+				input = v
+			default:
+				data, err := json.Marshal(v)
+				if err != nil {
+					return types.WrapErr(err)
+				}
+				if err := json.Unmarshal(data, &input); err != nil {
+					return types.WrapErr(err)
+				}
+			}
+
+			result, err := coll.JSONPath( query.Value().(string), input)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+			return types.DefaultTypeAdapter.NativeToValue(result)
+
+		}),
+	),
+)
+
+var collJmesPathGen = cel.Function("jmespath",
+	cel.Overload("jmespathh_string_interface{}",
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.BinaryBinding(func(query, object ref.Val) ref.Val {
+
+			var input interface{}
+			switch v := object.Value().(type) {
+			case string, []byte:
+				input = v
+			default:
+				data, err := json.Marshal(v)
+				if err != nil {
+					return types.WrapErr(err)
+				}
+				if err := json.Unmarshal(data, &input); err != nil {
+					return types.WrapErr(err)
+				}
+			}
+
+			result, err := coll.JMESPath( query.Value().(string), input)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+			return types.DefaultTypeAdapter.NativeToValue(result)
+
+		}),
+	),
+)
+
+
+
 
 var collPickGen = cel.Function("pick",
 	cel.MemberOverload("pick_interface{}",

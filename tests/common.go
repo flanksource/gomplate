@@ -12,7 +12,8 @@ type NoStructTag struct {
 }
 
 type Address struct {
-	City string `json:"city_name"`
+	City    string `json:"city_name"`
+	Country string `json:"country,omitempty"`
 }
 
 type Person struct {
@@ -28,7 +29,7 @@ var person = Person{
 	Name: "John Doe",
 	Age:  25,
 	Address: &Address{
-		City: "Nepal",
+		City: "Kathmandu",
 	},
 	MetaData: map[string]any{
 		"key": "value",
@@ -39,10 +40,16 @@ var person = Person{
 	},
 	Addresses: []Address{
 		{
-			City: "Kathmandu",
+			City:    "Kathmandu",
+			Country: "Nepal",
 		},
 		{
-			City: "Bhaktapur",
+			City:    "Bhaktapur",
+			Country: "Nepal",
+		},
+		{
+			City:    "New York",
+			Country: "USA",
 		},
 	},
 }

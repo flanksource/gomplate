@@ -7,6 +7,8 @@ import (
 	"reflect"
 
 	"github.com/itchyny/gojq"
+	"github.com/jmespath/go-jmespath"
+	"github.com/ohler55/ojg/jp"
 )
 
 // JQ -
@@ -50,6 +52,49 @@ func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error)
 	}
 
 	return out, nil
+}
+
+func JMESPath(jmesPath string, in interface{}) (interface{}, error) {
+	// convert input to a supported type, if necessary
+	in, err := jqConvertType(in)
+	if err != nil {
+		return nil, fmt.Errorf("type conversion: %w", err)
+	}
+
+	if inString, ok := in.(string); ok {
+		var v map[string]any
+		if err := json.Unmarshal([]byte(inString), &v); err == nil {
+			in = v
+		}
+	}
+	result, err := jmespath.Search(jmesPath, in)
+
+	if err != nil {
+		return nil, fmt.Errorf("%+w", err)
+	}
+
+	return result, nil
+}
+
+func JSONPath(jsonPath string, in interface{}) (interface{}, error) {
+	// convert input to a supported type, if necessary
+	in, err := jqConvertType(in)
+	if err != nil {
+		return nil, fmt.Errorf("type conversion: %w", err)
+	}
+
+	if inString, ok := in.(string); ok {
+		var v map[string]any
+		if err := json.Unmarshal([]byte(inString), &v); err == nil {
+			in = v
+		}
+	}
+
+	x, err := jp.ParseString(jsonPath)
+	if err != nil {
+		return nil, err
+	}
+	return x.Get(in), nil
 }
 
 func isSupportableType(in interface{}) bool {
