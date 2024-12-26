@@ -117,6 +117,7 @@ func TestCelColl(t *testing.T) {
 		{nil, `Dict(['a','b', 'c', 'd']).c`, "d"},
 		{nil, `Has(['a','b', 'c'], 'a')`, "true"},
 		{nil, `Has(['a','b', 'c'], 'e')`, "false"},
+		{map[string]interface{}{"kv": "a=b,c=d"}, "keyValToMap(kv).a", "b"},
 	})
 }
 
