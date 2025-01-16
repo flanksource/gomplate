@@ -52,9 +52,6 @@ func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error)
 	} else {
 		out = a
 	}
-	if out == NullValue || out == nil {
-		out = ""
-	}
 
 	return out, nil
 }

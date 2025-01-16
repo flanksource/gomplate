@@ -65,13 +65,13 @@ var structEnv = map[string]any{
 	},
 }
 
-type inlineJson struct {
+type inlineJSON struct {
 	Name string `json:"name"`
 	Data string `json:"data"`
 }
 
 var inline map[string]interface{}
-var structJson string
+var structJSON string
 
 func init() {
 	s, _ := json.MarshalIndent(person, "", "  ")
@@ -82,7 +82,7 @@ func init() {
 		"Data": encoded,
 	}
 	s, _ = json.MarshalIndent(inline, "", "  ")
-	structJson = string(s)
+	structJSON = string(s)
 }
 
 type FolderCheck struct {
