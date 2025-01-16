@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"time"
 )
 
@@ -10,7 +12,8 @@ type NoStructTag struct {
 }
 
 type Address struct {
-	City string `json:"city_name"`
+	City    string `json:"city_name"`
+	Country string `json:"country,omitempty"`
 }
 
 type Person struct {
@@ -22,6 +25,35 @@ type Person struct {
 	Addresses []Address      `json:"addresses,omitempty"`
 }
 
+var person = Person{
+	Name: "John Doe",
+	Age:  25,
+	Address: &Address{
+		City: "Kathmandu",
+	},
+	MetaData: map[string]any{
+		"key": "value",
+	},
+	Codes: []string{
+		"GO",
+		"JS",
+	},
+	Addresses: []Address{
+		{
+			City:    "Kathmandu",
+			Country: "Nepal",
+		},
+		{
+			City:    "Bhaktapur",
+			Country: "Nepal",
+		},
+		{
+			City:    "New York",
+			Country: "USA",
+		},
+	},
+}
+
 // A shared test data for all template test
 var structEnv = map[string]any{
 	"results": Person{
@@ -31,6 +63,26 @@ var structEnv = map[string]any{
 			City: "Kathmandu",
 		},
 	},
+}
+
+type inlineJSON struct {
+	Name string `json:"name"`
+	Data string `json:"data"`
+}
+
+var inline map[string]interface{}
+var structJSON string
+
+func init() {
+	s, _ := json.MarshalIndent(person, "", "  ")
+	encoded := base64.StdEncoding.EncodeToString(s)
+
+	inline = map[string]interface{}{
+		"Name": "Jane Doe",
+		"Data": encoded,
+	}
+	s, _ = json.MarshalIndent(inline, "", "  ")
+	structJSON = string(s)
 }
 
 type FolderCheck struct {

@@ -78,6 +78,19 @@ func TestGomplate(t *testing.T) {
 		{map[string]interface{}{"v": "1.2.3-beta.1+c0ff33"}, "{{  (.v | semver).Prerelease  }}", "beta.1"},
 		{map[string]interface{}{"old": "1.2.3", "new": "1.2.3"}, "{{  .old | semverCompare .new }}", "true"},
 		{map[string]interface{}{"old": "1.2.3", "new": "1.2.4"}, "{{  .old | semverCompare .new }}", "false"},
+
+		{map[string]interface{}{"i": person}, `{{ .i | jsonpath "$.addresses[-1:].city_name" }}`, "New York"},
+		{map[string]interface{}{"i": person}, `{{ .i | jmespath "addresses[*].city_name | [0]"}}`, "Kathmandu"},
+		{map[string]interface{}{"i": person}, `{{ .i | jmespath "length(addresses)"}}`, "3"},
+
+		{map[string]interface{}{"kv": "a=b,c=d"}, "{{ (.kv | keyValToMap).a }}", "b"},
+		{inline, `{{.Name}}`, "Jane Doe"},
+		{inline, `{{ (.Data |  base64.Decode | json).name }}`, "John Doe"},
+		{inline, `{{ (.Data |  base64.Decode ) | jq ".addresses[0].city_name" }}`, "Kathmandu"},
+		{inline, `{{ $city := (.Data |  base64.Decode ) | jq ".addresses[0].city_name" }}
+			{{ $city | strings.ToLower }}
+		`, "kathmandu"},
+		// {inline, `{{ (.Data |  base64.Decode | json) | jsonPath ".name" }}`, "John Doe"},
 		{structEnv, `{{.results.name}} {{.results.Address.city_name}}`, "Aditya Kathmandu"},
 		{
 			map[string]any{"results": junitEnv},

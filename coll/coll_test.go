@@ -616,3 +616,17 @@ func TestPick(t *testing.T) {
 
 	assert.EqualValues(t, in, Pick(in, "foo", "bar", ""))
 }
+
+func TestKeyValToMap(t *testing.T) {
+	in := "foo=bar,bar=true"
+	expected := map[string]string{
+		"foo": "bar",
+		"bar": "true",
+	}
+	result, err := KeyValToMap(in)
+	assert.NoError(t, err)
+	assert.EqualValues(t, expected, result)
+	out := MapToKeyVal(expected)
+	assert.EqualValues(t, in, out)
+
+}

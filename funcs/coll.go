@@ -43,6 +43,10 @@ func CreateCollFuncs(ctx context.Context) map[string]interface{} {
 	f["sort"] = ns.Sort
 	f["jq"] = ns.JQ
 	f["flatten"] = ns.Flatten
+	f["mapToKeyVal"] = coll.MapToKeyVal[any]
+	f["keyValToMap"] = coll.KeyValToMap
+	f["jsonpath"] = coll.JSONPath
+	f["jmespath"] = coll.JMESPath
 	return f
 }
 

@@ -23,6 +23,7 @@ import (
 	"github.com/robertkrimen/otto/registry"
 	_ "github.com/robertkrimen/otto/underscore"
 	"github.com/samber/oops"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 var funcMap gotemplate.FuncMap
@@ -264,6 +265,9 @@ func RunTemplateContext(ctx commonsContext.Context, environment map[string]any, 
 		out, err := RunExpressionContext(ctx, environment, template)
 		if err != nil {
 			return "", err
+		}
+		if _, ok := out.(structpb.NullValue); ok || out == nil {
+			return "", nil
 		}
 		return fmt.Sprintf("%v", out), nil
 	}

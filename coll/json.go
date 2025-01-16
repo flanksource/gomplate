@@ -7,7 +7,11 @@ import (
 	"reflect"
 
 	"github.com/itchyny/gojq"
+	"github.com/jmespath/go-jmespath"
+	"github.com/ohler55/ojg/jp"
 )
+
+const NullValue = "NULL_VALUE"
 
 // JQ -
 func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error) {
@@ -49,6 +53,63 @@ func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error)
 		out = a
 	}
 
+	return out, nil
+}
+
+func JMESPath(jmesPath string, in interface{}) (interface{}, error) {
+	// convert input to a supported type, if necessary
+	in, err := jqConvertType(in)
+	if err != nil {
+		return nil, fmt.Errorf("type conversion: %w", err)
+	}
+
+	if inString, ok := in.(string); ok {
+		var v map[string]any
+		if err := json.Unmarshal([]byte(inString), &v); err == nil {
+			in = v
+		}
+	}
+	out, err := jmespath.Search(jmesPath, in)
+
+	if err != nil {
+		return nil, fmt.Errorf("%+w", err)
+	}
+	if out == nil || out == NullValue || out == "" {
+		out = ""
+	}
+
+	return out, nil
+}
+
+func JSONPath(jsonPath string, in interface{}) (interface{}, error) {
+	// convert input to a supported type, if necessary
+	in, err := jqConvertType(in)
+	if err != nil {
+		return nil, fmt.Errorf("type conversion: %w", err)
+	}
+
+	if inString, ok := in.(string); ok {
+		var v map[string]any
+		if err := json.Unmarshal([]byte(inString), &v); err == nil {
+			in = v
+		}
+	}
+
+	x, err := jp.ParseString(jsonPath)
+	if err != nil {
+		return nil, err
+	}
+	out := x.Get(in)
+
+	if len(out) == 1 {
+		if out[0] == NullValue || out[0] == nil {
+			return "", nil
+		}
+		return out[0], nil
+	}
+	if len(out) == 0 {
+		return "", nil
+	}
 	return out, nil
 }
 

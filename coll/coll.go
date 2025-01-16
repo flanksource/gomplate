@@ -6,9 +6,12 @@
 package coll
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/flanksource/gomplate/v3/conv"
 	iconv "github.com/flanksource/gomplate/v3/internal/conv"
@@ -339,4 +342,31 @@ func Flatten(list interface{}, depth int) ([]interface{}, error) {
 		}
 	}
 	return out, nil
+}
+
+func MapToKeyVal[T string | any | interface{}](m map[string]T) string {
+	var buf bytes.Buffer
+	for k, v := range m {
+		if buf.Len() > 0 {
+			buf.WriteByte(',')
+
+		}
+		buf.WriteString(k)
+		buf.WriteByte('=')
+		buf.WriteString(fmt.Sprintf("%v", v))
+	}
+	return buf.String()
+}
+
+func KeyValToMap(s string) (map[string]string, error) {
+	m := make(map[string]string)
+	for _, kv := range strings.Split(s, ",") {
+		kv = strings.TrimSpace(kv)
+		parts := strings.Split(kv, "=")
+		if len(parts) != 2 {
+			return nil, errors.New("invalid input string")
+		}
+		m[parts[0]] = parts[1]
+	}
+	return m, nil
 }

@@ -4,6 +4,7 @@ package funcs
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"sort"
 
@@ -286,6 +287,72 @@ var collJQGen = cel.Function("jq",
 	),
 )
 
+var collJsonPathGen = cel.Function("jsonpath",
+	cel.Overload("jsonpath_string_interface{}",
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.BinaryBinding(func(query, object ref.Val) ref.Val {
+
+			var input interface{}
+			switch v := object.Value().(type) {
+			case string, []byte:
+				input = v
+			default:
+				data, err := json.Marshal(v)
+				if err != nil {
+					return types.WrapErr(err)
+				}
+				if err := json.Unmarshal(data, &input); err != nil {
+					return types.WrapErr(err)
+				}
+			}
+
+			result, err := coll.JSONPath( query.Value().(string), input)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+			return types.DefaultTypeAdapter.NativeToValue(result)
+
+		}),
+	),
+)
+
+var collJmesPathGen = cel.Function("jmespath",
+	cel.Overload("jmespath_string_interface{}",
+		[]*cel.Type{
+			cel.StringType, cel.DynType,
+		},
+		cel.DynType,
+		cel.BinaryBinding(func(query, object ref.Val) ref.Val {
+
+			var input interface{}
+			switch v := object.Value().(type) {
+			case string, []byte:
+				input = v
+			default:
+				data, err := json.Marshal(v)
+				if err != nil {
+					return types.WrapErr(err)
+				}
+				if err := json.Unmarshal(data, &input); err != nil {
+					return types.WrapErr(err)
+				}
+			}
+
+			result, err := coll.JMESPath( query.Value().(string), input)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+			return types.DefaultTypeAdapter.NativeToValue(result)
+
+		}),
+	),
+)
+
+
+
 
 var collPickGen = cel.Function("pick",
 	cel.MemberOverload("pick_interface{}",
@@ -335,3 +402,40 @@ var collOmitGen = cel.Function("omit",
 		}),
 	),
 )
+
+var collKeyValToMapGen = cel.Function("keyValToMap",
+	cel.Overload("keyValToMap_interface{}",
+		[]*cel.Type{
+			cel.AnyType,
+		},
+		cel.MapType(cel.StringType, cel.AnyType),
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			result, err := coll.KeyValToMap(fmt.Sprintf("%s",args[0].Value()))
+			if err != nil {
+				return types.WrapErr(err)
+			}
+
+			return types.DefaultTypeAdapter.NativeToValue(result)
+		}),
+	),
+)
+
+var collMapToKeyValGen = cel.Function("mapToKeyVal",
+	cel.Overload("mapToKeyVal_interface{}",
+		[]*cel.Type{
+			cel.MapType(cel.StringType, cel.AnyType),
+		},
+		cel.StringType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			m, err := args[0].ConvertToNative(typeMapStringAny)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+
+			result := coll.MapToKeyVal(m.(map[string]interface{}))
+
+			return types.DefaultTypeAdapter.NativeToValue(result)
+		}),
+	),
+)
+
