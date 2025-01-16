@@ -320,7 +320,7 @@ var collJsonPathGen = cel.Function("jsonpath",
 )
 
 var collJmesPathGen = cel.Function("jmespath",
-	cel.Overload("jmespathh_string_interface{}",
+	cel.Overload("jmespath_string_interface{}",
 		[]*cel.Type{
 			cel.StringType, cel.DynType,
 		},
