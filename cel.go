@@ -33,3 +33,32 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 
 	return opts
 }
+
+// The following identifiers are reserved to allow easier embedding of CEL into a host language.
+//
+// Reference: https://github.com/google/cel-spec/blob/master/doc/langdef.md
+var celKeywords = map[string]struct{}{
+	"as":        {},
+	"break":     {},
+	"const":     {},
+	"continue":  {},
+	"else":      {},
+	"for":       {},
+	"function":  {},
+	"if":        {},
+	"import":    {},
+	"let":       {},
+	"loop":      {},
+	"namespace": {},
+	"package":   {},
+	"return":    {},
+	"var":       {},
+	"void":      {},
+	"while":     {},
+}
+
+// IsCelKeyword returns true if the given key is a reserved word in Cel
+func IsCelKeyword(key string) bool {
+	_, ok := celKeywords[key]
+	return ok
+}
