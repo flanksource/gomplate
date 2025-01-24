@@ -20,9 +20,3 @@ type MetricsType struct {
 	TemplatesProcessed int
 	Errors             int
 }
-
-func newMetrics() *MetricsType {
-	return &MetricsType{
-		RenderDuration: make(map[string]time.Duration),
-	}
-}

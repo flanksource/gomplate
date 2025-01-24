@@ -188,7 +188,7 @@ func RunExpressionContext(ctx commonsContext.Context, _environment map[string]an
 
 		ast, issues := env.Compile(strings.ReplaceAll(template.Expression, "\n", " "))
 		if issues != nil && issues.Err() != nil {
-			return "", oops.With("template", template.Expression).Errorf(issues.String())
+			return "", oops.With("template", template.Expression).Errorf("issues: %s", issues.String())
 		}
 
 		prg, err = env.Program(ast, cel.Globals(data))

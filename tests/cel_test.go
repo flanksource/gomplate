@@ -608,6 +608,26 @@ func TestCelK8sMemoryResourceUnits(t *testing.T) {
 	}
 }
 
+func TestMatchLabel(t *testing.T) {
+	config := map[string]any{
+		"labels": map[string]string{
+			"environment": "production",
+			"region":      "us-east-1",
+		},
+		"tags": map[string]string{
+			"cluster": "aws-prod",
+		},
+	}
+
+	runTests(t, []Test{
+		{map[string]any{"config": config}, "matchLabel(config.labels, 'region', 'us-*')", "true"},
+		{map[string]any{"config": config}, "matchLabel(config.labels, 'region', 'eu-*')", "false"},
+		{map[string]any{"config": config}, "matchLabel(config.labels, 'environment', 'production')", "true"},
+		{map[string]any{"config": config}, "matchLabel(config.tags, 'cluster', 'aws-*')", "true"},
+		{map[string]any{"config": config}, "matchLabel(config.tags, 'cluster', '*-prod')", "true"},
+	})
+}
+
 func TestCelYAML(t *testing.T) {
 	person := Person{
 		Name:    "Aditya",

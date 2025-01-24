@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/flanksource/commons/collections"
 	"github.com/flanksource/gomplate/v3/conv"
 	iconv "github.com/flanksource/gomplate/v3/internal/conv"
 )
@@ -369,4 +370,21 @@ func KeyValToMap(s string) (map[string]string, error) {
 		m[parts[0]] = parts[1]
 	}
 	return m, nil
+}
+
+func MatchLabel(labels map[string]any, key, valuePattern string) bool {
+	for k, v := range labels {
+		if k != key {
+			continue
+		}
+
+		if vStr, ok := v.(string); ok {
+			if collections.MatchItems(vStr, valuePattern) {
+				return true
+			}
+		}
+
+	}
+
+	return false
 }
