@@ -2,6 +2,7 @@ package gomplate
 
 import (
 	"reflect"
+	"regexp"
 
 	"github.com/flanksource/gomplate/v3/funcs"
 	"github.com/flanksource/gomplate/v3/kubernetes"
@@ -38,6 +39,10 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 //
 // Reference: https://github.com/google/cel-spec/blob/master/doc/langdef.md
 var celKeywords = map[string]struct{}{
+	"true":      {},
+	"false":     {},
+	"null":      {},
+	"in":        {},
 	"as":        {},
 	"break":     {},
 	"const":     {},
@@ -57,8 +62,18 @@ var celKeywords = map[string]struct{}{
 	"while":     {},
 }
 
+var celIdentifierRegexp = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
 // IsCelKeyword returns true if the given key is a reserved word in Cel
 func IsCelKeyword(key string) bool {
 	_, ok := celKeywords[key]
 	return ok
+}
+
+func IsValidCELIdentifier(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+
+	return !IsCelKeyword(s) && celIdentifierRegexp.MatchString(s)
 }
