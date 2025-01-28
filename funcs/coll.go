@@ -2,8 +2,12 @@ package funcs
 
 import (
 	"context"
+	"strings"
 
 	"github.com/flanksource/gomplate/v3/conv"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 
 	"github.com/flanksource/gomplate/v3/coll"
 	"github.com/pkg/errors"
@@ -43,6 +47,8 @@ func CreateCollFuncs(ctx context.Context) map[string]interface{} {
 	f["sort"] = ns.Sort
 	f["jq"] = ns.JQ
 	f["flatten"] = ns.Flatten
+
+	f["matchLabel"] = coll.MatchLabel
 	f["mapToKeyVal"] = coll.MapToKeyVal[any]
 	f["keyValToMap"] = coll.KeyValToMap
 	f["jsonpath"] = coll.JSONPath
@@ -189,3 +195,24 @@ func (CollFuncs) Omit(args ...interface{}) (map[string]interface{}, error) {
 	}
 	return coll.Omit(m, keys...), nil
 }
+
+var celLabelsMatch = cel.Function("matchLabel",
+	cel.Overload("matchLabel_map_string_string",
+		[]*cel.Type{
+			cel.MapType(cel.StringType, cel.DynType), cel.StringType, cel.StringType,
+		},
+		cel.BoolType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			key := conv.ToString(args[1])
+			valuePatterns := strings.Split(conv.ToString(args[2]), ",")
+
+			labels, err := convertMap(args[0])
+			if err != nil {
+				return types.WrapErr(errors.New("matchLabel expects the first argument to be a map[string]any"))
+			}
+
+			result := coll.MatchLabel(labels, key, valuePatterns...)
+			return types.DefaultTypeAdapter.NativeToValue(result)
+		}),
+	),
+)

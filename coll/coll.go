@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/flanksource/commons/collections"
 	"github.com/flanksource/gomplate/v3/conv"
 	iconv "github.com/flanksource/gomplate/v3/internal/conv"
 )
@@ -369,4 +370,20 @@ func KeyValToMap(s string) (map[string]string, error) {
 		m[parts[0]] = parts[1]
 	}
 	return m, nil
+}
+
+// MatchLabel returns true if the given map has a key that matches any of the given patterns.
+// If all patterns are exclusions and the key doesn't exist, it's treated as a match.
+func MatchLabel(labels map[string]any, key string, valuePatterns ...string) bool {
+	value, exists := labels[key]
+	if !exists {
+		return collections.IsExclusionOnlyPatterns(valuePatterns)
+	}
+
+	vStr, ok := value.(string)
+	if !ok {
+		return false
+	}
+
+	return collections.MatchItems(vStr, valuePatterns...)
 }
