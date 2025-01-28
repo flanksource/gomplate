@@ -7,7 +7,7 @@ toolchain go1.23.4
 require (
 	github.com/Masterminds/goutils v1.1.1
 	github.com/Masterminds/semver/v3 v3.3.1
-	github.com/flanksource/commons v1.35.3
+	github.com/flanksource/commons v1.36.1
 	github.com/flanksource/is-healthy v1.0.59
 	github.com/flanksource/kubectl-neat v1.0.4
 	github.com/google/cel-go v0.22.1

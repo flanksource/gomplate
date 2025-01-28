@@ -625,6 +625,11 @@ func TestMatchLabel(t *testing.T) {
 		{map[string]any{"config": config}, "matchLabel(config.labels, 'environment', 'production')", "true"},
 		{map[string]any{"config": config}, "matchLabel(config.tags, 'cluster', 'aws-*')", "true"},
 		{map[string]any{"config": config}, "matchLabel(config.tags, 'cluster', '*-prod')", "true"},
+		{map[string]any{"config": config}, "matchLabel(config.tags, 'cluster', '!aws-prod')", "false"},
+		{map[string]any{"config": config}, "matchLabel(config.tags, 'cluster', '!aws-demo')", "true"},
+		{map[string]any{"config": config}, "matchLabel(config.tags, 'nonExistingKey', 'aws-demo')", "false"},
+		{map[string]any{"config": config}, "matchLabel(config.tags, 'nonExistingKey', '!aws-demo')", "true"},
+		{map[string]any{"config": config}, "matchLabel(config.tags, 'nonExistingKey', '!*')", "true"},
 	})
 }
 

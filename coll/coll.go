@@ -372,19 +372,18 @@ func KeyValToMap(s string) (map[string]string, error) {
 	return m, nil
 }
 
-func MatchLabel(labels map[string]any, key, valuePattern string) bool {
-	for k, v := range labels {
-		if k != key {
-			continue
-		}
-
-		if vStr, ok := v.(string); ok {
-			if collections.MatchItems(vStr, valuePattern) {
-				return true
-			}
-		}
-
+// MatchLabel returns true if the given map has a key that matches any of the given patterns.
+// If all patterns are exclusions and the key doesn't exist, it's treated as a match.
+func MatchLabel(labels map[string]any, key string, valuePatterns ...string) bool {
+	value, exists := labels[key]
+	if !exists {
+		return collections.IsExclusionOnlyPatterns(valuePatterns)
 	}
 
-	return false
+	vStr, ok := value.(string)
+	if !ok {
+		return false
+	}
+
+	return collections.MatchItems(vStr, valuePatterns...)
 }

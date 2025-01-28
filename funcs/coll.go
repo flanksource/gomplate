@@ -2,6 +2,7 @@ package funcs
 
 import (
 	"context"
+	"strings"
 
 	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/google/cel-go/cel"
@@ -203,14 +204,14 @@ var celLabelsMatch = cel.Function("matchLabel",
 		cel.BoolType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 			key := conv.ToString(args[1])
-			valuePattern := conv.ToString(args[2])
+			valuePatterns := strings.Split(conv.ToString(args[2]), ",")
 
 			labels, err := convertMap(args[0])
 			if err != nil {
 				return types.WrapErr(errors.New("matchLabel expects the first argument to be a map[string]any"))
 			}
 
-			result := coll.MatchLabel(labels, key, valuePattern)
+			result := coll.MatchLabel(labels, key, valuePatterns...)
 			return types.DefaultTypeAdapter.NativeToValue(result)
 		}),
 	),
