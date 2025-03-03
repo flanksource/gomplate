@@ -1,6 +1,7 @@
 package gomplate
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -28,6 +29,17 @@ type Delims struct {
 
 // this func is required to fulfil the reflectwalk.StructWalker interface
 func (w StructTemplater) Struct(reflect.Value) error {
+	return nil
+}
+
+func setMapIndex(newMap reflect.Value, newKey reflect.Value, val reflect.Value) error {
+	if !newKey.Type().AssignableTo(newMap.Type().Key()) {
+		if !newKey.Type().ConvertibleTo(newMap.Type().Key()) {
+			return fmt.Errorf("cannot convert %v of type %s to %s", newKey.Interface(), newKey.Type(), newMap.Type().Key())
+		}
+		newKey = newKey.Convert(newMap.Type().Key())
+	}
+	newMap.SetMapIndex(newKey, val)
 	return nil
 }
 
@@ -117,12 +129,16 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 					if err != nil {
 						return err
 					}
-					newMap.SetMapIndex(newKey, reflect.ValueOf(newVal))
+					if err := setMapIndex(newMap, newKey, reflect.ValueOf(newVal)); err != nil {
+						return err
+					}
 
 				case reflect.Map:
 					marshalled, err := yaml.Marshal(val.Interface())
 					if err != nil {
-						newMap.SetMapIndex(newKey, val)
+						if err := setMapIndex(newMap, newKey, val); err != nil {
+							return err
+						}
 					} else {
 						templated, err := w.Template(string(marshalled))
 						if err != nil {
@@ -131,14 +147,20 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 
 						var unmarshalled map[string]any
 						if err := yaml.Unmarshal([]byte(templated), &unmarshalled); err != nil {
-							newMap.SetMapIndex(newKey, val)
+							if err := setMapIndex(newMap, newKey, val); err != nil {
+								return err
+							}
 						} else {
-							newMap.SetMapIndex(newKey, reflect.ValueOf(unmarshalled))
+							if err := setMapIndex(newMap, newKey, reflect.ValueOf(unmarshalled)); err != nil {
+								return err
+							}
 						}
 					}
 
 				default:
-					newMap.SetMapIndex(newKey, val)
+					if err := setMapIndex(newMap, newKey, val); err != nil {
+						return err
+					}
 				}
 			}
 			v.Set(newMap)
@@ -147,6 +169,7 @@ func (w StructTemplater) StructField(f reflect.StructField, v reflect.Value) err
 
 	return nil
 }
+
 func (w StructTemplater) templateKey(v reflect.Value) (reflect.Value, error) {
 	if v.Kind() == reflect.String {
 		key, err := w.Template(v.String())
