@@ -69,14 +69,14 @@ func (f CryptoFuncs) SHA512(input interface{}) string {
 }
 
 // SHA512_224 -
-// nolint: revive,stylecheck
+// nolint:staticcheck
 func (f CryptoFuncs) SHA512_224(input interface{}) string {
 	out, _ := f.SHA512_224Bytes(input)
 	return fmt.Sprintf("%02x", out)
 }
 
 // SHA512_256 -
-// nolint: revive,stylecheck
+// nolint:staticcheck
 func (f CryptoFuncs) SHA512_256(input interface{}) string {
 	out, _ := f.SHA512_256Bytes(input)
 	return fmt.Sprintf("%02x", out)

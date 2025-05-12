@@ -72,14 +72,14 @@ func CreateStringFuncs(ctx context.Context) map[string]interface{} {
 	return f
 }
 
-func (ns StringFuncs) HumanDuration(in interface{}) (string, error) {
+func (f StringFuncs) HumanDuration(in interface{}) (string, error) {
 	return gompstrings.HumanDuration(in), nil
 }
 
-func (ns StringFuncs) HumanSize(in interface{}) (string, error) {
+func (f StringFuncs) HumanSize(in interface{}) (string, error) {
 	return gompstrings.HumanBytes(in), nil
 }
-func (ns StringFuncs) Semver(in string) (*semver.Version, error) {
+func (f StringFuncs) Semver(in string) (*semver.Version, error) {
 	return gompstrings.Semver(in)
 }
 
@@ -116,7 +116,7 @@ type StringFuncs struct {
 
 // Abbrev -
 // nolint:stylecheck
-func (StringFuncs) Abbrev(args ...interface{}) (string, error) {
+func (f StringFuncs) Abbrev(args ...interface{}) (string, error) {
 	str := ""
 	offset := 0
 	maxWidth := 0
