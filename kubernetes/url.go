@@ -122,11 +122,11 @@ var (
 
 // ConvertToNative implements ref.Val.ConvertToNative.
 func (d URL) ConvertToNative(typeDesc reflect.Type) (interface{}, error) {
-	if reflect.TypeOf(d.URL).AssignableTo(typeDesc) {
-		return d.URL, nil
+	if reflect.TypeOf(d).AssignableTo(typeDesc) {
+		return d, nil
 	}
 	if reflect.TypeOf("").AssignableTo(typeDesc) {
-		return d.URL.String(), nil
+		return d.String(), nil
 	}
 	return nil, fmt.Errorf("type conversion error from 'URL' to '%v'", typeDesc)
 }
@@ -148,7 +148,7 @@ func (d URL) Equal(other ref.Val) ref.Val {
 	if !ok {
 		return types.MaybeNoSuchOverloadErr(other)
 	}
-	return types.Bool(d.URL.String() == otherDur.URL.String())
+	return types.Bool(d.String() == otherDur.String())
 }
 
 // Type implements ref.Val.Type.
@@ -172,7 +172,7 @@ func (*urls) LibraryName() string {
 var urlLibraryDecls = map[string][]cel.FunctionOpt{
 	"url": {
 		cel.Overload("string_to_url", []*cel.Type{cel.StringType}, URLType,
-			cel.UnaryBinding(stringToUrl))},
+			cel.UnaryBinding(stringToURL))},
 	"getScheme": {
 		cel.MemberOverload("url_get_scheme", []*cel.Type{URLType}, cel.StringType,
 			cel.UnaryBinding(getScheme))},
@@ -209,8 +209,7 @@ func (*urls) ProgramOptions() []cel.ProgramOption {
 	return []cel.ProgramOption{}
 }
 
-// nolint: stylecheck
-func stringToUrl(arg ref.Val) ref.Val {
+func stringToURL(arg ref.Val) ref.Val {
 	s, ok := arg.Value().(string)
 	if !ok {
 		return types.MaybeNoSuchOverloadErr(arg)

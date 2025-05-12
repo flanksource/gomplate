@@ -180,8 +180,8 @@ func PodComponentProperties(input any) []map[string]any {
 		{"name": "cpu", "max": totalCPU, "unit": "millicores", "headline": true},
 		{"name": "memory", "max": totalMemBytes, "unit": "bytes", "headline": true},
 		{"name": "node", "text": pod.Spec.NodeName},
-		{"name": "created_at", "text": pod.ObjectMeta.CreationTimestamp.String()},
-		{"name": "namespace", "text": pod.ObjectMeta.Namespace},
+		{"name": "created_at", "text": pod.CreationTimestamp.String()},
+		{"name": "namespace", "text": pod.Namespace},
 	}
 }
 
