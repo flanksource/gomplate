@@ -31,7 +31,7 @@ jobs:
       contents: read  # for actions/checkout to fetch code
       security-events: write  # for github/codeql-action/autobuild to send a status report
     name: Analyze
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
