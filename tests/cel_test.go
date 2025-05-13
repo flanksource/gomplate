@@ -667,26 +667,3 @@ func TestCelUUID(t *testing.T) {
 		{nil, "string(uuid.Parse('2a42e576-c308-4db9-8525-0513af307586'))", "2a42e576-c308-4db9-8525-0513af307586"},
 	})
 }
-
-func TestGCPIncidentsToCheckResult(t *testing.T) {
-	env := map[string]any{
-		"r": map[string]any{
-			"incident_id":   "0.nrwo9fe1a4wg",
-			"summary":       "Sent packets for flanksource-sandbox gke-hub-cluster-private-pool-containe-00531631-rf93 with metric labels {instance_name=gke-hub-cluster-private-pool-containe-00531631-rf93, loadbalanced=false} returned to normal with a value of Incident cancelled because the alert policy condition was deleted or modified while incident was active.",
-			"resource_name": "flanksource-sandbox gke-hub-cluster-private-pool-containe-00531631-rf93",
-		},
-	}
-
-	output := map[string]any{
-		"description": "Sent packets for flanksource-sandbox gke-hub-cluster-private-pool-containe-00531631-rf93 with metric labels {instance_name=gke-hub-cluster-private-pool-containe-00531631-rf93, loadbalanced=false} returned to normal with a value of Incident cancelled because the alert policy condition was deleted or modified while incident was active.",
-		"details": map[string]any{
-			"incident_id":   "0.nrwo9fe1a4wg",
-			"resource_name": "flanksource-sandbox gke-hub-cluster-private-pool-containe-00531631-rf93",
-			"summary":       "Sent packets for flanksource-sandbox gke-hub-cluster-private-pool-containe-00531631-rf93 with metric labels {instance_name=gke-hub-cluster-private-pool-containe-00531631-rf93, loadbalanced=false} returned to normal with a value of Incident cancelled because the alert policy condition was deleted or modified while incident was active.",
-		},
-		"message": "Sent packets for flanksource-sandbox gke-hub-cluster-private-pool-containe-00531631-rf93 with metric labels {instance_name=gke-hub-cluster-private-pool-containe-00531631-rf93, loadbalanced=false} returned to normal with a value of Incident cancelled because the alert policy condition was deleted or modified while incident was active.",
-		"name":    "[0.nrwo9fe1a4wg] Sent packets for flanksource-sandbox gke-hub-cluster-private-pool-containe-00531631-rf93 with metric labels {instance_name=gke-hub-cluster-private-pool-containe-00531631-rf93, loadbalanced=false} returned to normal with a value of Incident cancelled because the alert policy condition was deleted or modified while incident was active.",
-		"pass":    false,
-	}
-	executeTemplate(t, 0, `gcp.incidents.toCheckResult(r)`, output, env, false)
-}

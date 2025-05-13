@@ -5,7 +5,6 @@ import (
 	"regexp"
 
 	"github.com/flanksource/gomplate/v3/funcs"
-	"github.com/flanksource/gomplate/v3/gcp"
 	"github.com/flanksource/gomplate/v3/kubernetes"
 	"github.com/flanksource/gomplate/v3/strings"
 	"github.com/google/cel-go/cel"
@@ -22,7 +21,6 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 	// Generated functions
 	var opts = funcs.CelEnvOption
 	opts = append(opts, kubernetes.Library()...)
-	opts = append(opts, gcp.Library()...)
 	opts = append(opts, ext.Strings(), ext.Encoders(), ext.Lists(), ext.Math(), ext.Sets())
 	opts = append(opts, cel.StdLib())
 	opts = append(opts, cel.OptionalTypes())
