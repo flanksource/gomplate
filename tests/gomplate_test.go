@@ -26,7 +26,7 @@ func TestGomplateFunctions(t *testing.T) {
 		},
 	}
 
-	out, err := gomplate.RunTemplate(map[string]interface{}{
+	out, err := gomplate.RunTemplate(map[string]any{
 		"hello": "hi",
 	}, gomplate.Template{
 		Template:  "{{.hello}} {{fn1}}",
@@ -39,12 +39,12 @@ func TestGomplateFunctions(t *testing.T) {
 
 func TestDelimeters(t *testing.T) {
 	tests := []struct {
-		env      map[string]interface{}
+		env      map[string]any
 		template string
 		out      string
 	}{
-		{map[string]interface{}{"hello": "world"}, "[[ .hello ]]", "world"},
-		{map[string]interface{}{"hello": "world"}, "$(.hello)", "$(.hello)"},
+		{map[string]any{"hello": "world"}, "[[ .hello ]]", "world"},
+		{map[string]any{"hello": "world"}, "$(.hello)", "$(.hello)"},
 	}
 
 	for _, tt := range tests {
@@ -60,30 +60,31 @@ func TestDelimeters(t *testing.T) {
 
 func TestGomplate(t *testing.T) {
 	tests := []struct {
-		env      map[string]interface{}
+		env      map[string]any
 		template string
 		out      string
 	}{
-		{map[string]interface{}{"hello": "world"}, "{{ .hello }}", "world"},
-		{map[string]interface{}{"hello": "hello world ?"}, "{{ .hello | urlencode }}", `hello+world+%3F`},
-		{map[string]interface{}{"hello": "hello+world+%3F"}, "{{ .hello | urldecode }}", `hello world ?`},
-		{map[string]interface{}{"age": 75 * time.Second}, "{{ .age | humanDuration  }}", "1m15s"},
-		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthyCertificate)}, "{{(.healthySvc | isHealthy)}}", "true"},
-		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthyCertificate)}, "{{(.healthySvc | isReady)}}", "true"},
-		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestDegradedCertificate)}, "{{(.healthySvc | isHealthy)}}", "false"},
-		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthySvc)}, "{{ (.healthySvc | isHealthy) }}", "true"},
-		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestLuaStatus)}, "{{ (.healthySvc | getStatus) }}", ": found less than two generators, Merge requires two or more"},
-		{map[string]interface{}{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthySvc)}, "{{ (.healthySvc | getHealth).Health  }}", "healthy"},
-		{map[string]interface{}{"size": 123456}, "{{ .size | humanSize }}", "120.6K"},
-		{map[string]interface{}{"v": "1.2.3-beta.1+c0ff33"}, "{{  (.v | semver).Prerelease  }}", "beta.1"},
-		{map[string]interface{}{"old": "1.2.3", "new": "1.2.3"}, "{{  .old | semverCompare .new }}", "true"},
-		{map[string]interface{}{"old": "1.2.3", "new": "1.2.4"}, "{{  .old | semverCompare .new }}", "false"},
+		{map[string]any{"hello": "world"}, "{{ .hello }}", "world"},
+		{map[string]any{"hello": "hello world ?"}, "{{ .hello | urlencode }}", `hello+world+%3F`},
+		{map[string]any{"hello": "hello+world+%3F"}, "{{ .hello | urldecode }}", `hello world ?`},
+		{map[string]any{"age": 75 * time.Second}, "{{ .age | humanDuration  }}", "1m15s"},
+		{map[string]any{"delay": "30d"}, `{{ ((time.Now).Add (time.ParseDuration .delay)).Format "Monday, 2 January 2006" }}`, time.Now().Add(30 * 24 * time.Hour).Format("Monday, 2 January 2006")},
+		{map[string]any{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthyCertificate)}, "{{(.healthySvc | isHealthy)}}", "true"},
+		{map[string]any{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthyCertificate)}, "{{(.healthySvc | isReady)}}", "true"},
+		{map[string]any{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestDegradedCertificate)}, "{{(.healthySvc | isHealthy)}}", "false"},
+		{map[string]any{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthySvc)}, "{{ (.healthySvc | isHealthy) }}", "true"},
+		{map[string]any{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestLuaStatus)}, "{{ (.healthySvc | getStatus) }}", ": found less than two generators, Merge requires two or more"},
+		{map[string]any{"healthySvc": kubernetes.GetUnstructured(kubernetes.TestHealthySvc)}, "{{ (.healthySvc | getHealth).Health  }}", "healthy"},
+		{map[string]any{"size": 123456}, "{{ .size | humanSize }}", "120.6K"},
+		{map[string]any{"v": "1.2.3-beta.1+c0ff33"}, "{{  (.v | semver).Prerelease  }}", "beta.1"},
+		{map[string]any{"old": "1.2.3", "new": "1.2.3"}, "{{  .old | semverCompare .new }}", "true"},
+		{map[string]any{"old": "1.2.3", "new": "1.2.4"}, "{{  .old | semverCompare .new }}", "false"},
 
-		{map[string]interface{}{"i": person}, `{{ .i | jsonpath "$.addresses[-1:].city_name" }}`, "New York"},
-		{map[string]interface{}{"i": person}, `{{ .i | jmespath "addresses[*].city_name | [0]"}}`, "Kathmandu"},
-		{map[string]interface{}{"i": person}, `{{ .i | jmespath "length(addresses)"}}`, "3"},
+		{map[string]any{"i": person}, `{{ .i | jsonpath "$.addresses[-1:].city_name" }}`, "New York"},
+		{map[string]any{"i": person}, `{{ .i | jmespath "addresses[*].city_name | [0]"}}`, "Kathmandu"},
+		{map[string]any{"i": person}, `{{ .i | jmespath "length(addresses)"}}`, "3"},
 
-		{map[string]interface{}{"kv": "a=b,c=d"}, "{{ (.kv | keyValToMap).a }}", "b"},
+		{map[string]any{"kv": "a=b,c=d"}, "{{ (.kv | keyValToMap).a }}", "b"},
 		{inline, `{{.Name}}`, "Jane Doe"},
 		{inline, `{{ (.Data |  base64.Decode | json).name }}`, "John Doe"},
 		{inline, `{{ (.Data |  base64.Decode ) | jq ".addresses[0].city_name" }}`, "Kathmandu"},
@@ -119,15 +120,15 @@ func TestGomplate(t *testing.T) {
 
 func TestGomplateHeaders(t *testing.T) {
 	tests := []struct {
-		env       map[string]interface{}
+		env       map[string]any
 		template  string
 		out       string
 		expectErr bool
 	}{
-		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/template-multiple-headers.yaml"), readFile(t, "testdata/gotemplate/expected/template-multiple-headers.yaml"), false},
-		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/template-header.txt"), "Hello, world", false},
-		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/bad-template-header.txt"), "", true},
-		{map[string]interface{}{"name": "world"}, readFile(t, "testdata/gotemplate/template-header-override.txt"), "Hello, world. This ${should} not be {{touched}}", false},
+		{map[string]any{"name": "world"}, readFile(t, "testdata/gotemplate/template-multiple-headers.yaml"), readFile(t, "testdata/gotemplate/expected/template-multiple-headers.yaml"), false},
+		{map[string]any{"name": "world"}, readFile(t, "testdata/gotemplate/template-header.txt"), "Hello, world", false},
+		{map[string]any{"name": "world"}, readFile(t, "testdata/gotemplate/bad-template-header.txt"), "", true},
+		{map[string]any{"name": "world"}, readFile(t, "testdata/gotemplate/template-header-override.txt"), "Hello, world. This ${should} not be {{touched}}", false},
 	}
 
 	for i, tc := range tests {
