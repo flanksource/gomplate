@@ -3,6 +3,7 @@ package funcs
 import (
 	"context"
 	"fmt"
+	"github.com/flanksource/commons/duration"
 	"os"
 	"strconv"
 	"strings"
@@ -168,7 +169,9 @@ func (TimeFuncs) Hour(n interface{}) gotime.Duration {
 
 // ParseDuration -
 func (TimeFuncs) ParseDuration(n interface{}) (gotime.Duration, error) {
-	return gotime.ParseDuration(conv.ToString(n))
+	// Using commons duration package to support more time units
+	d, err := duration.ParseDuration(conv.ToString(n))
+	return gotime.Duration(d), err
 }
 
 // Since -
