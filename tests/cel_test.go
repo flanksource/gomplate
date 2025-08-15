@@ -7,10 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flanksource/gomplate/v3"
-	"github.com/flanksource/gomplate/v3/kubernetes"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+
+	"github.com/flanksource/gomplate/v3"
+	"github.com/flanksource/gomplate/v3/kubernetes"
 )
 
 func panIf(err error) {
@@ -78,6 +79,28 @@ func TestFunctions(t *testing.T) {
 
 	assert.ErrorIs(t, nil, err)
 	assert.Equal(t, "hi b", out)
+}
+
+func TestCelGoTemplateFunction(t *testing.T) {
+	testCases := []Test{
+		{
+			env:        map[string]any{"row": map[string]any{"id": 123, "name": "test"}},
+			expression: `f("{{id}}", row)`,
+			out:        "123",
+		},
+		{
+			env:        map[string]any{"row": map[string]any{"user": map[string]string{"name": "john"}}},
+			expression: `f("Hello $(.user.name)", row)`,
+			out:        "Hello john",
+		},
+		{
+			env:        map[string]any{"row": "john"},
+			expression: `f("Hello $(.data)", row)`,
+			out:        "Hello john",
+		},
+	}
+
+	runTests(t, testCases)
 }
 
 // unstructure marshalls a struct to and from JSON to remove any type details
