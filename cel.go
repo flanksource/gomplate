@@ -1,14 +1,21 @@
 package gomplate
 
 import (
+	gocontext "context"
+	"fmt"
 	"reflect"
 	"regexp"
 
+	"github.com/flanksource/commons/context"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
+	"github.com/google/cel-go/ext"
+
+	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/flanksource/gomplate/v3/funcs"
 	"github.com/flanksource/gomplate/v3/kubernetes"
 	"github.com/flanksource/gomplate/v3/strings"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/ext"
 )
 
 var typeAdapters = []cel.EnvOption{}
@@ -26,6 +33,7 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 	opts = append(opts, cel.OptionalTypes())
 	opts = append(opts, strings.Library...)
 	opts = append(opts, typeAdapters...)
+	opts = append(opts, getGoTemplateCelFunction())
 
 	// Load input as variables
 	for k := range environment {
@@ -76,4 +84,50 @@ func IsValidCELIdentifier(s string) bool {
 	}
 
 	return !IsCelKeyword(s) && celIdentifierRegexp.MatchString(s)
+}
+
+// getGoTemplateCelFunction returns a CEL function that calls gotemplate on a format string
+func getGoTemplateCelFunction() cel.EnvOption {
+	return cel.Function("f",
+		cel.Overload("f_string_any",
+			[]*cel.Type{
+				cel.StringType, cel.DynType,
+			},
+			cel.StringType,
+			cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+				format := conv.ToString(args[0])
+				data := args[1].Value()
+
+				env := map[string]any{}
+				switch v := data.(type) {
+				case map[string]any:
+					env = v
+				case map[string]string:
+					for k, v := range v {
+						env[k] = v
+					}
+				default:
+					// Otherwise, make data available as 'data' variable
+					env["data"] = v
+				}
+
+				// Use struct templater as it supports ValueFunctions and multiple delims
+				st := StructTemplater{
+					Context:        context.NewContext(gocontext.Background()),
+					Values:         env,
+					ValueFunctions: true,
+					DelimSets: []Delims{
+						{Left: "$(", Right: ")"},
+						{Left: "{{", Right: "}}"},
+					},
+				}
+				result, err := st.Template(format)
+				if err != nil {
+					return types.WrapErr(fmt.Errorf("gotemplate error: %w", err))
+				}
+
+				return types.DefaultTypeAdapter.NativeToValue(result)
+			}),
+		),
+	)
 }
