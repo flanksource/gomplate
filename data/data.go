@@ -343,7 +343,7 @@ func marshalObj(obj interface{}, f func(interface{}) ([]byte, error)) (string, e
 }
 
 func toJSONBytes(in interface{}) ([]byte, error) {
-	h := &codec.JsonHandle{}
+	h := &codec.JsonHandle{HTMLCharsAsIs: true}
 	h.Canonical = true
 	buf := new(bytes.Buffer)
 	err := codec.NewEncoder(buf, h).Encode(in)
