@@ -85,18 +85,15 @@ func (UUIDFuncs) Parse(in interface{}) (string, error) {
 // This function always returns the same UUID for the same input, making it idempotent.
 // It uses the nil UUID as the namespace and SHA256 as the hashing algorithm.
 func (UUIDFuncs) IdempotentUUID(args ...interface{}) (string, error) {
-	// Concatenate all arguments into a single string
-	var data string
+	// Concatenate all arguments into a single byte slice
+	var data []byte
 	for _, arg := range args {
-		data += conv.ToString(arg)
+		data = append(data, []byte(conv.ToString(arg))...)
 	}
-
-	// Create a SHA256 hash
-	h := sha256.New()
 	
 	// Use uuid.Nil as the namespace
-	// Generate a version 5-style UUID (SHA-based) using the hash
-	u := uuid.NewHash(h, uuid.Nil, []byte(data), 5)
+	// Generate a version 5-style UUID (SHA-based) using SHA256
+	u := uuid.NewHash(sha256.New(), uuid.Nil, data, 5)
 	
 	return u.String(), nil
 }
