@@ -99,3 +99,29 @@ var uuidParseGen = cel.Function("uuid.Parse",
 		}),
 	),
 )
+
+var uuidIdempotentUUIDGen = cel.Function("uuid.IdempotentUUID",
+	cel.Overload("uuid.IdempotentUUID_list",
+
+		[]*cel.Type{
+			cel.ListType(cel.DynType),
+		},
+		cel.StringType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x UUIDFuncs
+
+			list, err := sliceToNative[interface{}](args...)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+
+			result, err := x.IdempotentUUID(list...)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+			return types.String(result)
+
+		}),
+	),
+)
