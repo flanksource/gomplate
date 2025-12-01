@@ -113,3 +113,63 @@ func TestParse(t *testing.T) {
 		assert.Equal(t, in, uid)
 	}
 }
+
+func TestIdempotentUUID(t *testing.T) {
+	t.Parallel()
+
+	u := UUIDNS()
+	
+	// Test that the same input produces the same UUID
+	uuid1, err := u.IdempotentUUID("test")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, uuid1)
+	
+	uuid2, err := u.IdempotentUUID("test")
+	assert.NoError(t, err)
+	assert.Equal(t, uuid1, uuid2, "Same input should produce same UUID")
+	
+	// Test that different inputs produce different UUIDs
+	uuid3, err := u.IdempotentUUID("different")
+	assert.NoError(t, err)
+	assert.NotEqual(t, uuid1, uuid3, "Different inputs should produce different UUIDs")
+	
+	// Test with multiple arguments
+	uuid4, err := u.IdempotentUUID("arg1", "arg2", "arg3")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, uuid4)
+	
+	uuid5, err := u.IdempotentUUID("arg1", "arg2", "arg3")
+	assert.NoError(t, err)
+	assert.Equal(t, uuid4, uuid5, "Same multiple arguments should produce same UUID")
+	
+	// Test that order matters
+	uuid6, err := u.IdempotentUUID("arg2", "arg1", "arg3")
+	assert.NoError(t, err)
+	assert.NotEqual(t, uuid4, uuid6, "Different order should produce different UUIDs")
+	
+	// Test with numeric arguments
+	uuid7, err := u.IdempotentUUID(123, 456)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, uuid7)
+	
+	uuid8, err := u.IdempotentUUID(123, 456)
+	assert.NoError(t, err)
+	assert.Equal(t, uuid7, uuid8, "Same numeric arguments should produce same UUID")
+	
+	// Test with no arguments
+	uuid9, err := u.IdempotentUUID()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, uuid9)
+	
+	uuid10, err := u.IdempotentUUID()
+	assert.NoError(t, err)
+	assert.Equal(t, uuid9, uuid10, "No arguments should produce same UUID each time")
+	
+	// Verify the UUID format is valid (version 5, SHA-based)
+	parsed, err := u.Parse(uuid1)
+	assert.NoError(t, err)
+	assert.Equal(t, uuid1, parsed)
+	
+	// Check that it's a valid UUID v5 pattern
+	assert.Regexp(t, "^[[:xdigit:]]{8}-[[:xdigit:]]{4}-5[[:xdigit:]]{3}-[89ab][[:xdigit:]]{3}-[[:xdigit:]]{12}$", uuid1)
+}
