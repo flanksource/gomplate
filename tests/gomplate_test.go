@@ -122,19 +122,19 @@ func TestGomplate(t *testing.T) {
 func TestHashUUID(t *testing.T) {
 	// Test that HashUUID returns the same UUID for the same input
 	template := `{{ uuid.HashUUID "test" }}`
-	
+
 	out1, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
 		Template: template,
 	})
 	assert.NoError(t, err)
 	assert.NotEmpty(t, out1)
-	
+
 	out2, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
 		Template: template,
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, out1, out2, "Same input should produce same UUID")
-	
+
 	// Test with different input produces different UUID
 	template2 := `{{ uuid.HashUUID "different" }}`
 	out3, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
@@ -142,7 +142,7 @@ func TestHashUUID(t *testing.T) {
 	})
 	assert.NoError(t, err)
 	assert.NotEqual(t, out1, out3, "Different input should produce different UUID")
-	
+
 	// Test with multiple arguments
 	template3 := `{{ uuid.HashUUID "arg1" "arg2" }}`
 	out4, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
@@ -150,7 +150,7 @@ func TestHashUUID(t *testing.T) {
 	})
 	assert.NoError(t, err)
 	assert.NotEmpty(t, out4)
-	
+
 	out5, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
 		Template: template3,
 	})
