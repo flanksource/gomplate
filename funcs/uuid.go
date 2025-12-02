@@ -81,10 +81,10 @@ func (UUIDFuncs) Parse(in interface{}) (string, error) {
 	return u.String(), err
 }
 
-// IdempotentUUID - return a deterministic UUID based on the SHA256 hash of the input arguments.
+// HashUUID - return a deterministic UUID based on the SHA256 hash of the input arguments.
 // This function always returns the same UUID for the same input, making it idempotent.
 // It uses the nil UUID as the namespace and SHA256 as the hashing algorithm.
-func (UUIDFuncs) IdempotentUUID(args ...interface{}) (string, error) {
+func (UUIDFuncs) HashUUID(args ...interface{}) (string, error) {
 	// Concatenate all arguments into a single byte slice
 	var data []byte
 	for _, arg := range args {

@@ -119,9 +119,9 @@ func TestGomplate(t *testing.T) {
 	}
 }
 
-func TestIdempotentUUID(t *testing.T) {
-	// Test that IdempotentUUID returns the same UUID for the same input
-	template := `{{ uuid.IdempotentUUID "test" }}`
+func TestHashUUID(t *testing.T) {
+	// Test that HashUUID returns the same UUID for the same input
+	template := `{{ uuid.HashUUID "test" }}`
 	
 	out1, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
 		Template: template,
@@ -136,7 +136,7 @@ func TestIdempotentUUID(t *testing.T) {
 	assert.Equal(t, out1, out2, "Same input should produce same UUID")
 	
 	// Test with different input produces different UUID
-	template2 := `{{ uuid.IdempotentUUID "different" }}`
+	template2 := `{{ uuid.HashUUID "different" }}`
 	out3, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
 		Template: template2,
 	})
@@ -144,7 +144,7 @@ func TestIdempotentUUID(t *testing.T) {
 	assert.NotEqual(t, out1, out3, "Different input should produce different UUID")
 	
 	// Test with multiple arguments
-	template3 := `{{ uuid.IdempotentUUID "arg1" "arg2" }}`
+	template3 := `{{ uuid.HashUUID "arg1" "arg2" }}`
 	out4, err := gomplate.RunTemplate(map[string]any{}, gomplate.Template{
 		Template: template3,
 	})
