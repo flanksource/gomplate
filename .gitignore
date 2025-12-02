@@ -6,5 +6,6 @@ report.xml
 *.cid
 *.iid
 *.out
+*.test
 
 .vscode
