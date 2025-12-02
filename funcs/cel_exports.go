@@ -192,5 +192,5 @@ var CelEnvOption = []cel.EnvOption{
 	uuidNilGen,
 	uuidIsValidGen,
 	uuidParseGen,
-	uuidIdempotentUUIDGen,
+	uuidHashUUIDGen,
 }

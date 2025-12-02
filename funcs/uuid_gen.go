@@ -100,8 +100,8 @@ var uuidParseGen = cel.Function("uuid.Parse",
 	),
 )
 
-var uuidIdempotentUUIDGen = cel.Function("uuid.IdempotentUUID",
-	cel.Overload("uuid.IdempotentUUID_list",
+var uuidHashUUIDGen = cel.Function("uuid.HashUUID",
+	cel.Overload("uuid.HashUUID_list",
 
 		[]*cel.Type{
 			cel.ListType(cel.DynType),
@@ -116,7 +116,7 @@ var uuidIdempotentUUIDGen = cel.Function("uuid.IdempotentUUID",
 				return types.WrapErr(err)
 			}
 
-			result, err := x.IdempotentUUID(list...)
+			result, err := x.HashUUID(list...)
 			if err != nil {
 				return types.WrapErr(err)
 			}
