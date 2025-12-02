@@ -90,10 +90,10 @@ func (UUIDFuncs) HashUUID(args ...interface{}) (string, error) {
 	for _, arg := range args {
 		data = append(data, []byte(conv.ToString(arg))...)
 	}
-	
+
 	// Use uuid.Nil as the namespace
 	// Generate a version 5-style UUID (SHA-based) using SHA256
 	u := uuid.NewHash(sha256.New(), uuid.Nil, data, 5)
-	
+
 	return u.String(), nil
 }
