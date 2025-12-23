@@ -11,6 +11,7 @@ BUILDX_ACTION ?= --load
 TAG_LATEST ?= latest
 TAG_ALPINE ?= alpine
 
+
 ifeq ("$(CI)","true")
 LINT_PROCS ?= 1
 else
@@ -35,6 +36,14 @@ ifeq ("$(GOARM)","")
 GOARM ?= $(subst v,,$(TARGETVARIANT))
 endif
 endif
+
+## Location to install dependencies to
+LOCALBIN ?= $(shell pwd)/.bin
+$(LOCALBIN):
+	mkdir -p $(LOCALBIN)
+
+GOLANGCI_LINT_VERSION ?= v2.7.2
+GOLANGCI_LINT ?= $(LOCALBIN)/golangci-lint
 
 # platforms := freebsd-amd64 linux-amd64 linux-386 linux-armv5 linux-armv6 linux-armv7 linux-arm64 darwin-amd64 solaris-amd64 windows-amd64.exe windows-386.exe
 platforms := freebsd-amd64 linux-amd64 linux-386 linux-armv6 linux-armv7 linux-arm64 linux-ppc64le darwin-amd64 darwin-arm64 solaris-amd64 windows-amd64.exe windows-386.exe
@@ -184,11 +193,14 @@ docs/content/functions/%.md: docs-src/content/functions/%.yml docs-src/content/f
 gomplate.png: gomplate.svg
 	cloudconvert -f png -c density=288 $^
 
-lint:
-	@golangci-lint run --verbose --max-same-issues=0 --max-issues-per-linter=0
+.PHONY: golangci-lint
+golangci-lint: $(GOLANGCI_LINT)
+$(GOLANGCI_LINT): $(LOCALBIN)
+	test -s $(LOCALBIN)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(LOCALBIN) $(GOLANGCI_LINT_VERSION)
 
-ci-lint:
-	@golangci-lint run --verbose --max-same-issues=0 --max-issues-per-linter=0 --out-format=github-actions
+.PHONY: lint
+lint: golangci-lint
+	$(GOLANGCI_LINT) run ./...
 
 .PHONY: gen-changelog clean test build-x build-release build test-integration-docker gen-docs lint clean-images clean-containers docker-images
 .DELETE_ON_ERROR:
