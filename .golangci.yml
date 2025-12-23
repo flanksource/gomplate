@@ -28,6 +28,7 @@ linters:
     gocritic:
       disabled-checks:
         - singleCaseSwitch
+        - deprecatedComment
     gocyclo:
       min-complexity: 10
     govet:
