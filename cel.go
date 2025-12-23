@@ -68,6 +68,7 @@ var celKeywords = map[string]struct{}{
 	"var":       {},
 	"void":      {},
 	"while":     {},
+	"type":      {},
 }
 
 var celIdentifierRegexp = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
