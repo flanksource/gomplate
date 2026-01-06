@@ -170,6 +170,8 @@ var CelEnvOption = []cel.EnvOption{
 	testKindGen,
 	testIsKindGen,
 
+	inBusinessHourGen,
+
 	timeZoneNameGen,
 	timeZoneOffsetGen,
 	timeParseGen,
