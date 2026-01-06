@@ -202,6 +202,10 @@ $(GOLANGCI_LINT): $(LOCALBIN)
 lint: golangci-lint
 	$(GOLANGCI_LINT) run ./...
 
+.PHONY: tidy
+tidy:
+	go mod tidy
+
 .PHONY: gen-changelog clean test build-x build-release build test-integration-docker gen-docs lint clean-images clean-containers docker-images
 .DELETE_ON_ERROR:
 .SECONDARY:
