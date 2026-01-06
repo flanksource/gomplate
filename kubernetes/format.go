@@ -1,11 +1,12 @@
 package kubernetes
 
 import (
-	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/flanksource/kubectl-neat/cmd"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
+
+	"github.com/flanksource/gomplate/v3/conv"
 )
 
 func Neat(in, outputFormat string) (string, error) {
@@ -22,7 +23,7 @@ func k8sNeat() cel.EnvOption {
 				objVal := conv.ToString(obj.Value())
 				res, err := Neat(objVal, "same")
 				if err != nil {
-					return types.NewErr(err.Error())
+					return types.NewErr("%s", err.Error())
 				}
 
 				return types.String(res)
@@ -42,7 +43,7 @@ func k8sNeatWithOption() cel.EnvOption {
 
 				res, err := Neat(objVal, outputFormat)
 				if err != nil {
-					return types.NewErr(err.Error())
+					return types.NewErr("%s", err.Error())
 				}
 
 				return types.String(res)
