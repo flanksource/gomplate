@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,6 +37,76 @@ var (
 
 func init() {
 	funcMap = CreateFuncs(context.Background())
+}
+
+// ListAllFuncs returns the sorted list of built-in template function names.
+func ListAllFuncs() []string {
+	names := make(map[string]struct{}, len(funcMap))
+	for name, fn := range funcMap {
+		if isNamespaceFactory(fn) {
+			addNamespaceFuncs(names, name, fn)
+			continue
+		}
+		names[name] = struct{}{}
+	}
+
+	out := make([]string, 0, len(names))
+	for name := range names {
+		out = append(out, name)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func addNamespaceFuncs(names map[string]struct{}, namespace string, fn any) {
+	val := reflect.ValueOf(fn)
+	if val.Kind() != reflect.Func {
+		return
+	}
+	typ := val.Type()
+	if typ.NumIn() != 0 || typ.NumOut() != 1 {
+		return
+	}
+	if typ.Out(0).Kind() != reflect.Interface {
+		return
+	}
+
+	var res reflect.Value
+	func() {
+		defer func() {
+			if recover() != nil {
+				res = reflect.Value{}
+			}
+		}()
+		res = val.Call(nil)[0]
+	}()
+	if !res.IsValid() {
+		return
+	}
+	if res.Kind() == reflect.Interface {
+		if res.IsNil() {
+			return
+		}
+		res = res.Elem()
+	}
+
+	resType := res.Type()
+	for i := 0; i < resType.NumMethod(); i++ {
+		method := resType.Method(i)
+		if method.PkgPath != "" {
+			continue
+		}
+		names[namespace+"."+method.Name] = struct{}{}
+	}
+}
+
+func isNamespaceFactory(fn any) bool {
+	val := reflect.ValueOf(fn)
+	if val.Kind() != reflect.Func {
+		return false
+	}
+	typ := val.Type()
+	return typ.NumIn() == 0 && typ.NumOut() == 1 && typ.Out(0).Kind() == reflect.Interface
 }
 
 type Template struct {
