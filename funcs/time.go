@@ -3,13 +3,14 @@ package funcs
 import (
 	"context"
 	"fmt"
-	"github.com/flanksource/commons/duration"
-	"github.com/flanksource/commons/properties"
-	"github.com/flanksource/commons/utils"
 	"os"
 	"strconv"
 	"strings"
 	gotime "time"
+
+	"github.com/flanksource/commons/duration"
+	"github.com/flanksource/commons/properties"
+	"github.com/flanksource/commons/utils"
 
 	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/flanksource/gomplate/v3/time"
@@ -67,8 +68,8 @@ func CreateTimeFuncs(ctx context.Context) map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		"time":             func() interface{} { return ns },
-		"in_business_hour": ns.InBusinessHour,
+		"time":              func() interface{} { return ns },
+		"in_business_hours": ns.InBusinessHour,
 	}
 }
 

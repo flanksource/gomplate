@@ -107,7 +107,7 @@ func TestCelGoTemplateFunction(t *testing.T) {
 func TestCelInBusinessHourDefault(t *testing.T) {
 	g := NewWithT(t)
 	out, err := gomplate.RunExpression(nil, gomplate.Template{
-		Expression: `in_business_hour("2024-01-02T10:00:00Z")`,
+		Expression: `in_business_hours("2024-01-02T10:00:00Z")`,
 	})
 	g.Expect(err).ToNot(HaveOccurred())
 	g.Expect(out).To(Equal(true))
@@ -123,22 +123,22 @@ func TestCelInBusinessHour(t *testing.T) {
 	}{
 		{
 			name:       "inside business hours",
-			expression: `in_business_hour("2024-01-02T10:00:00Z")`, // 2 January 2024, Tuesday
+			expression: `in_business_hours("2024-01-02T10:00:00Z")`, // 2 January 2024, Tuesday
 			expect:     true,
 		},
 		{
 			name:       "inside business hours datetime",
-			expression: `in_business_hour("2024-01-02 10:00:00")`, // DateTime format (no timezone)
+			expression: `in_business_hours("2024-01-02 10:00:00")`, // DateTime format (no timezone)
 			expect:     true,
 		},
 		{
 			name:       "outside business hours",
-			expression: `in_business_hour("2024-01-02T20:00:00Z")`, // 2 January 2024, Tuesday
+			expression: `in_business_hours("2024-01-02T20:00:00Z")`, // 2 January 2024, Tuesday
 			expect:     false,
 		},
 		{
 			name:       "outside business hours weekend",
-			expression: `in_business_hour("2025-01-05T10:00:00Z")`, // 5 January 2025, Sunday
+			expression: `in_business_hours("2025-01-05T10:00:00Z")`, // 5 January 2025, Sunday
 			expect:     false,
 		},
 	}

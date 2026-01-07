@@ -6,8 +6,8 @@ import (
 	"github.com/google/cel-go/common/types/ref"
 )
 
-var inBusinessHourGen = cel.Function("in_business_hour",
-	cel.Overload("in_business_hour_string",
+var inBusinessHourGen = cel.Function("in_business_hours",
+	cel.Overload("in_business_hours_string",
 		[]*cel.Type{
 			cel.StringType,
 		},

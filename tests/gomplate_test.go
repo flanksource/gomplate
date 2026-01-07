@@ -161,7 +161,7 @@ func TestInBusinessHourTemplate(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		template := fmt.Sprintf(`{{ in_business_hour %q }}`, tc.timeStr)
+		template := fmt.Sprintf(`{{ in_business_hours %q }}`, tc.timeStr)
 		out, err := gomplate.RunTemplate(nil, gomplate.Template{
 			Template: template,
 		})
