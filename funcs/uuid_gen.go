@@ -99,3 +99,29 @@ var uuidParseGen = cel.Function("uuid.Parse",
 		}),
 	),
 )
+
+var uuidHashUUIDGen = cel.Function("uuid.HashUUID",
+	cel.Overload("uuid.HashUUID_list",
+
+		[]*cel.Type{
+			cel.ListType(cel.DynType),
+		},
+		cel.StringType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+
+			var x UUIDFuncs
+
+			list, err := sliceToNative[interface{}](args...)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+
+			result, err := x.HashUUID(list...)
+			if err != nil {
+				return types.WrapErr(err)
+			}
+			return types.String(result)
+
+		}),
+	),
+)
