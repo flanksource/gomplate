@@ -6,11 +6,12 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/robertkrimen/otto/underscore"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/flanksource/gomplate/v3"
 	_ "github.com/flanksource/gomplate/v3/js"
 	"github.com/flanksource/gomplate/v3/kubernetes"
-	_ "github.com/robertkrimen/otto/underscore"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestGomplateFunctions(t *testing.T) {
@@ -143,6 +144,29 @@ func TestGomplateHeaders(t *testing.T) {
 				assert.Equal(t, tc.out, out)
 			}
 		})
+	}
+}
+
+func TestInBusinessHourTemplate(t *testing.T) {
+	loadTestProperties(t)
+
+	tests := []struct {
+		timeStr string
+		out     string
+	}{
+		{"2024-01-02T10:00:00Z", "true"},  // 2 January 2024, Tuesday
+		{"2024-01-02 10:00:00", "true"},   // DateTime format (no timezone)
+		{"2024-01-02T20:00:00Z", "false"}, // 2 January 2024, Tuesday
+		{"2025-01-05T10:00:00Z", "false"}, // 5 January 2025, Sunday
+	}
+
+	for _, tc := range tests {
+		template := fmt.Sprintf(`{{ in_business_hours %q }}`, tc.timeStr)
+		out, err := gomplate.RunTemplate(nil, gomplate.Template{
+			Template: template,
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, tc.out, out)
 	}
 }
 

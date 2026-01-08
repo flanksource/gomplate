@@ -3,11 +3,14 @@ package funcs
 import (
 	"context"
 	"fmt"
-	"github.com/flanksource/commons/duration"
 	"os"
 	"strconv"
 	"strings"
 	gotime "time"
+
+	"github.com/flanksource/commons/duration"
+	"github.com/flanksource/commons/properties"
+	"github.com/flanksource/commons/utils"
 
 	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/flanksource/gomplate/v3/time"
@@ -65,7 +68,8 @@ func CreateTimeFuncs(ctx context.Context) map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		"time": func() interface{} { return ns },
+		"time":              func() interface{} { return ns },
+		"in_business_hours": ns.InBusinessHour,
 	}
 }
 
@@ -182,6 +186,36 @@ func (TimeFuncs) Since(n gotime.Time) gotime.Duration {
 // Until -
 func (TimeFuncs) Until(n gotime.Time) gotime.Duration {
 	return gotime.Until(n)
+}
+
+// InBusinessHour returns nil when no business hours are configured.
+func (TimeFuncs) InBusinessHour(value string) (any, error) {
+	in, err := inBusinessHour(value)
+	if err != nil {
+		return nil, err
+	}
+	if in == nil {
+		return nil, nil
+	}
+	return *in, nil
+}
+
+func inBusinessHour(value string) (*bool, error) {
+	intervals, err := properties.BusinessHours()
+	if err != nil {
+		return nil, err
+	}
+	if len(intervals) == 0 {
+		return nil, nil
+	}
+
+	t := utils.ParseTime(value)
+	if t == nil {
+		return nil, fmt.Errorf("failed to parse time %q", value)
+	}
+
+	in := intervals.ContainsTime(*t)
+	return &in, nil
 }
 
 // convert a number input to a pair of int64s, representing the integer portion and the decimal remainder

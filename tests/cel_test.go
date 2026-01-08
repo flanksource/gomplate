@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/onsi/gomega"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
@@ -101,6 +102,58 @@ func TestCelGoTemplateFunction(t *testing.T) {
 	}
 
 	runTests(t, testCases)
+}
+
+func TestCelInBusinessHourDefault(t *testing.T) {
+	g := NewWithT(t)
+	out, err := gomplate.RunExpression(nil, gomplate.Template{
+		Expression: `in_business_hours("2024-01-02T10:00:00Z")`,
+	})
+	g.Expect(err).ToNot(HaveOccurred())
+	g.Expect(out).To(Equal(true))
+}
+
+func TestCelInBusinessHour(t *testing.T) {
+	loadTestProperties(t)
+
+	tests := []struct {
+		name       string
+		expression string
+		expect     any
+	}{
+		{
+			name:       "inside business hours",
+			expression: `in_business_hours("2024-01-02T10:00:00Z")`, // 2 January 2024, Tuesday
+			expect:     true,
+		},
+		{
+			name:       "inside business hours datetime",
+			expression: `in_business_hours("2024-01-02 10:00:00")`, // DateTime format (no timezone)
+			expect:     true,
+		},
+		{
+			name:       "outside business hours",
+			expression: `in_business_hours("2024-01-02T20:00:00Z")`, // 2 January 2024, Tuesday
+			expect:     false,
+		},
+		{
+			name:       "outside business hours weekend",
+			expression: `in_business_hours("2025-01-05T10:00:00Z")`, // 5 January 2025, Sunday
+			expect:     false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			g := NewWithT(t)
+
+			out, err := gomplate.RunExpression(nil, gomplate.Template{
+				Expression: tc.expression,
+			})
+			g.Expect(err).ToNot(HaveOccurred())
+			g.Expect(out).To(Equal(tc.expect))
+		})
+	}
 }
 
 // unstructure marshalls a struct to and from JSON to remove any type details
