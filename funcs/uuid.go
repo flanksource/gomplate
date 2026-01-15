@@ -88,7 +88,7 @@ func (UUIDFuncs) Parse(in interface{}) (string, error) {
 // It uses the nil UUID as the namespace and SHA256 as the hashing algorithm.
 func (UUIDFuncs) HashUUID(args ...interface{}) (string, error) {
 	// Concatenate all arguments into a single byte slice
-	var data []byte
+	data := make([]byte, 0, len(args)*16)
 	for _, arg := range args {
 		data = append(data, []byte(conv.ToString(arg))...)
 	}

@@ -82,7 +82,7 @@ var regexLibraryDecls = map[string][]cel.FunctionOpt{
 }
 
 func (*regex) CompileOptions() []cel.EnvOption {
-	options := []cel.EnvOption{}
+	options := make([]cel.EnvOption, 0, len(regexLibraryDecls))
 	for name, overloads := range regexLibraryDecls {
 		options = append(options, cel.Function(name, overloads...))
 	}

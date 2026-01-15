@@ -198,7 +198,7 @@ var urlLibraryDecls = map[string][]cel.FunctionOpt{
 }
 
 func (*urls) CompileOptions() []cel.EnvOption {
-	options := []cel.EnvOption{}
+	options := make([]cel.EnvOption, 0, len(urlLibraryDecls))
 	for name, overloads := range urlLibraryDecls {
 		options = append(options, cel.Function(name, overloads...))
 	}

@@ -80,7 +80,7 @@ func (CollFuncs) Dict(in ...interface{}) (map[string]interface{}, error) {
 
 // Keys -
 func (CollFuncs) Keys(in map[string]any) []string {
-	keys := []string{}
+	keys := make([]string, 0, len(in))
 	for k := range in {
 		keys = append(keys, k)
 	}
@@ -89,7 +89,7 @@ func (CollFuncs) Keys(in map[string]any) []string {
 
 // Values -
 func (CollFuncs) Values(in map[string]any) []any {
-	values := []any{}
+	values := make([]any, 0, len(in))
 	for _, v := range in {
 		values = append(values, v)
 	}
