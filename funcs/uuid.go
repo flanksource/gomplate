@@ -10,12 +10,14 @@ import (
 )
 
 // UUIDNS -
+//
 // Deprecated: don't use
 func UUIDNS() *UUIDFuncs {
 	return &UUIDFuncs{}
 }
 
 // AddUUIDFuncs -
+//
 // Deprecated: use CreateUUIDFuncs instead
 func AddUUIDFuncs(f map[string]interface{}) {
 	for k, v := range CreateUUIDFuncs(context.Background()) {

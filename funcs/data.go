@@ -8,6 +8,7 @@ import (
 )
 
 // DataNS -
+//
 // Deprecated: don't use
 func DataNS() *DataFuncs {
 	return &DataFuncs{}

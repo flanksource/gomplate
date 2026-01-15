@@ -10,12 +10,14 @@ import (
 )
 
 // ConvNS -
+//
 // Deprecated: don't use
 func ConvNS() *ConvFuncs {
 	return &ConvFuncs{}
 }
 
 // AddConvFuncs -
+//
 // Deprecated: use CreateConvFuncs instead
 func AddConvFuncs(f map[string]interface{}) {
 	for k, v := range CreateConvFuncs(context.Background()) {
@@ -43,6 +45,7 @@ type ConvFuncs struct {
 }
 
 // Bool -
+//
 // Deprecated: use ToBool instead
 func (f *ConvFuncs) Bool(s interface{}) bool {
 	return conv.Bool(conv.ToString(s))
@@ -59,6 +62,7 @@ func (ConvFuncs) ToBools(in ...interface{}) []bool {
 }
 
 // Slice -
+//
 // Deprecated: use coll.Slice instead
 func (f *ConvFuncs) Slice(args ...interface{}) []interface{} {
 	return coll.Slice(args...)
@@ -70,6 +74,7 @@ func (ConvFuncs) Join(in interface{}, sep string) (string, error) {
 }
 
 // Has -
+//
 // Deprecated: use coll.Has instead
 func (f *ConvFuncs) Has(in interface{}, key string) bool {
 	return coll.Has(in, key)
@@ -149,6 +154,7 @@ func (ConvFuncs) Default(def, in interface{}) interface{} {
 }
 
 // Dict -
+//
 // Deprecated: use coll.Dict instead
 func (f *ConvFuncs) Dict(in ...interface{}) (map[string]interface{}, error) {
 	return coll.Dict(in...)
