@@ -742,4 +742,40 @@ func TestCelUUID(t *testing.T) {
 		{nil, "uuid.IsValid('2a42e576-c308-4db9-8525-0513af307586')", "true"},
 		{nil, "string(uuid.Parse('2a42e576-c308-4db9-8525-0513af307586'))", "2a42e576-c308-4db9-8525-0513af307586"},
 	})
+
+	// Test HashUUID for idempotency
+	expr1 := `uuid.HashUUID(['test'])`
+	out1, err := gomplate.RunTemplate(nil, gomplate.Template{
+		Expression: expr1,
+	})
+	assert.NoError(t, err)
+	assert.NotEmpty(t, out1)
+
+	out2, err := gomplate.RunTemplate(nil, gomplate.Template{
+		Expression: expr1,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, out1, out2, "Same input should produce same UUID")
+
+	// Test with different input
+	expr2 := `uuid.HashUUID(['different'])`
+	out3, err := gomplate.RunTemplate(nil, gomplate.Template{
+		Expression: expr2,
+	})
+	assert.NoError(t, err)
+	assert.NotEqual(t, out1, out3, "Different input should produce different UUID")
+
+	// Test with multiple arguments
+	expr3 := `uuid.HashUUID(['arg1', 'arg2'])`
+	out4, err := gomplate.RunTemplate(nil, gomplate.Template{
+		Expression: expr3,
+	})
+	assert.NoError(t, err)
+	assert.NotEmpty(t, out4)
+
+	out5, err := gomplate.RunTemplate(nil, gomplate.Template{
+		Expression: expr3,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, out4, out5, "Same multiple arguments should produce same UUID")
 }

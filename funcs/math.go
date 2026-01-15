@@ -12,12 +12,14 @@ import (
 )
 
 // MathNS - the math namespace
+//
 // Deprecated: don't use
 func MathNS() *MathFuncs {
 	return &MathFuncs{}
 }
 
 // AddMathFuncs -
+//
 // Deprecated: use CreateMathFuncs instead
 func AddMathFuncs(f map[string]interface{}) {
 	for k, v := range CreateMathFuncs(context.Background()) {

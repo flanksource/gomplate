@@ -30,7 +30,7 @@ func getArgs(args []Ident) string {
 
 var tplFuncs = map[string]any{
 	"getReturnIdentifiers": func(args []Ident) string {
-		var output []string
+		output := make([]string, 0, len(args))
 		for i := range args {
 			output = append(output, fmt.Sprintf("a%d", i))
 		}
@@ -38,7 +38,7 @@ var tplFuncs = map[string]any{
 		return strings.Join(output, ", ")
 	},
 	"fnSuffix": func(args []Ident) string {
-		var output []string
+		output := make([]string, 0, len(args))
 		for _, a := range args {
 			output = append(output, a.GoType)
 		}

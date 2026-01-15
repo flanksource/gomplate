@@ -25,12 +25,14 @@ import (
 )
 
 // StrNS -
+//
 // Deprecated: don't use
 func StrNS() *StringFuncs {
 	return &StringFuncs{}
 }
 
 // AddStringFuncs -
+//
 // Deprecated: use CreateStringFuncs instead
 func AddStringFuncs(f map[string]interface{}) {
 	for k, v := range CreateStringFuncs(context.Background()) {

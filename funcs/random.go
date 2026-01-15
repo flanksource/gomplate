@@ -12,12 +12,14 @@ import (
 )
 
 // RandomNS -
+//
 // Deprecated: don't use
 func RandomNS() *RandomFuncs {
 	return &RandomFuncs{}
 }
 
 // AddRandomFuncs -
+//
 // Deprecated: use CreateRandomFuncs instead
 func AddRandomFuncs(f map[string]interface{}) {
 	for k, v := range CreateRandomFuncs(context.Background()) {

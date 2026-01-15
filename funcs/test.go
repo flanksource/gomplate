@@ -11,12 +11,14 @@ import (
 )
 
 // TestNS -
+//
 // Deprecated: don't use
 func TestNS() *TestFuncs {
 	return &TestFuncs{}
 }
 
 // AddTestFuncs -
+//
 // Deprecated: use CreateTestFuncs instead
 func AddTestFuncs(f map[string]interface{}) {
 	for k, v := range CreateTestFuncs(context.Background()) {

@@ -17,6 +17,7 @@ import (
 )
 
 // TimeNS -
+//
 // Deprecated: don't use
 func TimeNS() *TimeFuncs {
 	return &TimeFuncs{
@@ -39,6 +40,7 @@ func TimeNS() *TimeFuncs {
 }
 
 // AddTimeFuncs -
+//
 // Deprecated: use CreateTimeFuncs instead
 func AddTimeFuncs(f map[string]interface{}) {
 	for k, v := range CreateTimeFuncs(context.Background()) {
