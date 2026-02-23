@@ -172,9 +172,6 @@ func RunExpressionContext(ctx commonsContext.Context, _environment map[string]an
 		cached, ok := celExpressionCache.Get(template.CacheKey(_environment))
 		if ok {
 			if cachedPrg, ok := cached.(*cel.Program); ok {
-				if ctx.Logger != nil {
-					ctx.Logger.V(7).Infof("%s using cached cel program", template.ShortString())
-				}
 				prg = *cachedPrg
 			}
 		}
@@ -204,7 +201,7 @@ func RunExpressionContext(ctx commonsContext.Context, _environment map[string]an
 		return nil, oops.With("template", template.Expression).Wrap(err)
 	}
 	if ctx.Logger != nil && out.Value() != template.Expression {
-		ctx.Logger.V(6).Infof("templated %s => %v", template.ShortString(), out)
+		ctx.Logger.V(7).Infof("templated %s => %v", template.ShortString(), out)
 	}
 	return out.Value(), nil
 
@@ -334,7 +331,7 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 
 	out := strings.TrimSpace(buf.String())
 	if ctx.Logger != nil && out != template.Template {
-		ctx.Logger.V(6).Infof("templated %s ==> %s", template.ShortString(), out)
+		ctx.Logger.V(7).Infof("templated %s ==> %s", template.ShortString(), out)
 	}
 	return out, nil
 }
@@ -347,7 +344,6 @@ func LoadSharedLibrary(source string) error {
 		return fmt.Errorf("failed to read shared library %s: %s", source, err)
 	}
 
-	fmt.Printf("Loaded %s: \n%s\n", source, string(data))
 	registry.Register(func() string { return string(data) })
 	return nil
 }

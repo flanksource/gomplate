@@ -1,6 +1,7 @@
 package gomplate
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,9 +21,10 @@ var opts = oj.Options{
 	UseTags:      true,
 	KeyExact:     true,
 	NestEmbed:    false,
-	BytesAs:      ojg.BytesAsString,
-	TimeFormat:   "time",
-	WriteLimit:   1024,
+
+	BytesAs:    ojg.BytesAsString,
+	TimeFormat: "time",
+	WriteLimit: 1024,
 }
 
 type AsMapper interface {
@@ -31,10 +33,19 @@ type AsMapper interface {
 
 // Serialize iterates over each key-value pair in the input map
 // serializes any struct value to map[string]any.
-func Serialize(in map[string]any) (map[string]any, error) {
+func Serialize(in map[string]any) (out map[string]any, err error) {
 	if in == nil {
 		return nil, nil
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			if _err, ok := r.(error); ok {
+				err = _err
+			}
+			err = fmt.Errorf("panic during serialization: %v", r)
+		}
+	}()
 
 	// cel supports time.Duration natively - save original and then replace it after decomposition
 	// FIXME: This does not work for anything inside Structs
@@ -52,7 +63,7 @@ func Serialize(in map[string]any) (map[string]any, error) {
 		}
 	})
 
-	out := alt.Alter(in, &opts).(map[string]any)
+	out = alt.Alter(in, &opts).(map[string]any)
 
 	for path, v := range nativeTypes {
 		expr, err := jp.ParseString(path)
