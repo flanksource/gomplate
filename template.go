@@ -14,6 +14,7 @@ import (
 
 	commonsContext "github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/logger"
+	"github.com/flanksource/commons/properties"
 	_ "github.com/flanksource/gomplate/v3/js"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
@@ -200,8 +201,8 @@ func RunExpressionContext(ctx commonsContext.Context, _environment map[string]an
 	if err != nil {
 		return nil, oops.With("template", template.Expression).Wrap(err)
 	}
-	if ctx.Logger != nil && out.Value() != template.Expression {
-		ctx.Logger.V(7).Infof("templated %s => %v", template.ShortString(), out)
+	if ctx.Logger != nil && out.Value() != template.Expression && properties.On(false, "gomplate.log") {
+		ctx.Logger.V(4).Infof("templated %s => %v", template.ShortString(), out)
 	}
 	return out.Value(), nil
 
@@ -279,7 +280,7 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 		cached, ok := goTemplateCache.Get(template.CacheKey(nil))
 		if ok {
 			if cachedTpl, ok := cached.(*gotemplate.Template); ok {
-				if ctx.Logger != nil {
+				if ctx.Logger != nil && properties.On(false, "gomplate.log") {
 					ctx.Logger.V(7).Infof("%s using cached template", template.ShortString())
 				}
 				tpl = cachedTpl
@@ -330,8 +331,8 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 	}
 
 	out := strings.TrimSpace(buf.String())
-	if ctx.Logger != nil && out != template.Template {
-		ctx.Logger.V(7).Infof("templated %s ==> %s", template.ShortString(), out)
+	if ctx.Logger != nil && out != template.Template && properties.On(false, "gomplate.log") {
+		ctx.Logger.V(4).Infof("templated %s ==> %s", template.ShortString(), out)
 	}
 	return out, nil
 }
