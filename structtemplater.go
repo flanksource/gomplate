@@ -7,6 +7,7 @@ import (
 
 	"github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/logger"
+	"github.com/flanksource/commons/properties"
 	"github.com/mitchellh/reflectwalk"
 	"gopkg.in/yaml.v3"
 )
@@ -185,16 +186,21 @@ func (w StructTemplater) Walk(object interface{}) error {
 	if w.Context.Logger == nil {
 		w.Context = newContext()
 	}
-	w.Context.Logger.V(7).Infof("walking %s", logger.Pretty(object))
+	if w.Context.Logger.IsLevelEnabled(3) && properties.On(false, "gomplate.log") {
+		w.Context.Logger.V(3).Infof("walking %s", logger.Pretty(object))
+	}
 	return reflectwalk.Walk(object, w)
 }
 
 func (w StructTemplater) Template(val string) (string, error) {
-	w.Context.Logger.V(8).Infof("templating %s", val)
-	in := val
 	if strings.TrimSpace(val) == "" {
 		return val, nil
 	}
+	if w.Context.Logger.IsLevelEnabled(4) && properties.On(false, "gomplate.log") {
+		w.Context.Logger.V(4).Infof("templating %s", val)
+	}
+	in := val
+
 	if w.Funcs == nil {
 		w.Funcs = make(map[string]any)
 	}
@@ -238,7 +244,7 @@ func (w StructTemplater) Template(val string) (string, error) {
 		}
 	}
 	val = strings.TrimSpace(val)
-	if strings.TrimSpace(val) != strings.TrimSpace(in) {
+	if strings.TrimSpace(val) != strings.TrimSpace(in) && w.Context.Logger.IsLevelEnabled(6) && properties.On(false, "gomplate.log") {
 		w.Context.Logger.V(6).Infof("==> %s", val)
 	}
 	return val, nil
