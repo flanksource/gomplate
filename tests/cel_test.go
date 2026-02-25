@@ -684,6 +684,65 @@ func TestCelK8sMemoryResourceUnits(t *testing.T) {
 	}
 }
 
+func TestCelFirstLast(t *testing.T) {
+	runTests(t, []Test{
+		// global first/last on list
+		{nil, `first([1, 2, 3])`, "1"},
+		{nil, `last([1, 2, 3])`, "3"},
+		// member first/last on list
+		{nil, `[1, 2, 3].first()`, "1"},
+		{nil, `[1, 2, 3].last()`, "3"},
+		// empty list → null → rendered as ""
+		{nil, `first([])`, ""},
+		{nil, `last([])`, ""},
+		// null input → null → ""
+		{nil, `first(null)`, ""},
+		{nil, `last(null)`, ""},
+		// string first/last character
+		{nil, `first("hello")`, "h"},
+		{nil, `last("hello")`, "o"},
+		// member string
+		{nil, `"hello".first()`, "h"},
+		{nil, `"hello".last()`, "o"},
+		// empty string → ""
+		{nil, `first("")`, ""},
+		{nil, `last("")`, ""},
+		// map sorted-key first/last
+		{nil, `first({'b': 2, 'a': 1})`, "1"},
+		{nil, `last({'b': 2, 'a': 1})`, "2"},
+		// nil env variable → null → ""
+		{map[string]any{"a": nil}, `first(a)`, ""},
+		{map[string]any{"a": nil}, `last(a)`, ""},
+		// env variable list
+		{map[string]any{"a": []any{"x", "y", "z"}}, `first(a)`, "x"},
+		{map[string]any{"a": []any{"x", "y", "z"}}, `last(a)`, "z"},
+	})
+}
+
+func TestCelCoalesce(t *testing.T) {
+	runTests(t, []Test{
+		// plain null / empty string fallback
+		{nil, `coalesce(null, "b")`, "b"},
+		{nil, `coalesce("", "b")`, "b"},
+		// all empty returns null → rendered as empty string by RunTemplate
+		{nil, `coalesce(null, null)`, ""},
+		// zero is a valid (non-empty) value
+		{nil, `coalesce(null, 0)`, "0"},
+		// optional.none() is skipped
+		{nil, `coalesce(optional.none(), "y")`, "y"},
+		// optional.of("") is also empty → skip
+		{nil, `coalesce(optional.of(""), "y")`, "y"},
+		// optional.of("z") unwraps to "z"
+		{nil, `coalesce(optional.of("z"), "y")`, "z"},
+		// env variable that is null falls through to default
+		{map[string]any{"a": nil}, `coalesce(a, "default")`, "default"},
+		// multi-arg chain: first two empty, last wins
+		{map[string]any{"a": "", "b": nil}, `coalesce(a, b, "last")`, "last"},
+		// first non-empty wins
+		{map[string]any{"a": "first"}, `coalesce(a, "second")`, "first"},
+	})
+}
+
 func TestMatchLabel(t *testing.T) {
 	config := map[string]any{
 		"labels": map[string]string{
@@ -697,6 +756,9 @@ func TestMatchLabel(t *testing.T) {
 
 	runTests(t, []Test{
 		{map[string]any{"config": config}, "matchLabel(config.labels, 'region', 'us-*')", "true"},
+		{map[string]any{"config": config}, "config.labels.region ==  'us-east-1'", "true"},
+		{map[string]any{"config": config}, "config.labels.zone ==  'us-east-1a'", "false"},
+
 		{map[string]any{"config": config}, "matchLabel(config.labels, 'region', 'eu-*')", "false"},
 		{map[string]any{"config": config}, "matchLabel(config.labels, 'environment', 'production')", "true"},
 		{map[string]any{"config": config}, "matchLabel(config.tags, 'cluster', 'aws-*')", "true"},
@@ -778,4 +840,47 @@ func TestCelUUID(t *testing.T) {
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, out4, out5, "Same multiple arguments should produce same UUID")
+}
+
+func TestCelNet(t *testing.T) {
+	runTests(t, []Test{
+		{nil, `net.ContainsCIDR("10.0.0.0/8", "10.1.2.3")`, "true"},
+		{nil, `net.ContainsCIDR("10.0.0.0/8", "192.168.1.1")`, "false"},
+		{nil, `net.ContainsCIDR("bad-cidr", "10.0.0.1")`, "false"},
+		{nil, `net.ContainsCIDR("10.0.0.0/8", "not-an-ip")`, "false"},
+		{nil, `net.IsValidIP("10.0.0.1")`, "true"},
+		{nil, `net.IsValidIP("::1")`, "true"},
+		{nil, `net.IsValidIP("not-an-ip")`, "false"},
+	})
+}
+
+func TestDebug(t *testing.T) {
+	runTests(t, []Test{
+		{map[string]any{"x": "hello"}, `debug(x)`, "hello"},
+		{map[string]any{"x": 42}, `debug("label", x)`, "42"},
+		{map[string]any{"x": "hello"}, `debug(x) + " world"`, "hello world"},
+	})
+}
+
+func TestNilSafe(t *testing.T) {
+	runTests(t, []Test{
+		// Missing map key → null → empty string
+		{map[string]any{"x": map[string]any{"a": 1}}, "x.missing", ""},
+		// Zero-value arithmetic: null + 1 → 0 + 1 → "1"
+		{map[string]any{"x": map[string]any{"a": 1}}, "x.missing + 1", "1"},
+		// Zero-value equality
+		{map[string]any{"x": map[string]any{"a": 1}}, "x.missing == 0", "true"},
+		{map[string]any{"x": map[string]any{"a": "b"}}, `x.missing == ""`, "true"},
+		{map[string]any{"x": map[string]any{"a": 1}}, "x.missing != 1", "true"},
+		{map[string]any{"x": map[string]any{"a": true}}, "x.missing == false", "true"},
+		// Zero-value comparisons
+		{map[string]any{"x": map[string]any{"a": 1}}, "x.missing > 0", "false"},
+		{map[string]any{"x": map[string]any{"a": 1}}, "x.missing < 1", "true"},
+		// Chained null access: x.a is nil → x.a.b.c → null → ""
+		{map[string]any{"x": map[string]any{"a": nil}}, "x.a.b.c", ""},
+		// Null string concatenation: null + " world" → "" + " world"
+		{map[string]any{"x": map[string]any{"a": nil}}, `x.a + " world"`, " world"},
+		// matchLabel on missing labels key: null arg → null → ""
+		{map[string]any{"config": map[string]any{}}, "matchLabel(config.labels, 'k', 'v')", ""},
+	})
 }

@@ -29,6 +29,9 @@ var CelEnvOption = []cel.EnvOption{
 	collJmesPathGen,
 	collJsonPathGen,
 	celLabelsMatch,
+	celCoalesce,
+	celFirst,
+	celLast,
 	// NOTE: Conv Bool, int, Float, String are not needed
 	// as cel-go has native support for it.
 	// Slice, ToStrings are meaningless since
@@ -195,4 +198,7 @@ var CelEnvOption = []cel.EnvOption{
 	uuidIsValidGen,
 	uuidParseGen,
 	uuidHashUUIDGen,
+
+	netContainsCIDRGen,
+	netIsValidIPGen,
 }
