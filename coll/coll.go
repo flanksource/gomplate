@@ -354,7 +354,7 @@ func MapToKeyVal[T string | any | interface{}](m map[string]T) string {
 		}
 		buf.WriteString(k)
 		buf.WriteByte('=')
-		buf.WriteString(fmt.Sprintf("%v", v))
+		fmt.Fprintf(&buf, "%v", v)
 	}
 	return buf.String()
 }

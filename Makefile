@@ -42,9 +42,6 @@ LOCALBIN ?= $(shell pwd)/.bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
-GOLANGCI_LINT_VERSION ?= v2.7.2
-GOLANGCI_LINT ?= $(LOCALBIN)/golangci-lint
-
 # platforms := freebsd-amd64 linux-amd64 linux-386 linux-armv5 linux-armv6 linux-armv7 linux-arm64 darwin-amd64 solaris-amd64 windows-amd64.exe windows-386.exe
 platforms := freebsd-amd64 linux-amd64 linux-386 linux-armv6 linux-armv7 linux-arm64 linux-ppc64le darwin-amd64 darwin-arm64 solaris-amd64 windows-amd64.exe windows-386.exe
 
@@ -193,14 +190,12 @@ docs/content/functions/%.md: docs-src/content/functions/%.yml docs-src/content/f
 gomplate.png: gomplate.svg
 	cloudconvert -f png -c density=288 $^
 
-.PHONY: golangci-lint
-golangci-lint: $(GOLANGCI_LINT)
-$(GOLANGCI_LINT): $(LOCALBIN)
-	test -s $(LOCALBIN)/golangci-lint || curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(LOCALBIN) $(GOLANGCI_LINT_VERSION)
-
 .PHONY: lint
-lint: golangci-lint
-	$(GOLANGCI_LINT) run ./...
+lint: $(LOCALBIN)
+	mkdir -p bin
+	GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.10.1
+	$(LOCALBIN)/golangci-lint run
+
 
 .PHONY: tidy
 tidy:
