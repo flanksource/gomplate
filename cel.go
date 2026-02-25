@@ -7,6 +7,7 @@ import (
 	"regexp"
 
 	"github.com/flanksource/commons/context"
+	"github.com/flanksource/commons/logger"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
@@ -15,6 +16,7 @@ import (
 	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/flanksource/gomplate/v3/funcs"
 	"github.com/flanksource/gomplate/v3/kubernetes"
+	"github.com/flanksource/gomplate/v3/nilsafe"
 	"github.com/flanksource/gomplate/v3/strings"
 )
 
@@ -31,9 +33,11 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 	opts = append(opts, ext.Strings(), ext.Encoders(), ext.Lists(), ext.Math(), ext.Sets())
 	opts = append(opts, cel.StdLib())
 	opts = append(opts, cel.OptionalTypes())
+	opts = append(opts, nilsafe.Library(nilsafe.WithZeroValues()))
 	opts = append(opts, strings.Library...)
 	opts = append(opts, typeAdapters...)
 	opts = append(opts, getGoTemplateCelFunction())
+	opts = append(opts, getDebugCelFunction())
 
 	// Load input as variables
 	for k := range environment {
@@ -85,6 +89,28 @@ func IsValidCELIdentifier(s string) bool {
 	}
 
 	return !IsCelKeyword(s) && celIdentifierRegexp.MatchString(s)
+}
+
+func getDebugCelFunction() cel.EnvOption {
+	log := logger.GetLogger("cel")
+	return cel.Function("debug",
+		cel.Overload("debug_dyn",
+			[]*cel.Type{cel.DynType},
+			cel.DynType,
+			cel.UnaryBinding(func(val ref.Val) ref.Val {
+				log.Debugf("%s", logger.Pretty(val.Value()))
+				return val
+			}),
+		),
+		cel.Overload("debug_string_dyn",
+			[]*cel.Type{cel.StringType, cel.DynType},
+			cel.DynType,
+			cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+				log.Debugf("%s: %s", args[0].Value().(string), logger.Pretty(args[1].Value()))
+				return args[1]
+			}),
+		),
+	)
 }
 
 // getGoTemplateCelFunction returns a CEL function that calls gotemplate on a format string
