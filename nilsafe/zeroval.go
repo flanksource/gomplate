@@ -47,7 +47,7 @@ type zeroValueCall struct {
 }
 
 func (c *zeroValueCall) Eval(ctx interpreter.Activation) ref.Val {
-	args := c.InterpretableCall.Args()
+	args := c.Args()
 	vals := make([]ref.Val, len(args))
 	hasNull := false
 	for i, arg := range args {
@@ -60,7 +60,7 @@ func (c *zeroValueCall) Eval(ctx interpreter.Activation) ref.Val {
 		return c.InterpretableCall.Eval(ctx)
 	}
 
-	fn := c.InterpretableCall.Function()
+	fn := c.Function()
 	if !isOperator(fn) {
 		return types.NullValue
 	}
@@ -78,7 +78,7 @@ type zeroValueEq struct {
 }
 
 func (c *zeroValueEq) Eval(ctx interpreter.Activation) ref.Val {
-	args := c.InterpretableCall.Args()
+	args := c.Args()
 	lhs, rhs := args[0].Eval(ctx), args[1].Eval(ctx)
 
 	lNull := lhs == types.NullValue
@@ -109,7 +109,7 @@ type zeroValueNe struct {
 }
 
 func (c *zeroValueNe) Eval(ctx interpreter.Activation) ref.Val {
-	args := c.InterpretableCall.Args()
+	args := c.Args()
 	lhs, rhs := args[0].Eval(ctx), args[1].Eval(ctx)
 
 	lNull := lhs == types.NullValue

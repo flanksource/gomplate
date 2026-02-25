@@ -35,7 +35,7 @@ type library struct {
 }
 
 func (*library) LibraryName() string             { return "cel.lib.ext.nilsafe" }
-func (*library) CompileOptions() []cel.EnvOption  { return nil }
+func (*library) CompileOptions() []cel.EnvOption { return nil }
 
 func (l *library) ProgramOptions() []cel.ProgramOption {
 	return []cel.ProgramOption{cel.CustomDecorator(l.makeDecorator())}
@@ -100,7 +100,7 @@ type nilSafeCall struct {
 }
 
 func (c *nilSafeCall) Eval(ctx interpreter.Activation) ref.Val {
-	for _, arg := range c.InterpretableCall.Args() {
+	for _, arg := range c.Args() {
 		if arg.Eval(ctx) == types.NullValue {
 			return types.NullValue
 		}

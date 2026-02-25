@@ -260,7 +260,7 @@ func celFirstLast(arg ref.Val, first bool) ref.Val {
 		if first {
 			return l.Get(types.IntZero)
 		}
-		return l.Get(types.Int(sz.(types.Int) - 1))
+		return l.Get(sz.(types.Int) - 1)
 	}
 	return types.NullValue
 }
