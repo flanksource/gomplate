@@ -8,6 +8,7 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
+	"github.com/google/cel-go/common/types/traits"
 
 	"github.com/flanksource/gomplate/v3/coll"
 	"github.com/pkg/errors"
@@ -50,6 +51,9 @@ func CreateCollFuncs(ctx context.Context) map[string]interface{} {
 	f["jq"] = ns.JQ
 	f["flatten"] = ns.Flatten
 
+	f["coalesce"] = ns.Coalesce
+	f["first"] = ns.First
+	f["last"] = ns.Last
 	f["matchLabel"] = coll.MatchLabel
 	f["mapToKeyVal"] = coll.MapToKeyVal[any]
 	f["keyValToMap"] = coll.KeyValToMap
@@ -197,6 +201,134 @@ func (CollFuncs) Omit(args ...interface{}) (map[string]interface{}, error) {
 	}
 	return coll.Omit(m, keys...), nil
 }
+
+// Coalesce returns the first argument that is neither nil nor empty.
+func (CollFuncs) Coalesce(args ...interface{}) interface{} {
+	return coll.Coalesce(args...)
+}
+
+// First returns the first element of a list, first character of a string, or
+// value at the lexicographically smallest key of a map.
+func (CollFuncs) First(in interface{}) interface{} {
+	return coll.First(in)
+}
+
+// Last returns the last element of a list, last character of a string, or
+// value at the lexicographically largest key of a map.
+func (CollFuncs) Last(in interface{}) interface{} {
+	return coll.Last(in)
+}
+
+// celFirstLast extracts the first or last element from a CEL list, string, or map.
+func celFirstLast(arg ref.Val, first bool) ref.Val {
+	if arg == types.NullValue {
+		return types.NullValue
+	}
+	if s, ok := arg.(types.String); ok {
+		runes := []rune(string(s))
+		if len(runes) == 0 {
+			return types.String("")
+		}
+		if first {
+			return types.String(string(runes[0]))
+		}
+		return types.String(string(runes[len(runes)-1]))
+	}
+	if m, ok := arg.(traits.Mapper); ok {
+		if m.Size() == types.IntZero {
+			return types.NullValue
+		}
+		keys, err := m.ConvertToNative(typeMapStringAny)
+		if err != nil {
+			return types.WrapErr(err)
+		}
+		native, ok := keys.(map[string]any)
+		if !ok {
+			return types.NullValue
+		}
+		result := coll.First(native)
+		if !first {
+			result = coll.Last(native)
+		}
+		return types.DefaultTypeAdapter.NativeToValue(result)
+	}
+	if l, ok := arg.(traits.Lister); ok {
+		sz := l.Size()
+		if sz == types.IntZero {
+			return types.NullValue
+		}
+		if first {
+			return l.Get(types.IntZero)
+		}
+		return l.Get(types.Int(sz.(types.Int) - 1))
+	}
+	return types.NullValue
+}
+
+var celFirst = cel.Function("first",
+	cel.Overload("first_dyn", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, true) }),
+	),
+	cel.MemberOverload("dyn_first", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, true) }),
+	),
+)
+
+var celLast = cel.Function("last",
+	cel.Overload("last_dyn", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, false) }),
+	),
+	cel.MemberOverload("dyn_last", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, false) }),
+	),
+)
+
+// celCoalesceFirst returns the first non-null, non-empty ref.Val from args,
+// unwrapping CEL optional<T> values along the way.
+// optional.none() and plain null are skipped; optional.of(v) is unwrapped and
+// its inner value is checked for emptiness.
+func celCoalesceFirst(args []ref.Val) ref.Val {
+	for _, arg := range args {
+		if opt, ok := arg.(*types.Optional); ok {
+			if !opt.HasValue() {
+				continue
+			}
+			arg = opt.GetValue()
+		}
+		if arg == types.NullValue {
+			continue
+		}
+		if s, ok := arg.(types.String); ok && string(s) == "" {
+			continue
+		}
+		if l, ok := arg.(traits.Lister); ok && l.Size() == types.IntZero {
+			continue
+		}
+		if m, ok := arg.(traits.Mapper); ok && m.Size() == types.IntZero {
+			continue
+		}
+		return arg
+	}
+	return types.NullValue
+}
+
+var celCoalesce = cel.Function("coalesce",
+	cel.Overload("coalesce_1", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val { return celCoalesceFirst(args) }),
+	),
+	cel.Overload("coalesce_2", []*cel.Type{cel.DynType, cel.DynType}, cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val { return celCoalesceFirst(args) }),
+	),
+	cel.Overload("coalesce_3", []*cel.Type{cel.DynType, cel.DynType, cel.DynType}, cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val { return celCoalesceFirst(args) }),
+	),
+	cel.Overload("coalesce_4", []*cel.Type{cel.DynType, cel.DynType, cel.DynType, cel.DynType}, cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val { return celCoalesceFirst(args) }),
+	),
+	cel.Overload("coalesce_5", []*cel.Type{cel.DynType, cel.DynType, cel.DynType, cel.DynType, cel.DynType}, cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val { return celCoalesceFirst(args) }),
+	),
+)
 
 var celLabelsMatch = cel.Function("matchLabel",
 	cel.Overload("matchLabel_map_string_string",

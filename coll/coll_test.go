@@ -626,7 +626,10 @@ func TestKeyValToMap(t *testing.T) {
 	result, err := KeyValToMap(in)
 	assert.NoError(t, err)
 	assert.EqualValues(t, expected, result)
-	out := MapToKeyVal(expected)
-	assert.EqualValues(t, in, out)
 
+	// Round-trip: MapToKeyVal output order is non-deterministic, so parse it back
+	out := MapToKeyVal(expected)
+	roundTripped, err := KeyValToMap(out)
+	assert.NoError(t, err)
+	assert.EqualValues(t, expected, roundTripped)
 }
