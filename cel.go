@@ -32,7 +32,7 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 	opts = append(opts, kubernetes.Library()...)
 	opts = append(opts, ext.Strings(), ext.Encoders(), ext.Lists(), ext.Math(), ext.Sets())
 	opts = append(opts, cel.StdLib())
-	opts = append(opts, cel.OptionalTypes())
+	opts = append(opts, cel.OptionalTypes(cel.OptionalTypesVersion(1)))
 	opts = append(opts, nilsafe.Library(nilsafe.WithZeroValues()))
 	opts = append(opts, strings.Library...)
 	opts = append(opts, typeAdapters...)

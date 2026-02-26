@@ -219,70 +219,6 @@ func (CollFuncs) Last(in interface{}) interface{} {
 	return coll.Last(in)
 }
 
-// celFirstLast extracts the first or last element from a CEL list, string, or map.
-func celFirstLast(arg ref.Val, first bool) ref.Val {
-	if arg == types.NullValue {
-		return types.NullValue
-	}
-	if s, ok := arg.(types.String); ok {
-		runes := []rune(string(s))
-		if len(runes) == 0 {
-			return types.String("")
-		}
-		if first {
-			return types.String(string(runes[0]))
-		}
-		return types.String(string(runes[len(runes)-1]))
-	}
-	if m, ok := arg.(traits.Mapper); ok {
-		if m.Size() == types.IntZero {
-			return types.NullValue
-		}
-		keys, err := m.ConvertToNative(typeMapStringAny)
-		if err != nil {
-			return types.WrapErr(err)
-		}
-		native, ok := keys.(map[string]any)
-		if !ok {
-			return types.NullValue
-		}
-		result := coll.First(native)
-		if !first {
-			result = coll.Last(native)
-		}
-		return types.DefaultTypeAdapter.NativeToValue(result)
-	}
-	if l, ok := arg.(traits.Lister); ok {
-		sz := l.Size()
-		if sz == types.IntZero {
-			return types.NullValue
-		}
-		if first {
-			return l.Get(types.IntZero)
-		}
-		return l.Get(sz.(types.Int) - 1)
-	}
-	return types.NullValue
-}
-
-var celFirst = cel.Function("first",
-	cel.Overload("first_dyn", []*cel.Type{cel.DynType}, cel.DynType,
-		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, true) }),
-	),
-	cel.MemberOverload("dyn_first", []*cel.Type{cel.DynType}, cel.DynType,
-		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, true) }),
-	),
-)
-
-var celLast = cel.Function("last",
-	cel.Overload("last_dyn", []*cel.Type{cel.DynType}, cel.DynType,
-		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, false) }),
-	),
-	cel.MemberOverload("dyn_last", []*cel.Type{cel.DynType}, cel.DynType,
-		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLast(arg, false) }),
-	),
-)
-
 // celCoalesceFirst returns the first non-null, non-empty ref.Val from args,
 // unwrapping CEL optional<T> values along the way.
 // optional.none() and plain null are skipped; optional.of(v) is unwrapped and
@@ -327,6 +263,69 @@ var celCoalesce = cel.Function("coalesce",
 	),
 	cel.Overload("coalesce_5", []*cel.Type{cel.DynType, cel.DynType, cel.DynType, cel.DynType, cel.DynType}, cel.DynType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val { return celCoalesceFirst(args) }),
+	),
+)
+
+func celFirstLastImpl(arg ref.Val, first bool) ref.Val {
+	if opt, ok := arg.(*types.Optional); ok {
+		if !opt.HasValue() {
+			return types.NullValue
+		}
+		arg = opt.GetValue()
+	}
+	if arg == types.NullValue {
+		return types.NullValue
+	}
+
+	if l, ok := arg.(traits.Lister); ok {
+		if l.Size() == types.IntZero {
+			return types.NullValue
+		}
+		if first {
+			return l.Get(types.IntZero)
+		}
+		return l.Get(l.Size().(types.Int) - 1)
+	}
+
+	if _, ok := arg.(traits.Mapper); ok {
+		m, err := convertMap(arg)
+		if err != nil {
+			return types.WrapErr(err)
+		}
+		var result any
+		if first {
+			result = coll.First(m)
+		} else {
+			result = coll.Last(m)
+		}
+		if result == nil {
+			return types.NullValue
+		}
+		return types.DefaultTypeAdapter.NativeToValue(result)
+	}
+
+	return types.NullValue
+}
+
+var celFirst = cel.Function("first",
+	cel.Overload("first_dyn", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.OverloadIsNonStrict(),
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLastImpl(arg, true) }),
+	),
+	cel.MemberOverload("dyn_first", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.OverloadIsNonStrict(),
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLastImpl(arg, true) }),
+	),
+)
+
+var celLast = cel.Function("last",
+	cel.Overload("last_dyn", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.OverloadIsNonStrict(),
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLastImpl(arg, false) }),
+	),
+	cel.MemberOverload("dyn_last", []*cel.Type{cel.DynType}, cel.DynType,
+		cel.OverloadIsNonStrict(),
+		cel.UnaryBinding(func(arg ref.Val) ref.Val { return celFirstLastImpl(arg, false) }),
 	),
 )
 
