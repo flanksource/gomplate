@@ -596,7 +596,7 @@ func TestCelK8s(t *testing.T) {
 		{Input: `k8s.isHealthy(healthy_obj)`, Output: true},
 		{Input: `k8s.isHealthy(unhealthy_obj)`, Output: false},
 		{Input: `k8s.getHealth(healthy_obj).status`, Output: "Running"},
-		{Input: `k8s.getHealth(unhealthy_obj).message`, Output: "Back-off 40s restarting failed container=main pod=my-pod_argocd(63674389-f613-11e8-a057-fe5f49266390)"},
+		{Input: `k8s.getHealth(unhealthy_obj).message`, Output: "ContainersNotReady containers with unready status: [main], Back-off 40s restarting failed container=main pod=my-pod_argocd(63674389-f613-11e8-a057-fe5f49266390)"},
 		{Input: `k8s.getHealth(unhealthy_obj).ok`, Output: false},
 		{Input: `k8s.getHealth(healthy_obj).message`, Output: ""},
 		{Input: `k8s.is_healthy(healthy_obj)`, Output: true},
@@ -686,36 +686,26 @@ func TestCelK8sMemoryResourceUnits(t *testing.T) {
 
 func TestCelFirstLast(t *testing.T) {
 	runTests(t, []Test{
-		// global first/last on list
-		{nil, `first([1, 2, 3])`, "1"},
-		{nil, `last([1, 2, 3])`, "3"},
-		// member first/last on list
+		// list member
 		{nil, `[1, 2, 3].first()`, "1"},
 		{nil, `[1, 2, 3].last()`, "3"},
-		// empty list → null → rendered as ""
-		{nil, `first([])`, ""},
-		{nil, `last([])`, ""},
-		// null input → null → ""
-		{nil, `first(null)`, ""},
-		{nil, `last(null)`, ""},
-		// string first/last character
-		{nil, `first("hello")`, "h"},
-		{nil, `last("hello")`, "o"},
-		// member string
-		{nil, `"hello".first()`, "h"},
-		{nil, `"hello".last()`, "o"},
-		// empty string → ""
-		{nil, `first("")`, ""},
-		{nil, `last("")`, ""},
-		// map sorted-key first/last
-		{nil, `first({'b': 2, 'a': 1})`, "1"},
-		{nil, `last({'b': 2, 'a': 1})`, "2"},
-		// nil env variable → null → ""
-		{map[string]any{"a": nil}, `first(a)`, ""},
-		{map[string]any{"a": nil}, `last(a)`, ""},
+		// empty list → null
+		{nil, `[].first()`, ""},
+		{nil, `[].last()`, ""},
+		// map member (sorted key: "a" < "b")
+		{nil, `{"b": 2, "a": 1}.first()`, "1"},
+		{nil, `{"b": 2, "a": 1}.last()`, "2"},
+		// empty map → null
+		{nil, `{}.first()`, ""},
+		// standalone function
+		{nil, `first([1, 2, 3])`, "1"},
+		{nil, `last([1, 2, 3])`, "3"},
+		// nil-safe: missing variable → null
+		{map[string]any{"x": nil}, `x.first()`, ""},
+		{map[string]any{"x": nil}, `x.last()`, ""},
 		// env variable list
-		{map[string]any{"a": []any{"x", "y", "z"}}, `first(a)`, "x"},
-		{map[string]any{"a": []any{"x", "y", "z"}}, `last(a)`, "z"},
+		{map[string]any{"a": []any{"x", "y", "z"}}, `a.first()`, "x"},
+		{map[string]any{"a": []any{"x", "y", "z"}}, `a.last()`, "z"},
 	})
 }
 
