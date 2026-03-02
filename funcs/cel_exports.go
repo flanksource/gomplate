@@ -191,6 +191,7 @@ var CelEnvOption = []cel.EnvOption{
 	timeParseDurationGen,
 	timeSinceGen,
 	timeUntilGen,
+	timeInTimeRangeGen,
 
 	uuidV1Gen,
 	uuidV4Gen,
