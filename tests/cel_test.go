@@ -550,6 +550,24 @@ func TestCelDates(t *testing.T) {
 	runTests(t, tests)
 }
 
+func TestCelTimestampGetHoursMinutes(t *testing.T) {
+	ts, _ := time.Parse(time.RFC3339, "2024-06-15T14:30:45Z")
+
+	runTests(t, []Test{
+		// getHours and getMinutes on a time.Time variable
+		{map[string]any{"t": ts}, `t.getHours()`,   "14"},
+		{map[string]any{"t": ts}, `t.getMinutes()`, "30"},
+
+		// combined — check it's within 9–17 and past the half hour
+		{map[string]any{"t": ts}, `t.getHours() >= 9 && t.getHours() <= 17`, "true"},
+		{map[string]any{"t": ts}, `t.getHours() == 14 && t.getMinutes() == 30`, "true"},
+
+		// with a timezone offset (CEL built-in tz support)
+		{map[string]any{"t": ts}, `t.getHours("America/New_York")`,   "10"}, // UTC-4 in June
+		{map[string]any{"t": ts}, `t.getMinutes("America/New_York")`, "30"},
+	})
+}
+
 func TestCelTimeInTimeRange(t *testing.T) {
 	// various timestamps to test boundary conditions
 	ts14_30_45, _ := time.Parse(time.RFC3339, "2024-06-15T14:30:45Z") // 14:30:45 — inside 9–17
