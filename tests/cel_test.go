@@ -555,7 +555,7 @@ func TestCelTimestampGetHoursMinutes(t *testing.T) {
 
 	runTests(t, []Test{
 		// getHours and getMinutes on a time.Time variable
-		{map[string]any{"t": ts}, `t.getHours()`,   "14"},
+		{map[string]any{"t": ts}, `t.getHours()`, "14"},
 		{map[string]any{"t": ts}, `t.getMinutes()`, "30"},
 
 		// combined — check it's within 9–17 and past the half hour
@@ -563,7 +563,7 @@ func TestCelTimestampGetHoursMinutes(t *testing.T) {
 		{map[string]any{"t": ts}, `t.getHours() == 14 && t.getMinutes() == 30`, "true"},
 
 		// with a timezone offset (CEL built-in tz support)
-		{map[string]any{"t": ts}, `t.getHours("America/New_York")`,   "10"}, // UTC-4 in June
+		{map[string]any{"t": ts}, `t.getHours("America/New_York")`, "10"}, // UTC-4 in June
 		{map[string]any{"t": ts}, `t.getMinutes("America/New_York")`, "30"},
 	})
 }
