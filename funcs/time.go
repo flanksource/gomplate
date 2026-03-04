@@ -11,6 +11,7 @@ import (
 	"github.com/flanksource/commons/duration"
 	"github.com/flanksource/commons/properties"
 	"github.com/flanksource/commons/utils"
+	"github.com/timberio/go-datemath"
 
 	"github.com/flanksource/gomplate/v3/conv"
 	"github.com/flanksource/gomplate/v3/time"
@@ -72,6 +73,7 @@ func CreateTimeFuncs(ctx context.Context) map[string]interface{} {
 	return map[string]interface{}{
 		"time":              func() interface{} { return ns },
 		"in_business_hours": ns.InBusinessHour,
+		"parseDateTime":     ParseDateTime,
 	}
 }
 
@@ -326,4 +328,78 @@ func padRight(in, pad string, length int) string {
 			return in[0:length]
 		}
 	}
+}
+
+// ParseDateTime handles various datetime formats including datemath expressions
+func ParseDateTime(timeStr string) *gotime.Time {
+	if timeStr == "" {
+		return nil
+	}
+
+	// Handle datemath expressions using the go-datemath library
+	if strings.HasPrefix(timeStr, "now") || strings.Contains(timeStr, "/") {
+		parsedTime, err := datemath.ParseAndEvaluate(timeStr, datemath.WithNow(gotime.Now()))
+		if err != nil {
+			return nil
+		}
+		return &parsedTime
+	}
+
+	// Handle Unix timestamps (seconds)
+	if val, err := strconv.ParseInt(timeStr, 10, 64); err == nil {
+		if val > 1000000000 && val < 10000000000 { // Valid Unix timestamp range
+			t := gotime.Unix(val, 0)
+			return &t
+		}
+	}
+
+	// Handle Unix timestamps (milliseconds)
+	if val, err := strconv.ParseInt(timeStr, 10, 64); err == nil {
+		if val > 1000000000000 && val < 10000000000000 { // Valid Unix timestamp in ms
+			t := gotime.Unix(val/1000, (val%1000)*1000000)
+			return &t
+		}
+	}
+
+	// Try parsing as RFC3339Nano (with milliseconds)
+	if t, err := gotime.Parse(gotime.RFC3339Nano, timeStr); err == nil {
+		return &t
+	}
+
+	// Try parsing as RFC3339
+	if t, err := gotime.Parse(gotime.RFC3339, timeStr); err == nil {
+		return &t
+	}
+
+	// Try parsing as RFC3339 without timezone but with milliseconds
+	if t, err := gotime.Parse("2006-01-02T15:04:05.999999999", timeStr); err == nil {
+		return &t
+	}
+
+	// Try parsing as RFC3339 without timezone
+	if t, err := gotime.Parse("2006-01-02T15:04:05", timeStr); err == nil {
+		return &t
+	}
+
+	// Try parsing as ISO date
+	if t, err := gotime.Parse("2006-01-02", timeStr); err == nil {
+		return &t
+	}
+
+	// Try parsing as date with time and milliseconds
+	if t, err := gotime.Parse("2006-01-02 15:04:05.999999999", timeStr); err == nil {
+		return &t
+	}
+
+	// Try parsing as date with time (common log format)
+	if t, err := gotime.Parse("2006-01-02 15:04:05", timeStr); err == nil {
+		return &t
+	}
+
+	// Try parsing as date with time and timezone
+	if t, err := gotime.Parse("2006-01-02 15:04:05 MST", timeStr); err == nil {
+		return &t
+	}
+
+	return nil
 }
