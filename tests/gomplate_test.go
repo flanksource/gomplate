@@ -186,6 +186,40 @@ func TestGomplateHeaders(t *testing.T) {
 	}
 }
 
+func TestParseDateTimeTemplate(t *testing.T) {
+	tests := []struct {
+		template string
+		out      string
+	}{
+		// RFC3339 format
+		{`{{ (parseDateTime "2024-01-15T10:30:00Z").Format "15:04" }}`, "10:30"},
+		// RFC3339 with milliseconds
+		{`{{ (parseDateTime "2024-01-15T10:30:00.123Z").Format "15:04:05" }}`, "10:30:00"},
+		// RFC3339Nano
+		{`{{ (parseDateTime "2024-01-15T10:30:00.123456789Z").Format "2006-01-02" }}`, "2024-01-15"},
+		// ISO date only
+		{`{{ (parseDateTime "2024-01-15").Format "2006-01-02" }}`, "2024-01-15"},
+		// DateTime with space separator
+		{`{{ (parseDateTime "2024-01-15 10:30:00").Format "15:04:05" }}`, "10:30:00"},
+		// DateTime with space and milliseconds
+		{`{{ (parseDateTime "2024-01-15 10:30:45.123").Format "15:04:05" }}`, "10:30:45"},
+		// Unix timestamp (seconds)
+		{`{{ (parseDateTime "1705315800").Format "2006" }}`, "2024"},
+		// Unix timestamp (milliseconds)
+		{`{{ (parseDateTime "1705315800000").Format "2006" }}`, "2024"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.template, func(t *testing.T) {
+			out, err := gomplate.RunTemplate(nil, gomplate.Template{
+				Template: tc.template,
+			})
+			assert.NoError(t, err)
+			assert.Equal(t, tc.out, out)
+		})
+	}
+}
+
 func TestInBusinessHourTemplate(t *testing.T) {
 	loadTestProperties(t)
 

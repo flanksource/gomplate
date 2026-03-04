@@ -536,7 +536,7 @@ func TestCelDates(t *testing.T) {
 		{nil, `Duration("7d").getHours()`, "168"},
 		{nil, `duration("1h") > duration("2h")`, "false"},
 		{map[string]interface{}{"t": "2020-01-01T00:00:00Z"}, `Age(t) > duration('1h')`, "true"},
-		// {map[string]interface{}{"t": "2020-01-01T00:00:00Z"}, `age(t) > duration('1h')`, "true"},
+
 		{map[string]interface{}{"t": "2020-01-01T00:00:00Z"}, `Age(t) > Duration('3d')`, "true"},
 		{nil, `duration('24h') > Duration('3d')`, "false"},
 
@@ -545,6 +545,49 @@ func TestCelDates(t *testing.T) {
 		{map[string]interface{}{"code": 200, "sslAge": time.Hour}, `sslAge`, "1h0m0s"},
 		{map[string]interface{}{"code": 200, "sslAge": time.Hour}, `sslAge < duration('2h')`, "true"},
 		{map[string]interface{}{"code": 200, "sslAge": time.Hour}, `code in [200,201,301] && sslAge > duration('59m')`, "true"},
+	}
+
+	runTests(t, tests)
+}
+
+func TestCelParseDateTime(t *testing.T) {
+	tests := []Test{
+		// RFC3339 format
+		{nil, `time.ParseDateTime("2024-01-15T10:30:00Z").getHours()`, "10"},
+		{nil, `time.ParseDateTime("2024-01-15T10:30:00Z").getMinutes()`, "30"},
+		{nil, `time.ParseDateTime("2026-02-03T08:07:09.537").getMinutes()`, "7"},
+		{nil, `time.ParseDateTime("2024-01-15 10:30:00").getMinutes()`, "30"},
+
+		// RFC3339 with milliseconds
+		{nil, `time.ParseDateTime("2024-01-15T10:30:00.123Z").getHours()`, "10"},
+		{nil, `time.ParseDateTime("2024-01-15T10:30:00.123456Z").getMinutes()`, "30"},
+		{nil, `time.ParseDateTime("2024-01-15T10:30:00.123456789Z").getSeconds()`, "0"},
+
+		// RFC3339 without timezone
+		{nil, `time.ParseDateTime("2024-01-15T10:30:00").getHours()`, "10"},
+
+		// RFC3339 without timezone but with milliseconds
+		{nil, `time.ParseDateTime("2024-01-15T10:30:45.123").getSeconds()`, "45"},
+		{nil, `time.ParseDateTime("2024-01-15T10:30:45.123456").getSeconds()`, "45"},
+
+		// ISO date format
+		{nil, `time.ParseDateTime("2024-01-15").getFullYear()`, "2024"},
+
+		// Date with time (common log format)
+		{nil, `time.ParseDateTime("2024-01-15 10:30:00").getHours()`, "10"},
+
+		// Date with time and milliseconds
+		{nil, `time.ParseDateTime("2024-01-15 10:30:45.123").getSeconds()`, "45"},
+		{nil, `time.ParseDateTime("2024-01-15 10:30:45.123456789").getSeconds()`, "45"},
+
+		// Unix timestamp (seconds)
+		{nil, `time.ParseDateTime("1705315800").getFullYear()`, "2024"},
+
+		// Unix timestamp (milliseconds)
+		{nil, `time.ParseDateTime("1705315800000").getFullYear()`, "2024"},
+
+		// Empty string returns null
+		{nil, `time.ParseDateTime("") == null`, "true"},
 	}
 
 	runTests(t, tests)
