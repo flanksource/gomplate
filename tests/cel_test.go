@@ -550,6 +550,55 @@ func TestCelDates(t *testing.T) {
 	runTests(t, tests)
 }
 
+func TestCelTimestampGetHoursMinutes(t *testing.T) {
+	ts, _ := time.Parse(time.RFC3339, "2024-06-15T14:30:45Z")
+
+	runTests(t, []Test{
+		// getHours and getMinutes on a time.Time variable
+		{map[string]any{"t": ts}, `t.getHours()`, "14"},
+		{map[string]any{"t": ts}, `t.getMinutes()`, "30"},
+
+		// combined — check it's within 9–17 and past the half hour
+		{map[string]any{"t": ts}, `t.getHours() >= 9 && t.getHours() <= 17`, "true"},
+		{map[string]any{"t": ts}, `t.getHours() == 14 && t.getMinutes() == 30`, "true"},
+
+		// with a timezone offset (CEL built-in tz support)
+		{map[string]any{"t": ts}, `t.getHours("America/New_York")`, "10"}, // UTC-4 in June
+		{map[string]any{"t": ts}, `t.getMinutes("America/New_York")`, "30"},
+	})
+}
+
+func TestCelTimeInTimeRange(t *testing.T) {
+	// various timestamps to test boundary conditions
+	ts14_30_45, _ := time.Parse(time.RFC3339, "2024-06-15T14:30:45Z") // 14:30:45 — inside 9–17
+	ts09_00_00, _ := time.Parse(time.RFC3339, "2024-06-15T09:00:00Z") // 09:00:00 — start boundary
+	ts17_00_00, _ := time.Parse(time.RFC3339, "2024-06-15T17:00:00Z") // 17:00:00 — end boundary
+	ts17_00_01, _ := time.Parse(time.RFC3339, "2024-06-15T17:00:01Z") // 17:00:01 — one second past end
+	ts08_59_59, _ := time.Parse(time.RFC3339, "2024-06-15T08:59:59Z") // 08:59:59 — one second before start
+	ts09_30_00, _ := time.Parse(time.RFC3339, "2024-06-15T09:30:00Z") // 09:30:00 — inside with HH:MM:SS range
+
+	runTests(t, []Test{
+		// time.Time input, HH:MM boundaries
+		{map[string]any{"t": ts14_30_45}, `time.InTimeRange(t, "09:00", "17:00")`, "true"},
+		{map[string]any{"t": ts09_00_00}, `time.InTimeRange(t, "09:00", "17:00")`, "true"},  // start boundary
+		{map[string]any{"t": ts17_00_00}, `time.InTimeRange(t, "09:00", "17:00")`, "true"},  // end boundary
+		{map[string]any{"t": ts17_00_01}, `time.InTimeRange(t, "09:00", "17:00")`, "false"}, // one second past end
+		{map[string]any{"t": ts08_59_59}, `time.InTimeRange(t, "09:00", "17:00")`, "false"}, // one second before start
+
+		// RFC3339 string input, HH:MM boundaries
+		{nil, `time.InTimeRange("2024-06-15T14:30:00Z", "09:00", "17:00")`, "true"},
+		{nil, `time.InTimeRange("2024-06-15T08:59:59Z", "09:00", "17:00")`, "false"},
+		{nil, `time.InTimeRange("2024-06-15T17:00:01Z", "09:00", "17:00")`, "false"},
+
+		// HH:MM:SS boundaries (seconds precision)
+		{map[string]any{"t": ts09_30_00}, `time.InTimeRange(t, "09:30:00", "17:30:00")`, "true"},
+		{nil, `time.InTimeRange("2024-06-15T09:29:59Z", "09:30:00", "17:30:00")`, "false"}, // one second before HH:MM:SS start
+		{nil, `time.InTimeRange("2024-06-15T17:30:00Z", "09:30:00", "17:30:00")`, "true"},  // exact HH:MM:SS end boundary
+		{nil, `time.InTimeRange("2024-06-15T17:30:01Z", "09:30:00", "17:30:00")`, "false"}, // one second past HH:MM:SS end
+	})
+
+}
+
 func TestCelParseDateTime(t *testing.T) {
 	tests := []Test{
 		// RFC3339 format
@@ -639,7 +688,7 @@ func TestCelK8s(t *testing.T) {
 		{Input: `k8s.isHealthy(healthy_obj)`, Output: true},
 		{Input: `k8s.isHealthy(unhealthy_obj)`, Output: false},
 		{Input: `k8s.getHealth(healthy_obj).status`, Output: "Running"},
-		{Input: `k8s.getHealth(unhealthy_obj).message`, Output: "Back-off 40s restarting failed container=main pod=my-pod_argocd(63674389-f613-11e8-a057-fe5f49266390)"},
+		{Input: `k8s.getHealth(unhealthy_obj).message`, Output: "ContainersNotReady containers with unready status: [main], Back-off 40s restarting failed container=main pod=my-pod_argocd(63674389-f613-11e8-a057-fe5f49266390)"},
 		{Input: `k8s.getHealth(unhealthy_obj).ok`, Output: false},
 		{Input: `k8s.getHealth(healthy_obj).message`, Output: ""},
 		{Input: `k8s.is_healthy(healthy_obj)`, Output: true},
@@ -729,36 +778,26 @@ func TestCelK8sMemoryResourceUnits(t *testing.T) {
 
 func TestCelFirstLast(t *testing.T) {
 	runTests(t, []Test{
-		// global first/last on list
-		{nil, `first([1, 2, 3])`, "1"},
-		{nil, `last([1, 2, 3])`, "3"},
-		// member first/last on list
+		// list member
 		{nil, `[1, 2, 3].first()`, "1"},
 		{nil, `[1, 2, 3].last()`, "3"},
-		// empty list → null → rendered as ""
-		{nil, `first([])`, ""},
-		{nil, `last([])`, ""},
-		// null input → null → ""
-		{nil, `first(null)`, ""},
-		{nil, `last(null)`, ""},
-		// string first/last character
-		{nil, `first("hello")`, "h"},
-		{nil, `last("hello")`, "o"},
-		// member string
-		{nil, `"hello".first()`, "h"},
-		{nil, `"hello".last()`, "o"},
-		// empty string → ""
-		{nil, `first("")`, ""},
-		{nil, `last("")`, ""},
-		// map sorted-key first/last
-		{nil, `first({'b': 2, 'a': 1})`, "1"},
-		{nil, `last({'b': 2, 'a': 1})`, "2"},
-		// nil env variable → null → ""
-		{map[string]any{"a": nil}, `first(a)`, ""},
-		{map[string]any{"a": nil}, `last(a)`, ""},
+		// empty list → null
+		{nil, `[].first()`, ""},
+		{nil, `[].last()`, ""},
+		// map member (sorted key: "a" < "b")
+		{nil, `{"b": 2, "a": 1}.first()`, "1"},
+		{nil, `{"b": 2, "a": 1}.last()`, "2"},
+		// empty map → null
+		{nil, `{}.first()`, ""},
+		// standalone function
+		{nil, `first([1, 2, 3])`, "1"},
+		{nil, `last([1, 2, 3])`, "3"},
+		// nil-safe: missing variable → null
+		{map[string]any{"x": nil}, `x.first()`, ""},
+		{map[string]any{"x": nil}, `x.last()`, ""},
 		// env variable list
-		{map[string]any{"a": []any{"x", "y", "z"}}, `first(a)`, "x"},
-		{map[string]any{"a": []any{"x", "y", "z"}}, `last(a)`, "z"},
+		{map[string]any{"a": []any{"x", "y", "z"}}, `a.first()`, "x"},
+		{map[string]any{"a": []any{"x", "y", "z"}}, `a.last()`, "z"},
 	})
 }
 

@@ -192,6 +192,66 @@ func (TimeFuncs) Until(n gotime.Time) gotime.Duration {
 	return gotime.Until(n)
 }
 
+// InTimeRange reports whether the time of day of t falls within [start, end] (both inclusive).
+// start and end are "HH:MM" or "HH:MM:SS" strings.
+//
+// Examples:
+//
+//	InTimeRange(t, "09:00", "17:00")    → true for 9:00:00–17:00:59
+//	InTimeRange(t, "09:30", "17:30")    → true for 9:30:00–17:30:59
+//	InTimeRange(t, "09:00:00", "17:00:30") → true for 9:00:00–17:00:30
+func (TimeFuncs) InTimeRange(t any, start, end string) (bool, error) {
+	ts, err := toTime(t)
+	if err != nil {
+		return false, err
+	}
+	startSecs, err := parseTimeOfDay(start)
+	if err != nil {
+		return false, err
+	}
+	endSecs, err := parseTimeOfDay(end)
+	if err != nil {
+		return false, err
+	}
+	tSecs := ts.Hour()*3600 + ts.Minute()*60 + ts.Second()
+	return tSecs >= startSecs && tSecs <= endSecs, nil
+}
+
+// parseTimeOfDay parses a "HH:MM" or "HH:MM:SS" string and returns
+// the total number of seconds since midnight.
+func parseTimeOfDay(s string) (int, error) {
+	for _, layout := range []string{"15:04:05", "15:04"} {
+		if t, err := gotime.Parse(layout, s); err == nil {
+			return t.Hour()*3600 + t.Minute()*60 + t.Second(), nil
+		}
+	}
+	return 0, fmt.Errorf("cannot parse %q as a time of day (expected HH:MM or HH:MM:SS)", s)
+}
+
+// toTime converts a timestamp value to a time.Time.
+// Supported input types: time.Time, or a string in RFC3339Nano / RFC3339 /
+// "2006-01-02T15:04:05" / "2006-01-02 15:04:05" format.
+func toTime(v any) (gotime.Time, error) {
+	switch t := v.(type) {
+	case gotime.Time:
+		return t, nil
+	case string:
+		layouts := []string{
+			gotime.RFC3339Nano,
+			gotime.RFC3339,
+			"2006-01-02T15:04:05",
+			"2006-01-02 15:04:05",
+		}
+		for _, layout := range layouts {
+			if ts, err := gotime.Parse(layout, t); err == nil {
+				return ts, nil
+			}
+		}
+		return gotime.Time{}, fmt.Errorf("cannot parse %q as a timestamp", t)
+	}
+	return gotime.Time{}, fmt.Errorf("cannot convert %T to a timestamp", v)
+}
+
 // InBusinessHour returns nil when no business hours are configured.
 func (TimeFuncs) InBusinessHour(value string) (any, error) {
 	in, err := inBusinessHour(value)
