@@ -24,6 +24,7 @@ require (
 	github.com/robertkrimen/otto v0.5.1
 	github.com/samber/oops v1.21.0
 	github.com/stretchr/testify v1.11.1
+	github.com/timberio/go-datemath v0.1.0
 	github.com/ugorji/go/codec v1.3.1
 	golang.org/x/text v0.34.0
 	golang.org/x/tools v0.42.0

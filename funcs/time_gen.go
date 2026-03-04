@@ -2,10 +2,13 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
-import gotime "time"
+import (
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
+
+	gotime "time"
+)
 
 var timeZoneNameGen = cel.Function("time.ZoneName",
 	cel.Overload("time.ZoneName_",
@@ -307,6 +310,21 @@ var timeUntilGen = cel.Function("time.Until",
 
 			return types.DefaultTypeAdapter.NativeToValue(x.Until(args[0].Value().(gotime.Time)))
 
+		}),
+	),
+)
+
+var timeParseDateTimeGen = cel.Function("time.ParseDateTime",
+	cel.Overload("time.ParseDateTime_string",
+		[]*cel.Type{cel.StringType},
+		cel.DynType,
+		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
+			timeStr := args[0].Value().(string)
+			result := ParseDateTime(timeStr)
+			if result == nil {
+				return types.NullValue
+			}
+			return types.DefaultTypeAdapter.NativeToValue(*result)
 		}),
 	),
 )
