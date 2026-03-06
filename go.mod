@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/goutils v1.1.1
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/flanksource/commons v1.47.2
-	github.com/flanksource/is-healthy v1.0.83
+	github.com/flanksource/is-healthy v1.0.84
 	github.com/flanksource/kubectl-neat v1.0.4
 	github.com/google/cel-go v0.27.0
 	github.com/google/go-cmp v0.7.0
