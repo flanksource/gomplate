@@ -44,6 +44,7 @@ type Template struct {
 	JSONPath   string `yaml:"jsonPath,omitempty" json:"jsonPath,omitempty"`
 	Expression string `yaml:"expr,omitempty" json:"expr,omitempty"` // A cel-go expression
 	Javascript string `yaml:"javascript,omitempty" json:"javascript,omitempty"`
+	Jsonata    string `yaml:"jsonata,omitempty" json:"jsonata,omitempty"` // A JSONata expression
 	RightDelim string `yaml:"-" json:"-"`
 	LeftDelim  string `yaml:"-" json:"-"`
 
@@ -72,6 +73,9 @@ func (t Template) String() string {
 	if t.JSONPath != "" {
 		return "jsonpath: " + t.JSONPath
 	}
+	if t.Jsonata != "" {
+		return "jsonata: " + t.Jsonata
+	}
 	return ""
 }
 
@@ -87,6 +91,9 @@ func (t Template) ShortString() string {
 	}
 	if t.JSONPath != "" {
 		return "jsonpath: " + short(t.JSONPath)
+	}
+	if t.Jsonata != "" {
+		return "jsonata: " + short(t.Jsonata)
 	}
 	return ""
 }
@@ -116,7 +123,8 @@ func (t Template) CacheKey(env map[string]any) string {
 		t.Expression +
 		t.Javascript +
 		t.JSONPath +
-		t.Template
+		t.Template +
+		t.Jsonata
 }
 
 func (t Template) IsCacheable() bool {
@@ -133,7 +141,7 @@ func (t Template) IsCacheable() bool {
 }
 
 func (t Template) IsEmpty() bool {
-	return t.Template == "" && t.JSONPath == "" && t.Expression == "" && t.Javascript == ""
+	return t.Template == "" && t.JSONPath == "" && t.Expression == "" && t.Javascript == "" && t.Jsonata == ""
 }
 
 func RunExpression(_environment map[string]any, template Template) (any, error) {
@@ -268,6 +276,15 @@ func RunTemplateContext(ctx commonsContext.Context, environment map[string]any, 
 			return "", nil
 		}
 		return fmt.Sprintf("%v", out), nil
+	}
+
+	// JSONata
+	if template.Jsonata != "" {
+		out, err := RunJSONata(environment, template.Jsonata)
+		if err != nil {
+			return "", err
+		}
+		return jsonataToString(out), nil
 	}
 
 	return "", nil

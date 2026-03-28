@@ -1,6 +1,6 @@
 module github.com/flanksource/gomplate/v3
 
-go 1.25.1
+go 1.25.6
 
 require (
 	github.com/Masterminds/goutils v1.1.1
@@ -21,6 +21,7 @@ require (
 	github.com/onsi/gomega v1.39.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
+	github.com/recolabs/gnata v0.1.1
 	github.com/robertkrimen/otto v0.5.1
 	github.com/samber/oops v1.21.0
 	github.com/stretchr/testify v1.11.1
