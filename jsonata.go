@@ -26,7 +26,7 @@ var gnataBuiltinFunctions = map[string]struct{}{
 	"count": {}, "append": {}, "reverse": {}, "shuffle": {}, "distinct": {},
 	"flatten": {}, "zip": {},
 	"keys": {}, "values": {}, "spread": {}, "merge": {}, "error": {},
-	"lookup": {},
+	"lookup":  {},
 	"boolean": {}, "not": {}, "exists": {}, "assert": {}, "type": {},
 	"now": {}, "millis": {}, "fromMillis": {}, "toMillis": {},
 	"uppercase": {}, "lowercase": {}, "match": {}, "replace": {},
