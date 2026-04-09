@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
+	"github.com/antchfx/xmlquery"
 	"github.com/itchyny/gojq"
 	"github.com/jmespath/go-jmespath"
 	"github.com/ohler55/ojg/jp"
@@ -111,6 +113,34 @@ func JSONPath(jsonPath string, in interface{}) (interface{}, error) {
 		return "", nil
 	}
 	return out, nil
+}
+
+// XPath evaluates an XPath expression against an XML string and returns the
+// result. If the expression matches a single node its text content is returned;
+// if it matches multiple nodes a []string of text contents is returned.
+func XPath(xpathStr, xmlStr string) (interface{}, error) {
+	doc, err := xmlquery.Parse(strings.NewReader(xmlStr))
+	if err != nil {
+		return nil, fmt.Errorf("xpath: parsing xml: %w", err)
+	}
+
+	nodes, err := xmlquery.QueryAll(doc, xpathStr)
+	if err != nil {
+		return nil, fmt.Errorf("xpath: evaluating expression %q: %w", xpathStr, err)
+	}
+
+	switch len(nodes) {
+	case 0:
+		return "", nil
+	case 1:
+		return nodes[0].InnerText(), nil
+	default:
+		out := make([]string, len(nodes))
+		for i, n := range nodes {
+			out[i] = n.InnerText()
+		}
+		return out, nil
+	}
 }
 
 func isSupportableType(in interface{}) bool {

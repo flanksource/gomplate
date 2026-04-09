@@ -42,6 +42,8 @@ require github.com/hairyhenderson/yaml v0.0.0-20220618171115-2d35fca545ce
 
 require (
 	cel.dev/expr v0.25.1 // indirect
+	github.com/antchfx/xmlquery v1.5.1 // indirect
+	github.com/antchfx/xpath v1.3.6 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bsm/gomega v1.27.10 // indirect
@@ -58,6 +60,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
