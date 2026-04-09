@@ -26,6 +26,7 @@ var CelEnvOption = []cel.EnvOption{
 	collMapToKeyValGen,
 	collJmesPathGen,
 	collJsonPathGen,
+	collXPathGen,
 	celLabelsMatch,
 	celCoalesce,
 	celFirst,

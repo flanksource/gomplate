@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
+	"github.com/antchfx/xmlquery"
 	"github.com/itchyny/gojq"
 	"github.com/jmespath/go-jmespath"
 	"github.com/ohler55/ojg/jp"
@@ -109,6 +111,27 @@ func JSONPath(jsonPath string, in interface{}) (interface{}, error) {
 	}
 	if len(out) == 0 {
 		return "", nil
+	}
+	return out, nil
+}
+
+// XPath evaluates an XPath expression against an XML string and returns a
+// list of text contents of all matching nodes. Use .first() on the result to
+// get a single value.
+func XPath(xpathStr, xmlStr string) ([]string, error) {
+	doc, err := xmlquery.Parse(strings.NewReader(xmlStr))
+	if err != nil {
+		return nil, fmt.Errorf("xpath: parsing xml: %w", err)
+	}
+
+	nodes, err := xmlquery.QueryAll(doc, xpathStr)
+	if err != nil {
+		return nil, fmt.Errorf("xpath: evaluating expression %q: %w", xpathStr, err)
+	}
+
+	out := make([]string, len(nodes))
+	for i, n := range nodes {
+		out[i] = n.InnerText()
 	}
 	return out, nil
 }

@@ -59,6 +59,7 @@ func CreateCollFuncs(ctx context.Context) map[string]interface{} {
 	f["keyValToMap"] = coll.KeyValToMap
 	f["jsonpath"] = coll.JSONPath
 	f["jmespath"] = coll.JMESPath
+	f["xpath"] = coll.XPath
 	return f
 }
 

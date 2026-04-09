@@ -279,6 +279,12 @@ func TestCelJSON(t *testing.T) {
 		{map[string]interface{}{"i": person}, "jq('.Address.city_name', i)", "Kathmandu"},
 		{map[string]interface{}{"i": person}, "jq('.Address.country', i)", ""},
 		{map[string]interface{}{"i": personJSONString}, "jq('.Address.city_name', i)", "Kathmandu"},
+
+		// XPath always returns a list; use .first() for a single value
+		{nil, `xpath('//name/text()', '<root><name>Alice</name></root>').first()`, "Alice"},
+		{nil, `xpath('//item/@id', '<root><item id="42"/></root>').first()`, "42"},
+		{nil, `xpath('//item/@id', '<root><item id="1"/><item id="2"/></root>')`, "[1 2]"},
+		{nil, `xpath('//missing', '<root><name>Alice</name></root>')`, "[]"},
 	})
 }
 

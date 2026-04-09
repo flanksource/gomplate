@@ -354,6 +354,22 @@ var collJmesPathGen = cel.Function("jmespath",
 
 
 
+var collXPathGen = cel.Function("xpath",
+	cel.Overload("xpath_string_string",
+		[]*cel.Type{
+			cel.StringType, cel.StringType,
+		},
+		cel.DynType,
+		cel.BinaryBinding(func(xpathExpr, xmlStr ref.Val) ref.Val {
+			result, err := coll.XPath(xpathExpr.Value().(string), xmlStr.Value().(string))
+			if err != nil {
+				return types.WrapErr(err)
+			}
+			return types.DefaultTypeAdapter.NativeToValue(result)
+		}),
+	),
+)
+
 var collPickGen = cel.Function("pick",
 	cel.MemberOverload("pick_interface{}",
 		[]*cel.Type{
