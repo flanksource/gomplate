@@ -151,4 +151,26 @@ cfg := Config{Message: "Hello, {{ .name }}!"}
 
 err := gomplate.Walk(map[string]any{"name": "world"}, &cfg)
 // cfg.Message == "Hello, world!"
+
+## CEL eval helper
+
+A small helper command is available at `cmd/ceval` to evaluate CEL expressions against an input YAML or JSON file.
+
+Run it with:
+
+```bash
+go run ./cmd/ceval -f env.yaml -e "labels['a/b/c']"
+```
+
+Example input file:
+
+```yaml
+labels:
+  a/b/c: d
+```
+
+Output:
+
+```text
+d
 ```
