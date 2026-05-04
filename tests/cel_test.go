@@ -312,14 +312,14 @@ func TestCelFold(t *testing.T) {
 
 	out, err := gomplate.RunExpression(map[string]any{
 		"tags": []map[string]any{
-			{"key": "application", "value": "IIAB"},
-			{"key": "environment", "value": "PROD"},
+			{"key": "application", "value": "orders"},
+			{"key": "environment", "value": "prod"},
 		},
 	}, gomplate.Template{
 		Expression: `dyn(tags).fold(tag, acc, merge(acc, {tag.key: tag.value})).toJSON()`,
 	})
 	assert.NoError(t, err)
-	assert.JSONEq(t, `{"application":"IIAB","environment":"PROD"}`, out.(string))
+	assert.JSONEq(t, `{"application":"orders","environment":"prod"}`, out.(string))
 }
 
 func TestCelEncode(t *testing.T) {
