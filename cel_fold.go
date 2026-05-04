@@ -107,8 +107,8 @@ func foldMapMacro(mef cel.MacroExprFactory, target ast.Expr, args []ast.Expr) (a
 	}
 
 	entryVar := "__fold_entry__"
-	if entryVar == keyVar || entryVar == valVar || entryVar == accuVar {
-		entryVar = "__fold_entry2__"
+	for suffix := 2; entryVar == keyVar || entryVar == valVar || entryVar == accuVar; suffix++ {
+		entryVar = fmt.Sprintf("__fold_entry%d__", suffix)
 	}
 	entry := mef.NewIdent(entryVar)
 	key := mef.NewCall(operators.Index, entry, mef.NewLiteral(types.IntZero))
@@ -149,11 +149,11 @@ func foldInitialValue(collection ref.Val, mapValues bool) ref.Val {
 		if !ok {
 			return types.NewErr("fold target is not a map")
 		}
-		it := m.Iterator()
-		if it.HasNext() != types.True {
+		keys := sortedMapKeys(m)
+		if len(keys) == 0 {
 			return types.DefaultTypeAdapter.NativeToValue(nil)
 		}
-		first = m.Get(it.Next())
+		first = m.Get(keys[0])
 	} else {
 		l, ok := collection.(traits.Lister)
 		if !ok {
@@ -173,19 +173,29 @@ func sortedMapEntries(collection ref.Val) ref.Val {
 		return types.NewErr("fold target is not a map")
 	}
 
-	keys := []ref.Val{}
-	for it := m.Iterator(); it.HasNext() == types.True; {
-		keys = append(keys, it.Next())
-	}
-	sort.SliceStable(keys, func(i, j int) bool {
-		return fmt.Sprint(keys[i].Value()) < fmt.Sprint(keys[j].Value())
-	})
+	keys := sortedMapKeys(m)
 
 	entries := make([]ref.Val, 0, len(keys))
 	for _, key := range keys {
 		entries = append(entries, types.NewRefValList(types.DefaultTypeAdapter, []ref.Val{key, m.Get(key)}))
 	}
 	return types.NewRefValList(types.DefaultTypeAdapter, entries)
+}
+
+func sortedMapKeys(m traits.Mapper) []ref.Val {
+	keys := []ref.Val{}
+	for it := m.Iterator(); it.HasNext() == types.True; {
+		keys = append(keys, it.Next())
+	}
+	sort.SliceStable(keys, func(i, j int) bool {
+		return mapKeySortString(keys[i]) < mapKeySortString(keys[j])
+	})
+	return keys
+}
+
+func mapKeySortString(key ref.Val) string {
+	value := key.Value()
+	return fmt.Sprintf("%T:%v", value, value)
 }
 
 func mergeMaps(lhs, rhs ref.Val) ref.Val {
