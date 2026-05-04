@@ -2,17 +2,20 @@ package gomplate
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/ast"
+	"github.com/google/cel-go/common/operators"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
 	"github.com/google/cel-go/common/types/traits"
 )
 
 const (
-	foldInitListFn = "cel.@foldInitList"
-	foldInitMapFn  = "cel.@foldInitMap"
+	foldInitListFn       = "cel.@foldInitList"
+	foldInitMapFn        = "cel.@foldInitMap"
+	foldSortedMapEntries = "cel.@foldSortedMapEntries"
 )
 
 func getFoldCelLibrary() cel.EnvOption {
@@ -46,6 +49,10 @@ func (l *foldCelLibrary) CompileOptions() []cel.EnvOption {
 				cel.UnaryBinding(func(collection ref.Val) ref.Val {
 					return foldInitialValue(collection, true)
 				})),
+		),
+		cel.Function(foldSortedMapEntries,
+			cel.Overload("fold_sorted_map_entries_dyn", []*cel.Type{cel.DynType}, cel.ListType(cel.ListType(cel.DynType)),
+				cel.UnaryBinding(sortedMapEntries)),
 		),
 		cel.Function("merge",
 			cel.Overload("merge_map_map", []*cel.Type{cel.MapType(cel.DynType, cel.DynType), cel.MapType(cel.DynType, cel.DynType)}, cel.MapType(cel.DynType, cel.DynType),
@@ -99,14 +106,31 @@ func foldMapMacro(mef cel.MacroExprFactory, target ast.Expr, args []ast.Expr) (a
 		return nil, mef.NewError(args[2].ID(), "fold variable names must be unique")
 	}
 
-	return mef.NewComprehensionTwoVar(
-		target,
+	entryVar := "__fold_entry__"
+	if entryVar == keyVar || entryVar == valVar || entryVar == accuVar {
+		entryVar = "__fold_entry2__"
+	}
+	entry := mef.NewIdent(entryVar)
+	key := mef.NewCall(operators.Index, entry, mef.NewLiteral(types.IntZero))
+	value := mef.NewCall(operators.Index, mef.NewIdent(entryVar), mef.NewLiteral(types.Int(1)))
+	step := mef.NewComprehensionTwoVar(
+		mef.NewMap(mef.NewMapEntry(key, value, false)),
 		keyVar,
 		valVar,
 		accuVar,
-		mef.NewCall(foldInitMapFn, mef.Copy(target)),
+		mef.NewIdent(accuVar),
 		mef.NewLiteral(types.True),
 		args[3],
+		mef.NewIdent(accuVar),
+	)
+
+	return mef.NewComprehension(
+		mef.NewCall(foldSortedMapEntries, mef.Copy(target)),
+		entryVar,
+		accuVar,
+		mef.NewCall(foldInitMapFn, mef.Copy(target)),
+		mef.NewLiteral(types.True),
+		step,
 		mef.NewIdent(accuVar),
 	), nil
 }
@@ -141,6 +165,27 @@ func foldInitialValue(collection ref.Val, mapValues bool) ref.Val {
 		first = l.Get(types.IntZero)
 	}
 	return zeroValueForFold(first)
+}
+
+func sortedMapEntries(collection ref.Val) ref.Val {
+	m, ok := collection.(traits.Mapper)
+	if !ok {
+		return types.NewErr("fold target is not a map")
+	}
+
+	keys := []ref.Val{}
+	for it := m.Iterator(); it.HasNext() == types.True; {
+		keys = append(keys, it.Next())
+	}
+	sort.SliceStable(keys, func(i, j int) bool {
+		return fmt.Sprint(keys[i].Value()) < fmt.Sprint(keys[j].Value())
+	})
+
+	entries := make([]ref.Val, 0, len(keys))
+	for _, key := range keys {
+		entries = append(entries, types.NewRefValList(types.DefaultTypeAdapter, []ref.Val{key, m.Get(key)}))
+	}
+	return types.NewRefValList(types.DefaultTypeAdapter, entries)
 }
 
 func mergeMaps(lhs, rhs ref.Val) ref.Val {
