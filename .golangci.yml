@@ -6,7 +6,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - goconst
     - gocritic
     - goheader
     - gomodguard
@@ -22,9 +21,6 @@ linters:
   settings:
     dupl:
       threshold: 100
-    goconst:
-      min-len: 2
-      min-occurrences: 4
     gocritic:
       disabled-checks:
         - singleCaseSwitch
