@@ -304,6 +304,24 @@ func TestCelExtensions(t *testing.T) {
 	})
 }
 
+func TestCelFold(t *testing.T) {
+	runTests(t, []Test{
+		{nil, `[1, 2, 3].fold(e, acc, acc + e)`, "6"},
+		{nil, `{"a": "apple", "b": "banana"}.fold(k, v, acc, acc + v)`, "applebanana"},
+	})
+
+	out, err := gomplate.RunExpression(map[string]any{
+		"tags": []map[string]any{
+			{"key": "application", "value": "orders"},
+			{"key": "environment", "value": "prod"},
+		},
+	}, gomplate.Template{
+		Expression: `dyn(tags).fold(tag, acc, merge(acc, {tag.key: tag.value})).toJSON()`,
+	})
+	assert.NoError(t, err)
+	assert.JSONEq(t, `{"application":"orders","environment":"prod"}`, out.(string))
+}
+
 func TestCelEncode(t *testing.T) {
 	tests := []Test{
 		{map[string]interface{}{"hello": "hello world ?"}, "urlencode(hello)", `hello+world+%3F`},
