@@ -342,7 +342,12 @@ Combines all elements of a collection using a binary function.
 
 // For maps:
 {"a": "apple", "b": "banana"}.fold(k, v, acc, acc + v)   // "applebanana"
+
+// Build a map from a list of key/value objects:
+dyn(tags).fold(tag, acc, merge(acc, {tag.key: tag.value}))
 ```
+
+When folding a variable declared as `any`, wrap it with `dyn(...)` so CEL can use it as a comprehension range. The `merge(left, right)` helper returns a map containing all keys from both maps; values from `right` replace values from `left` on duplicate keys.
 
 ### has
 

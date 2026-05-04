@@ -38,6 +38,7 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 	opts = append(opts, typeAdapters...)
 	opts = append(opts, getGoTemplateCelFunction())
 	opts = append(opts, getDebugCelFunction())
+	opts = append(opts, getFoldCelLibrary())
 
 	// Load input as variables
 	for k := range environment {
