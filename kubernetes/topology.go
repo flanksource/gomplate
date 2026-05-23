@@ -103,7 +103,7 @@ func getPodResources(input any, resourceType string, allocType string) int64 {
 		for _, container := range pod.Spec.Containers {
 			mem := container.Resources.Limits.Memory()
 			if mem != nil {
-				totalMemBytes += _k8sMemoryAsBytes(mem.String())
+				totalMemBytes += MemoryAsBytes(mem.String())
 			}
 		}
 		return totalMemBytes
@@ -114,7 +114,7 @@ func getPodResources(input any, resourceType string, allocType string) int64 {
 		for _, container := range pod.Spec.Containers {
 			mem := container.Resources.Requests.Memory()
 			if mem != nil {
-				totalMemBytes += _k8sMemoryAsBytes(mem.String())
+				totalMemBytes += MemoryAsBytes(mem.String())
 			}
 		}
 		return totalMemBytes
@@ -125,7 +125,7 @@ func getPodResources(input any, resourceType string, allocType string) int64 {
 		for _, container := range pod.Spec.Containers {
 			cpu := container.Resources.Limits.Cpu()
 			if cpu != nil {
-				totalCPU += _k8sCPUAsMillicores(cpu.String())
+				totalCPU += CPUAsMillicores(cpu.String())
 			}
 		}
 		return totalCPU
@@ -137,7 +137,7 @@ func getPodResources(input any, resourceType string, allocType string) int64 {
 		for _, container := range pod.Spec.Containers {
 			cpu := container.Resources.Requests.Cpu()
 			if cpu != nil {
-				totalCPU += _k8sCPUAsMillicores(cpu.String())
+				totalCPU += CPUAsMillicores(cpu.String())
 			}
 		}
 		return totalCPU
@@ -162,7 +162,7 @@ func PodComponentProperties(input any) []map[string]any {
 	for _, container := range pod.Spec.Containers {
 		cpu := container.Resources.Limits.Cpu()
 		if cpu != nil {
-			totalCPU += _k8sCPUAsMillicores(cpu.String())
+			totalCPU += CPUAsMillicores(cpu.String())
 		}
 	}
 
@@ -170,7 +170,7 @@ func PodComponentProperties(input any) []map[string]any {
 	for _, container := range pod.Spec.Containers {
 		mem := container.Resources.Limits.Memory()
 		if mem != nil {
-			totalMemBytes += _k8sMemoryAsBytes(mem.String())
+			totalMemBytes += MemoryAsBytes(mem.String())
 		}
 	}
 
@@ -210,9 +210,9 @@ func NodeComponentProperties(input any) []map[string]any {
 		return nil
 	}
 
-	totalCPU := _k8sCPUAsMillicores(node.Status.Allocatable.Cpu().String())
-	totalMemBytes := _k8sMemoryAsBytes(node.Status.Allocatable.Memory().String())
-	totalStorage := _k8sMemoryAsBytes(node.Status.Allocatable.StorageEphemeral().String())
+	totalCPU := CPUAsMillicores(node.Status.Allocatable.Cpu().String())
+	totalMemBytes := MemoryAsBytes(node.Status.Allocatable.Memory().String())
+	totalStorage := MemoryAsBytes(node.Status.Allocatable.StorageEphemeral().String())
 
 	return []map[string]any{
 		{"name": "cpu", "max": totalCPU, "unit": "millicores", "headline": true},

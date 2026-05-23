@@ -9,7 +9,7 @@ import (
 	"github.com/google/cel-go/common/types/ref"
 )
 
-func _k8sCPUAsMillicores(objVal string) int64 {
+func CPUAsMillicores(objVal string) int64 {
 	if strings.HasSuffix(objVal, "m") {
 		return conv.ToInt64(strings.ReplaceAll(objVal, "m", ""))
 	}
@@ -28,13 +28,13 @@ func k8sCPUAsMillicores() cel.EnvOption {
 			cel.IntType,
 			cel.UnaryBinding(func(obj ref.Val) ref.Val {
 				objVal := conv.ToString(obj.Value())
-				return types.Int(_k8sCPUAsMillicores(objVal))
+				return types.Int(CPUAsMillicores(objVal))
 			}),
 		),
 	)
 }
 
-func _k8sMemoryAsBytes(objVal string) int64 {
+func MemoryAsBytes(objVal string) int64 {
 	objVal = strings.ToLower(objVal)
 
 	var memory int64
@@ -58,7 +58,7 @@ func k8sMemoryAsBytes() cel.EnvOption {
 			cel.IntType,
 			cel.UnaryBinding(func(obj ref.Val) ref.Val {
 				objVal := conv.ToString(obj.Value())
-				return types.Int(_k8sMemoryAsBytes(objVal))
+				return types.Int(MemoryAsBytes(objVal))
 			}),
 		),
 	)
