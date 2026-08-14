@@ -216,3 +216,38 @@ gencel-gen: gencel
 .PHONY: cleancel
 cleancel:
 	rm funcs/*_gen.go
+
+MONARCH_OUT := web/packages/lang/src/generated
+
+# Regenerates the Monaco language definitions from cel-go's grammar, the
+# text/template lexer and gomplate's live registries. Run after changing any
+# registered function.
+.PHONY: monarch
+monarch:
+	go run ./cmd/genmonarch -out $(MONARCH_OUT)
+
+# Fails when the checked-in definitions no longer match the code they describe.
+.PHONY: monarch-check
+monarch-check:
+	go run ./cmd/genmonarch -out $(MONARCH_OUT) -check
+
+.PHONY: web-install
+web-install:
+	pnpm -C web install --frozen-lockfile
+
+.PHONY: web-build
+web-build: web-install
+	pnpm -C web build
+
+.PHONY: web-test
+web-test: web-install
+	pnpm -C web test
+
+# Serves the evaluation API the playground proxies to.
+.PHONY: playground-server
+playground-server:
+	go run ./cmd/playground
+
+.PHONY: playground
+playground: web-install
+	pnpm -C web dev:playground

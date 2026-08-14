@@ -1,0 +1,52 @@
+name: web
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # The Monaco language definitions are generated from cel-go's grammar and
+  # gomplate's live registries. If a registered function changes and the
+  # generated files are not refreshed, the editor silently disagrees with the
+  # evaluator -- so drift is a build failure, not a warning.
+  drift:
+    name: generated definitions are current
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: buildjet/setup-go@555ce355a95ff01018ffcf8fbbd9c44654db8374 # v5.0.2
+        with:
+          go-version: 1.22.x
+      - name: Checkout code
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+      - name: Check for drift
+        run: make monarch-check
+
+  web:
+    name: build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d # v3.0.0
+        with:
+          version: 10
+      - name: Install Node
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm -C web install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm -C web typecheck
+      - name: Test
+        run: pnpm -C web test
+      - name: Build
+        run: pnpm -C web build
