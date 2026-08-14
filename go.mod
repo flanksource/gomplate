@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/goutils v1.1.1
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/antchfx/xmlquery v1.5.1
+	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/flanksource/commons v1.53.1
 	github.com/flanksource/is-healthy v1.0.90
 	github.com/flanksource/kubectl-neat v1.0.4
@@ -44,7 +45,6 @@ require github.com/hairyhenderson/yaml v0.0.0-20220618171115-2d35fca545ce
 require (
 	cel.dev/expr v0.25.1 // indirect
 	github.com/antchfx/xpath v1.3.6 // indirect
-	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bsm/gomega v1.27.10 // indirect
 	github.com/cert-manager/cert-manager v1.19.4 // indirect

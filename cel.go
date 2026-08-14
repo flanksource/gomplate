@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"sort"
 	"sync"
 
 	"github.com/flanksource/commons/context"
@@ -89,6 +90,19 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 	return opts
 }
 
+// CompileEnvOptions returns the options RunExpressionContext will compile the
+// template against: the static set plus the per-call variables, registered
+// native types, Functions and CelEnvs.
+//
+// For callers that want to compile an expression themselves before running it,
+// to get a source position out of the issues -- which RunExpression's error
+// does not carry. Building that environment from GetCelEnv alone reports a
+// template's own Functions and CelEnvs as undeclared references.
+func CompileEnvOptions(environment map[string]any, template Template) []cel.EnvOption {
+	opts := staticCelEnvOptions()
+	return append(opts, celEnvOptions(environment, template, currentNativeTypes())...)
+}
+
 // The following identifiers are reserved to allow easier embedding of CEL into a host language.
 //
 // Reference: https://github.com/google/cel-spec/blob/master/doc/langdef.md
@@ -123,6 +137,17 @@ var celIdentifierRegexp = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 func IsCelKeyword(key string) bool {
 	_, ok := celKeywords[key]
 	return ok
+}
+
+// CELKeywords returns the reserved words, sorted. Editor tooling needs the set
+// itself, not just membership tests.
+func CELKeywords() []string {
+	out := make([]string, 0, len(celKeywords))
+	for k := range celKeywords {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
 }
 
 func IsValidCELIdentifier(s string) bool {
