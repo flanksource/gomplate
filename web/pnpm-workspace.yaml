@@ -1,0 +1,27 @@
+packages:
+  - packages/*
+  - apps/*
+
+allowBuilds:
+  esbuild: true
+
+# Mirrors the versions clicky-ui pins in its own catalog. The playground links
+# the sibling clicky-ui checkout when it is present, and a linked workspace
+# package resolves its `catalog:` specifiers against *this* catalog, so the
+# overlapping entries have to agree.
+catalog:
+  "@monaco-editor/react": ^4.7.0
+  "@tailwindcss/vite": ^4.1.13
+  "@types/node": ^22.10.5
+  "@types/react": ^19.0.7
+  "@types/react-dom": ^19.0.3
+  "@vitejs/plugin-react": ^4.3.4
+  jsdom: ^26.0.0
+  monaco-editor: 0.48.0
+  react: ^19.0.0
+  react-dom: ^19.0.0
+  tailwindcss: ^4.1.13
+  typescript: ^5.7.3
+  vite: ^6.0.7
+  vitest: ^3.2.6
+  yaml: ^2.8.3
