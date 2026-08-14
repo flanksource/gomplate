@@ -1,0 +1,6189 @@
+{
+  "cel": {
+    "namespaces": [
+      "aws",
+      "base64",
+      "crypto",
+      "data",
+      "filepath",
+      "json",
+      "k8s",
+      "lists",
+      "math",
+      "net",
+      "optional",
+      "random",
+      "regexp",
+      "sets",
+      "strings",
+      "test",
+      "time",
+      "uuid"
+    ],
+    "keywords": [
+      "as",
+      "break",
+      "const",
+      "continue",
+      "else",
+      "false",
+      "for",
+      "function",
+      "if",
+      "import",
+      "in",
+      "let",
+      "loop",
+      "namespace",
+      "null",
+      "package",
+      "return",
+      "true",
+      "type",
+      "var",
+      "void",
+      "while"
+    ],
+    "types": [
+      "bool",
+      "bytes",
+      "double",
+      "dyn",
+      "duration",
+      "int",
+      "list",
+      "map",
+      "null_type",
+      "string",
+      "timestamp",
+      "type",
+      "uint"
+    ],
+    "macros": [
+      {
+        "name": "all",
+        "argCount": 2,
+        "receiverStyle": true,
+        "doc": "tests whether all elements in the input list or all keys in a map\nsatisfy the given predicate. The all macro behaves in a manner consistent with\nthe Logical AND operator including in how it absorbs errors and short-circuits.",
+        "examples": [
+          "[1, 2, 3].all(x, x \u003e 0) // true",
+          "[1, 2, 0].all(x, x \u003e 0) // false",
+          "['apple', 'banana', 'cherry'].all(fruit, fruit.size() \u003e 3) // true",
+          "[3.14, 2.71, 1.61].all(num, num \u003c 3.0) // false",
+          "{'a': 1, 'b': 2, 'c': 3}.all(key, key != 'b') // false",
+          "// an empty list or map as the range will result in a trivially true result\n[].all(x, x \u003e 0) // true"
+        ]
+      },
+      {
+        "name": "exists",
+        "argCount": 2,
+        "receiverStyle": true,
+        "doc": "tests whether any value in the list or any key in the map\nsatisfies the predicate expression. The exists macro behaves in a manner\nconsistent with the Logical OR operator including in how it absorbs errors and\nshort-circuits.",
+        "examples": [
+          "[1, 2, 3].exists(i, i % 2 != 0) // true",
+          "[0, -1, 5].exists(num, num \u003c 0) // true",
+          "{'x': 'foo', 'y': 'bar'}.exists(key, key.startsWith('z')) // false",
+          "// an empty list or map as the range will result in a trivially false result\n[].exists(i, i \u003e 0) // false",
+          "// test whether a key name equalling 'iss' exists in the map and the\n// value contains the substring 'cel.dev'\n// tokens = {'sub': 'me', 'iss': 'https://issuer.cel.dev'}\ntokens.exists(k, k == 'iss' \u0026\u0026 tokens[k].contains('cel.dev'))"
+        ]
+      },
+      {
+        "name": "exists_one",
+        "argCount": 2,
+        "receiverStyle": true,
+        "doc": "tests whether exactly one list element or map key satisfies\nthe predicate expression. This macro does not short-circuit in order to remain\nconsistent with logical operators being the only operators which can absorb\nerrors within CEL.",
+        "examples": [
+          "[1, 2, 2].exists_one(i, i \u003c 2) // true",
+          "{'a': 'hello', 'aa': 'hellohello'}.exists_one(k, k.startsWith('a')) // false",
+          "[1, 2, 3, 4].exists_one(num, num % 2 == 0) // false",
+          "// ensure exactly one key in the map ends in @acme.co\n{'wiley@acme.co': 'coyote', 'aa@milne.co': 'bear'}.exists_one(k, k.endsWith('@acme.co')) // true"
+        ]
+      },
+      {
+        "name": "filter",
+        "argCount": 2,
+        "receiverStyle": true,
+        "doc": "returns a list containing only the elements from the input list\nthat satisfy the given predicate",
+        "examples": [
+          "[1, 2, 3].filter(x, x \u003e 1) // [2, 3]",
+          "['cat', 'dog', 'bird', 'fish'].filter(pet, pet.size() == 3) // ['cat', 'dog']",
+          "[{'a': 10, 'b': 5, 'c': 20}].map(m, m.filter(key, m[key] \u003e 10)) // [['c']]",
+          "// filter a list to select only emails with the @cel.dev suffix\n['alice@buf.io', 'tristan@cel.dev'].filter(v, v.endsWith('@cel.dev')) // ['tristan@cel.dev']",
+          "// filter a map into a list, selecting only the values for keys that start with 'http-auth'\n{'http-auth-agent': 'secret', 'user-agent': 'mozilla'}.filter(k,\n     k.startsWith('http-auth')) // ['secret']"
+        ]
+      },
+      {
+        "name": "fold",
+        "argCount": 3,
+        "receiverStyle": true,
+        "doc": "Folds a list using an element variable, an accumulator variable, and a step expression.",
+        "examples": [
+          "[1, 2, 3].fold(e, acc, acc + e) // 6"
+        ]
+      },
+      {
+        "name": "fold",
+        "argCount": 4,
+        "receiverStyle": true,
+        "doc": "Folds a map using key/value variables, an accumulator variable, and a step expression.",
+        "examples": [
+          "{\"a\": \"apple\", \"b\": \"banana\"}.fold(k, v, acc, acc + v) // \"applebanana\""
+        ]
+      },
+      {
+        "name": "greatest",
+        "argCount": 0,
+        "receiverStyle": true
+      },
+      {
+        "name": "has",
+        "argCount": 1,
+        "receiverStyle": false,
+        "doc": "check a protocol buffer message for the presence of a field, or check a map\nfor the presence of a string key.\nOnly map accesses using the select notation are supported.",
+        "examples": [
+          "// true if the 'address' field exists in the 'user' message\nhas(user.address)",
+          "// test whether the 'key_name' is set on the map which defines it\nhas({'key_name': 'value'}.key_name) // true",
+          "// test whether the 'id' field is set to a non-default value on the Expr{} message literal\nhas(Expr{}.id) // false"
+        ]
+      },
+      {
+        "name": "least",
+        "argCount": 0,
+        "receiverStyle": true
+      },
+      {
+        "name": "map",
+        "argCount": 2,
+        "receiverStyle": true,
+        "doc": "the three-argument form of map transforms all elements in the input range.",
+        "examples": [
+          "[1, 2, 3].map(x, x * 2) // [2, 4, 6]",
+          "[5, 10, 15].map(x, x / 5) // [1, 2, 3]",
+          "['apple', 'banana'].map(fruit, fruit.upperAscii()) // ['APPLE', 'BANANA']",
+          "// Combine all map key-value pairs into a list\n{'hi': 'you', 'howzit': 'bruv'}.map(k,\n    k + \":\" + {'hi': 'you', 'howzit': 'bruv'}[k]) // ['hi:you', 'howzit:bruv']"
+        ]
+      },
+      {
+        "name": "map",
+        "argCount": 3,
+        "receiverStyle": true,
+        "doc": "the four-argument form of the map transforms only elements which satisfy\nthe predicate which is equivalent to chaining the filter and three-argument\nmap macros together.",
+        "examples": [
+          "// multiply only numbers divisible two, by 2\n[1, 2, 3, 4].map(num, num % 2 == 0, num * 2) // [4, 8]"
+        ]
+      },
+      {
+        "name": "optFlatMap",
+        "argCount": 2,
+        "receiverStyle": true,
+        "doc": "perform computation on the value if present and produce an optional value within the computation",
+        "examples": [
+          "// m = {'key': {}}\nm.?key.optFlatMap(k, k.?subkey) // optional.none()",
+          "// m = {'key': {'subkey': 'value'}}\nm.?key.optFlatMap(k, k.?subkey) // optional.of('value')"
+        ]
+      },
+      {
+        "name": "optMap",
+        "argCount": 2,
+        "receiverStyle": true,
+        "doc": "perform computation on the value if present and return the result as an optional",
+        "examples": [
+          "// sub with the prefix 'dev.cel' or optional.none()\nrequest.auth.tokens.?sub.optMap(id, 'dev.cel.' + id)",
+          "optional.none().optMap(i, i * 2) // optional.none()"
+        ]
+      },
+      {
+        "name": "sortBy",
+        "argCount": 2,
+        "receiverStyle": true
+      }
+    ],
+    "functions": [
+      {
+        "name": "Age",
+        "overloads": [
+          {
+            "id": "duration.Age",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Duration"
+          }
+        ]
+      },
+      {
+        "name": "Append",
+        "overloads": [
+          {
+            "id": "Append_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "CSV",
+        "overloads": [
+          {
+            "id": "CSV_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "Contains",
+        "overloads": [
+          {
+            "id": "Contains_string_interface{}",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "Dict",
+        "overloads": [
+          {
+            "id": "Dict_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "Duration",
+        "overloads": [
+          {
+            "id": "duration.Duration",
+            "args": [
+              "string"
+            ],
+            "result": "google.protobuf.Duration"
+          }
+        ]
+      },
+      {
+        "name": "GetHealth",
+        "overloads": [
+          {
+            "id": "GetHealth_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "GetStatus",
+        "overloads": [
+          {
+            "id": "GetStatus_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "Has",
+        "overloads": [
+          {
+            "id": "Has_interface{}_any",
+            "args": [
+              "dyn",
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "HumanDuration",
+        "overloads": [
+          {
+            "id": "HumanDuration_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "HumanSize",
+        "overloads": [
+          {
+            "id": "HumanSize_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "IsHealthy",
+        "overloads": [
+          {
+            "id": "IsHealthy_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "IsReady",
+        "overloads": [
+          {
+            "id": "IsReady_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "JSON",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": ".string.JSON()",
+            "args": [
+              "string"
+            ],
+            "result": "dyn",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "JSONArray",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": ".string.JSONArray()",
+            "args": [
+              "string"
+            ],
+            "result": "dyn",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "Prepend",
+        "overloads": [
+          {
+            "id": "Prepend_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "Semver",
+        "overloads": [
+          {
+            "id": "Semver_string",
+            "args": [
+              "string"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "SemverCompare",
+        "overloads": [
+          {
+            "id": "SemverCompare_string_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "Sort",
+        "overloads": [
+          {
+            "id": "Sort_string",
+            "args": [
+              "string"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "SplitN",
+        "overloads": [
+          {
+            "id": "SplitN_string_int_interface{}",
+            "args": [
+              "string",
+              "int",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "TOML",
+        "overloads": [
+          {
+            "id": "TOML_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "YAML",
+        "overloads": [
+          {
+            "id": "YAML_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "YAMLArray",
+        "overloads": [
+          {
+            "id": "data.YAMLArray_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "abbrev",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "stringsAbbrevWidthAndOffsetGen",
+            "args": [
+              "string",
+              "int",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "stringsAbbrevWidthGen",
+            "args": [
+              "string",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "age",
+        "overloads": [
+          {
+            "id": "duration.age",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Duration"
+          }
+        ]
+      },
+      {
+        "name": "arnToMap",
+        "overloads": [
+          {
+            "id": "arnToMap_overload",
+            "args": [
+              "string"
+            ],
+            "result": "map(string, string)"
+          }
+        ]
+      },
+      {
+        "name": "aws.arnToMap",
+        "namespace": "aws",
+        "overloads": [
+          {
+            "id": "aws.arnToMap_overload",
+            "args": [
+              "string"
+            ],
+            "result": "map(string, string)"
+          }
+        ]
+      },
+      {
+        "name": "aws.fromAWSMap",
+        "namespace": "aws",
+        "overloads": [
+          {
+            "id": "aws.fromAWSMap_overload",
+            "args": [
+              "list(map(string, string))"
+            ],
+            "result": "map(string, string)"
+          }
+        ]
+      },
+      {
+        "name": "base64.decode",
+        "namespace": "base64",
+        "overloads": [
+          {
+            "id": "base64_decode_string",
+            "args": [
+              "string"
+            ],
+            "result": "bytes"
+          }
+        ]
+      },
+      {
+        "name": "base64.encode",
+        "namespace": "base64",
+        "overloads": [
+          {
+            "id": "base64_encode_bytes",
+            "args": [
+              "bytes"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "bool",
+        "doc": "convert a value to a boolean",
+        "overloads": [
+          {
+            "id": "bool_to_bool",
+            "args": [
+              "bool"
+            ],
+            "result": "bool"
+          },
+          {
+            "id": "string_to_bool",
+            "args": [
+              "string"
+            ],
+            "result": "bool"
+          }
+        ],
+        "examples": [
+          "bool(true) // true",
+          "bool('true') // true\nbool('false') // false"
+        ]
+      },
+      {
+        "name": "bytes",
+        "doc": "convert a value to bytes",
+        "overloads": [
+          {
+            "id": "bytes_to_bytes",
+            "args": [
+              "bytes"
+            ],
+            "result": "bytes"
+          },
+          {
+            "id": "string_to_bytes",
+            "args": [
+              "string"
+            ],
+            "result": "bytes"
+          }
+        ],
+        "examples": [
+          "bytes(b'abc') // b'abc'",
+          "bytes('hello') // b'hello'"
+        ]
+      },
+      {
+        "name": "camelCase",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_camel_case",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "charAt",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_char_at_int",
+            "args": [
+              "string",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "coalesce",
+        "overloads": [
+          {
+            "id": "coalesce_1",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          },
+          {
+            "id": "coalesce_2",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          },
+          {
+            "id": "coalesce_3",
+            "args": [
+              "dyn",
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          },
+          {
+            "id": "coalesce_4",
+            "args": [
+              "dyn",
+              "dyn",
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          },
+          {
+            "id": "coalesce_5",
+            "args": [
+              "dyn",
+              "dyn",
+              "dyn",
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "contains",
+        "memberOnly": true,
+        "doc": "test whether a string contains a substring",
+        "overloads": [
+          {
+            "id": "contains_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_a_contains_bool",
+            "args": [
+              "list(\u003cA\u003e)",
+              "\u003cA\u003e"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ],
+        "examples": [
+          "'hello world'.contains('o w') // true\n'hello world'.contains('goodbye') // false"
+        ]
+      },
+      {
+        "name": "crypto.SHA1",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA1_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA1Bytes",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA1Bytes_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA224",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA224_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA224Bytes",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA224Bytes_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA256",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA256_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA256Bytes",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA256Bytes_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA384",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA384_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA384Bytes",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA384Bytes_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA512",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA512_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA512Bytes",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA512Bytes_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA512_224",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA512_224_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA512_224Bytes",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA512_224Bytes_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA512_256",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA512_256_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "crypto.SHA512_256Bytes",
+        "namespace": "crypto",
+        "overloads": [
+          {
+            "id": "crypto.SHA512_256Bytes_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "data.CSVByColumn",
+        "namespace": "data",
+        "overloads": [
+          {
+            "id": "data.CSVByColumn_string",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "data.CSVByRow",
+        "namespace": "data",
+        "overloads": [
+          {
+            "id": "data.CSVByRow_string",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "debug",
+        "overloads": [
+          {
+            "id": "debug_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          },
+          {
+            "id": "debug_string_dyn",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "distinct",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_distinct",
+            "args": [
+              "list(\u003cT\u003e)"
+            ],
+            "result": "list(\u003cT\u003e)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "double",
+        "doc": "convert a value to a double",
+        "overloads": [
+          {
+            "id": "double_to_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          },
+          {
+            "id": "int64_to_double",
+            "args": [
+              "int"
+            ],
+            "result": "double"
+          },
+          {
+            "id": "string_to_double",
+            "args": [
+              "string"
+            ],
+            "result": "double"
+          },
+          {
+            "id": "uint64_to_double",
+            "args": [
+              "uint"
+            ],
+            "result": "double"
+          }
+        ],
+        "examples": [
+          "double(1.23) // 1.23",
+          "double(123) // 123.0",
+          "double('1.23') // 1.23",
+          "double(123u) // 123.0"
+        ]
+      },
+      {
+        "name": "duration",
+        "doc": "convert a value to a google.protobuf.Duration",
+        "overloads": [
+          {
+            "id": "double.duration",
+            "args": [
+              "double"
+            ],
+            "result": "google.protobuf.Duration"
+          },
+          {
+            "id": "duration_to_duration",
+            "args": [
+              "google.protobuf.Duration"
+            ],
+            "result": "google.protobuf.Duration"
+          },
+          {
+            "id": "string_to_duration",
+            "args": [
+              "string"
+            ],
+            "result": "google.protobuf.Duration"
+          }
+        ],
+        "examples": [
+          "duration(duration('1s')) // duration('1s')",
+          "duration('1h2m3s') // duration('3723s')"
+        ]
+      },
+      {
+        "name": "dyn",
+        "doc": "indicate that the type is dynamic for type-checking purposes",
+        "overloads": [
+          {
+            "id": "to_dyn",
+            "args": [
+              "\u003cA\u003e"
+            ],
+            "result": "dyn"
+          }
+        ],
+        "examples": [
+          "dyn(1) // 1"
+        ]
+      },
+      {
+        "name": "endsWith",
+        "memberOnly": true,
+        "doc": "test whether a string ends with a substring suffix",
+        "overloads": [
+          {
+            "id": "ends_with_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ],
+        "examples": [
+          "'hello world'.endsWith('world') // true\n'hello world'.endsWith('hello') // false"
+        ]
+      },
+      {
+        "name": "f",
+        "overloads": [
+          {
+            "id": "f_string_any",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Base",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Base_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Clean",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Clean_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Dir",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Dir_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Ext",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Ext_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.FromSlash",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.FromSlash_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.IsAbs",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.IsAbs_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Join",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Join_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Match",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Match_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Rel",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Rel_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "filepath.Split",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.Split_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "filepath.ToSlash",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.ToSlash_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "filepath.VolumeName",
+        "namespace": "filepath",
+        "overloads": [
+          {
+            "id": "filepath.VolumeName_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "find",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_find_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "findAll",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_find_all_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "list(string)",
+            "member": true
+          },
+          {
+            "id": "string_find_all_string_int",
+            "args": [
+              "string",
+              "string",
+              "int"
+            ],
+            "result": "list(string)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "first",
+        "overloads": [
+          {
+            "id": "dyn_first",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn",
+            "member": true
+          },
+          {
+            "id": "first_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "flatten",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_flatten",
+            "args": [
+              "list(list(\u003cT\u003e))"
+            ],
+            "result": "list(\u003cT\u003e)",
+            "member": true
+          },
+          {
+            "id": "list_flatten_int",
+            "args": [
+              "list(dyn)",
+              "int"
+            ],
+            "result": "list(dyn)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "format",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_format",
+            "args": [
+              "string",
+              "list(dyn)"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "fromAWSMap",
+        "overloads": [
+          {
+            "id": "fromAWSMap_overload",
+            "args": [
+              "list(map(string, string))"
+            ],
+            "result": "map(string, string)"
+          }
+        ]
+      },
+      {
+        "name": "getDate",
+        "memberOnly": true,
+        "doc": "get the 1-based day of the month from a timestamp, UTC unless an IANA timezone is specified.",
+        "overloads": [
+          {
+            "id": "timestamp_to_day_of_month_1_based",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_day_of_month_1_based_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getDate() // 14",
+          "timestamp('2023-07-01T05:00:00Z').getDate('America/Los_Angeles') // 30"
+        ]
+      },
+      {
+        "name": "getDayOfMonth",
+        "memberOnly": true,
+        "doc": "get the 0-based day of the month from a timestamp, UTC unless an IANA timezone is specified.",
+        "overloads": [
+          {
+            "id": "timestamp_to_day_of_month",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_day_of_month_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getDayOfMonth() // 13",
+          "timestamp('2023-07-01T05:00:00Z').getDayOfMonth('America/Los_Angeles') // 29"
+        ]
+      },
+      {
+        "name": "getDayOfWeek",
+        "memberOnly": true,
+        "doc": "get the 0-based day of the week from a timestamp, UTC unless an IANA timezone is specified.",
+        "overloads": [
+          {
+            "id": "timestamp_to_day_of_week",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_day_of_week_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getDayOfWeek() // 5",
+          "timestamp('2023-07-16T05:00:00Z').getDayOfWeek('America/Los_Angeles') // 6"
+        ]
+      },
+      {
+        "name": "getDayOfYear",
+        "memberOnly": true,
+        "doc": "get the 0-based day of the year from a timestamp, UTC unless an IANA timezone is specified.",
+        "overloads": [
+          {
+            "id": "timestamp_to_day_of_year",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_day_of_year_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-01-02T00:00:00Z').getDayOfYear() // 1",
+          "timestamp('2023-01-01T05:00:00Z').getDayOfYear('America/Los_Angeles') // 364"
+        ]
+      },
+      {
+        "name": "getEscapedPath",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "url_get_escaped_path",
+            "args": [
+              "kubernetes.URL"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "getFullYear",
+        "memberOnly": true,
+        "doc": "get the 0-based full year from a timestamp, UTC unless an IANA timezone is specified.",
+        "overloads": [
+          {
+            "id": "timestamp_to_year",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_year_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getFullYear() // 2023",
+          "timestamp('2023-01-01T05:30:00Z').getFullYear('-08:00') // 2022"
+        ]
+      },
+      {
+        "name": "getHost",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "url_get_host",
+            "args": [
+              "kubernetes.URL"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "getHostname",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "url_get_hostname",
+            "args": [
+              "kubernetes.URL"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "getHours",
+        "memberOnly": true,
+        "doc": "get the hours portion from a timestamp, or convert a duration to hours",
+        "overloads": [
+          {
+            "id": "duration_to_hours",
+            "args": [
+              "google.protobuf.Duration"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_hours",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_hours_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getHours() // 10",
+          "timestamp('2023-07-14T10:30:45.123Z').getHours('America/Los_Angeles') // 2",
+          "duration('3723s').getHours() // 1"
+        ]
+      },
+      {
+        "name": "getMilliseconds",
+        "memberOnly": true,
+        "doc": "get the milliseconds portion from a timestamp",
+        "overloads": [
+          {
+            "id": "duration_to_milliseconds",
+            "args": [
+              "google.protobuf.Duration"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_milliseconds",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_milliseconds_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getMilliseconds() // 123",
+          "timestamp('2023-07-14T10:30:45.123Z').getMilliseconds('America/Los_Angeles') // 123"
+        ]
+      },
+      {
+        "name": "getMinutes",
+        "memberOnly": true,
+        "doc": "get the minutes portion from a timestamp, or convert a duration to minutes",
+        "overloads": [
+          {
+            "id": "duration_to_minutes",
+            "args": [
+              "google.protobuf.Duration"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_minutes",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_minutes_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getMinutes() // 30",
+          "timestamp('2023-07-14T10:30:45.123Z').getMinutes('America/Los_Angeles') // 30",
+          "duration('3723s').getMinutes() // 62"
+        ]
+      },
+      {
+        "name": "getMonth",
+        "memberOnly": true,
+        "doc": "get the 0-based month from a timestamp, UTC unless an IANA timezone is specified.",
+        "overloads": [
+          {
+            "id": "timestamp_to_month",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_month_with_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getMonth() // 6",
+          "timestamp('2023-01-01T05:30:00Z').getMonth('America/Los_Angeles') // 11"
+        ]
+      },
+      {
+        "name": "getPort",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "url_get_port",
+            "args": [
+              "kubernetes.URL"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "getQuery",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "url_get_query",
+            "args": [
+              "kubernetes.URL"
+            ],
+            "result": "map(string, list(string))",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "getScheme",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "url_get_scheme",
+            "args": [
+              "kubernetes.URL"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "getSeconds",
+        "memberOnly": true,
+        "doc": "get the seconds portion from a timestamp, or convert a duration to seconds",
+        "overloads": [
+          {
+            "id": "duration_to_seconds",
+            "args": [
+              "google.protobuf.Duration"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_seconds",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "timestamp_to_seconds_tz",
+            "args": [
+              "google.protobuf.Timestamp",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "timestamp('2023-07-14T10:30:45.123Z').getSeconds() // 45",
+          "timestamp('2023-07-14T10:30:45.123Z').getSeconds('America/Los_Angeles') // 45",
+          "duration('3723.456s').getSeconds() // 3723"
+        ]
+      },
+      {
+        "name": "hasValue",
+        "memberOnly": true,
+        "doc": "determine whether the optional contains a value",
+        "overloads": [
+          {
+            "id": "optional_hasValue",
+            "args": [
+              "optional_type(\u003cV\u003e)"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ],
+        "examples": [
+          "optional.of({1: 2}).hasValue() // true"
+        ]
+      },
+      {
+        "name": "in",
+        "overloads": [
+          {
+            "id": "in_list",
+            "args": [
+              "\u003cA\u003e",
+              "list(\u003cA\u003e)"
+            ],
+            "result": "bool"
+          },
+          {
+            "id": "in_map",
+            "args": [
+              "\u003cA\u003e",
+              "map(\u003cA\u003e, \u003cB\u003e)"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "in_business_hours",
+        "overloads": [
+          {
+            "id": "in_business_hours_string",
+            "args": [
+              "string"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "indent",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_indent",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "string_indent_with_width",
+            "args": [
+              "string",
+              "int",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "indexOf",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_a_index_of_int",
+            "args": [
+              "list(\u003cA\u003e)",
+              "\u003cA\u003e"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "string_index_of_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "string_index_of_string_int",
+            "args": [
+              "string",
+              "string",
+              "int"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "int",
+        "doc": "convert a value to an int",
+        "overloads": [
+          {
+            "id": "double_to_int64",
+            "args": [
+              "double"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "duration_to_int64",
+            "args": [
+              "google.protobuf.Duration"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "int64_to_int64",
+            "args": [
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "string_to_int64",
+            "args": [
+              "string"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "timestamp_to_int64",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "uint64_to_int64",
+            "args": [
+              "uint"
+            ],
+            "result": "int"
+          }
+        ],
+        "examples": [
+          "int(123) // 123",
+          "int(123.45) // 123",
+          "int(duration('1s')) // 1000000000",
+          "int('123') // 123\nint('-456') // -456",
+          "int(timestamp('1970-01-01T00:00:01Z')) // 1",
+          "int(123u) // 123"
+        ]
+      },
+      {
+        "name": "isSorted",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_bool_is_sorted_bool",
+            "args": [
+              "list(bool)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_bytes_is_sorted_bool",
+            "args": [
+              "list(bytes)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_double_is_sorted_bool",
+            "args": [
+              "list(double)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_duration_is_sorted_bool",
+            "args": [
+              "list(google.protobuf.Duration)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_int_is_sorted_bool",
+            "args": [
+              "list(int)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_string_is_sorted_bool",
+            "args": [
+              "list(string)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_timestamp_is_sorted_bool",
+            "args": [
+              "list(google.protobuf.Timestamp)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_uint_is_sorted_bool",
+            "args": [
+              "list(uint)"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "isURL",
+        "overloads": [
+          {
+            "id": "is_url_string",
+            "args": [
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "jmespath",
+        "overloads": [
+          {
+            "id": "jmespath_string_interface{}",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "join",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_join",
+            "args": [
+              "list(string)"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "list_join_string",
+            "args": [
+              "list(string)",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "jq",
+        "overloads": [
+          {
+            "id": "jq_string_interface{}",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "json.encode",
+        "namespace": "json",
+        "overloads": [
+          {
+            "id": "json_encode_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "jsonpath",
+        "overloads": [
+          {
+            "id": "jsonpath_string_interface{}",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "k8s.cpuAsMillicores",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.cpuAsMillicores_string",
+            "args": [
+              "string"
+            ],
+            "result": "int"
+          }
+        ]
+      },
+      {
+        "name": "k8s.getHealth",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.getHealth_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "k8s.getResourcesLimit",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.getResourcesLimit_obj_str_int",
+            "args": [
+              "google.protobuf.Any",
+              "string"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "k8s.getResourcesRequests",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.getResourcesRequests_obj_str_int",
+            "args": [
+              "google.protobuf.Any",
+              "string"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "k8s.getStatus",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.getStatus_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "k8s.isHealthy",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.isHealthy_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "k8s.isReady",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.isReady_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "k8s.is_healthy",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.is_healthy_overload",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "k8s.labels",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.labels_map_map",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "k8s.memoryAsBytes",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.memoryAsBytes_string",
+            "args": [
+              "string"
+            ],
+            "result": "int"
+          }
+        ]
+      },
+      {
+        "name": "k8s.neat",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s_neat",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "k8s_neat_with_option",
+            "args": [
+              "dyn",
+              "string"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "k8s.nodeProperties",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.nodeProperties_list_dyn_map",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "k8s.podProperties",
+        "namespace": "k8s",
+        "overloads": [
+          {
+            "id": "k8s.podProperties_list_dyn_map",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "google.protobuf.Any"
+          }
+        ]
+      },
+      {
+        "name": "kebabCase",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_kebab_case",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "keyValToMap",
+        "overloads": [
+          {
+            "id": "keyValToMap_interface{}",
+            "args": [
+              "google.protobuf.Any"
+            ],
+            "result": "map(string, google.protobuf.Any)"
+          }
+        ]
+      },
+      {
+        "name": "keys",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "map_keys",
+            "args": [
+              "map(string, google.protobuf.Any)"
+            ],
+            "result": "list(string)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "last",
+        "overloads": [
+          {
+            "id": "dyn_last",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn",
+            "member": true
+          },
+          {
+            "id": "last_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "lastIndexOf",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_a_last_index_of_int",
+            "args": [
+              "list(\u003cA\u003e)",
+              "\u003cA\u003e"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "string_last_index_of_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "string_last_index_of_string_int",
+            "args": [
+              "string",
+              "string",
+              "int"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "lists.range",
+        "namespace": "lists",
+        "overloads": [
+          {
+            "id": "lists_range",
+            "args": [
+              "int"
+            ],
+            "result": "list(int)"
+          }
+        ]
+      },
+      {
+        "name": "lowerAscii",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_lower_ascii",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "mapToKeyVal",
+        "overloads": [
+          {
+            "id": "mapToKeyVal_interface{}",
+            "args": [
+              "map(string, google.protobuf.Any)"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "match",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_match_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "matchLabel",
+        "overloads": [
+          {
+            "id": "matchLabel_map_string_string",
+            "args": [
+              "map(string, dyn)",
+              "string",
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "matches",
+        "doc": "test whether a string matches an RE2 regular expression",
+        "overloads": [
+          {
+            "id": "matches",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool"
+          },
+          {
+            "id": "matches_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ],
+        "examples": [
+          "matches('123-456', '^[0-9]+(-[0-9]+)?$') // true\nmatches('hello', '^h.*o$') // true",
+          "'123-456'.matches('^[0-9]+(-[0-9]+)?$') // true\n'hello'.matches('^h.*o$') // true"
+        ]
+      },
+      {
+        "name": "math.Abs",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Abs_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Add",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Add_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Ceil",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Ceil_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Div",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Div_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Floor",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Floor_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.IsFloat",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.IsFloat_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "math.IsInt",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.IsInt_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "math.IsNum",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.IsNum_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "math.Mul",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Mul_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Pow",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Pow_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Rem",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Rem_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Round",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Round_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Seq",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Seq_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.Sub",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.Sub_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "math.abs",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_abs_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          },
+          {
+            "id": "math_abs_int",
+            "args": [
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_abs_uint",
+            "args": [
+              "uint"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.bitAnd",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_bitAnd_int_int",
+            "args": [
+              "int",
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_bitAnd_uint_uint",
+            "args": [
+              "uint",
+              "uint"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.bitNot",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_bitNot_int_int",
+            "args": [
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_bitNot_uint_uint",
+            "args": [
+              "uint"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.bitOr",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_bitOr_int_int",
+            "args": [
+              "int",
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_bitOr_uint_uint",
+            "args": [
+              "uint",
+              "uint"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.bitShiftLeft",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_bitShiftLeft_int_int",
+            "args": [
+              "int",
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_bitShiftLeft_uint_int",
+            "args": [
+              "uint",
+              "int"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.bitShiftRight",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_bitShiftRight_int_int",
+            "args": [
+              "int",
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_bitShiftRight_uint_int",
+            "args": [
+              "uint",
+              "int"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.bitXor",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_bitXor_int_int",
+            "args": [
+              "int",
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_bitXor_uint_uint",
+            "args": [
+              "uint",
+              "uint"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.ceil",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_ceil_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          }
+        ]
+      },
+      {
+        "name": "math.containsFloat",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math.containsFloat_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "math.floor",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_floor_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          }
+        ]
+      },
+      {
+        "name": "math.isFinite",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_isFinite_double",
+            "args": [
+              "double"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "math.isInf",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_isInf_double",
+            "args": [
+              "double"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "math.isNaN",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_isNaN_double",
+            "args": [
+              "double"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "math.round",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_round_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          }
+        ]
+      },
+      {
+        "name": "math.sign",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_sign_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          },
+          {
+            "id": "math_sign_int",
+            "args": [
+              "int"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "math_sign_uint",
+            "args": [
+              "uint"
+            ],
+            "result": "uint"
+          }
+        ]
+      },
+      {
+        "name": "math.sqrt",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_sqrt_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          },
+          {
+            "id": "math_sqrt_int",
+            "args": [
+              "int"
+            ],
+            "result": "double"
+          },
+          {
+            "id": "math_sqrt_uint",
+            "args": [
+              "uint"
+            ],
+            "result": "double"
+          }
+        ]
+      },
+      {
+        "name": "math.trunc",
+        "namespace": "math",
+        "overloads": [
+          {
+            "id": "math_trunc_double",
+            "args": [
+              "double"
+            ],
+            "result": "double"
+          }
+        ]
+      },
+      {
+        "name": "max",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_bool_max_bool",
+            "args": [
+              "list(bool)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_bytes_max_bytes",
+            "args": [
+              "list(bytes)"
+            ],
+            "result": "bytes",
+            "member": true
+          },
+          {
+            "id": "list_double_max_double",
+            "args": [
+              "list(double)"
+            ],
+            "result": "double",
+            "member": true
+          },
+          {
+            "id": "list_duration_max_duration",
+            "args": [
+              "list(google.protobuf.Duration)"
+            ],
+            "result": "google.protobuf.Duration",
+            "member": true
+          },
+          {
+            "id": "list_int_max_int",
+            "args": [
+              "list(int)"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "list_string_max_string",
+            "args": [
+              "list(string)"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "list_timestamp_max_timestamp",
+            "args": [
+              "list(google.protobuf.Timestamp)"
+            ],
+            "result": "google.protobuf.Timestamp",
+            "member": true
+          },
+          {
+            "id": "list_uint_max_uint",
+            "args": [
+              "list(uint)"
+            ],
+            "result": "uint",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "merge",
+        "overloads": [
+          {
+            "id": "merge_map[string]interface{}",
+            "args": [
+              "map(string, dyn)",
+              "map(string, dyn)"
+            ],
+            "result": "map(string, dyn)",
+            "member": true
+          },
+          {
+            "id": "merge_map_map",
+            "args": [
+              "map(dyn, dyn)",
+              "map(dyn, dyn)"
+            ],
+            "result": "map(dyn, dyn)"
+          }
+        ]
+      },
+      {
+        "name": "min",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_bool_min_bool",
+            "args": [
+              "list(bool)"
+            ],
+            "result": "bool",
+            "member": true
+          },
+          {
+            "id": "list_bytes_min_bytes",
+            "args": [
+              "list(bytes)"
+            ],
+            "result": "bytes",
+            "member": true
+          },
+          {
+            "id": "list_double_min_double",
+            "args": [
+              "list(double)"
+            ],
+            "result": "double",
+            "member": true
+          },
+          {
+            "id": "list_duration_min_duration",
+            "args": [
+              "list(google.protobuf.Duration)"
+            ],
+            "result": "google.protobuf.Duration",
+            "member": true
+          },
+          {
+            "id": "list_int_min_int",
+            "args": [
+              "list(int)"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "list_string_min_string",
+            "args": [
+              "list(string)"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "list_timestamp_min_timestamp",
+            "args": [
+              "list(google.protobuf.Timestamp)"
+            ],
+            "result": "google.protobuf.Timestamp",
+            "member": true
+          },
+          {
+            "id": "list_uint_min_uint",
+            "args": [
+              "list(uint)"
+            ],
+            "result": "uint",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "net.ContainsCIDR",
+        "namespace": "net",
+        "overloads": [
+          {
+            "id": "net.ContainsCIDR_string_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "net.IsValidIP",
+        "namespace": "net",
+        "overloads": [
+          {
+            "id": "net.IsValidIP_string",
+            "args": [
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "omit",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "omit_interface{}",
+            "args": [
+              "map(string, google.protobuf.Any)",
+              "list(string)"
+            ],
+            "result": "map(string, google.protobuf.Any)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "optional.none",
+        "namespace": "optional",
+        "doc": "singleton value representing an optional without a value",
+        "overloads": [
+          {
+            "id": "optional_none",
+            "args": [],
+            "result": "optional_type(\u003cV\u003e)"
+          }
+        ],
+        "examples": [
+          "optional.none()"
+        ]
+      },
+      {
+        "name": "optional.of",
+        "namespace": "optional",
+        "doc": "create a new optional_type(T) with a value where any value is considered valid",
+        "overloads": [
+          {
+            "id": "optional_of",
+            "args": [
+              "\u003cV\u003e"
+            ],
+            "result": "optional_type(\u003cV\u003e)"
+          }
+        ],
+        "examples": [
+          "optional.of(1) // optional(1)"
+        ]
+      },
+      {
+        "name": "optional.ofNonZeroValue",
+        "namespace": "optional",
+        "doc": "create a new optional_type(T) with a value, if the value is not a zero or empty value",
+        "overloads": [
+          {
+            "id": "optional_ofNonZeroValue",
+            "args": [
+              "\u003cV\u003e"
+            ],
+            "result": "optional_type(\u003cV\u003e)"
+          }
+        ],
+        "examples": [
+          "optional.ofNonZeroValue(null) // optional.none()\noptional.ofNonZeroValue(\"\") // optional.none()\noptional.ofNonZeroValue(\"hello\") // optional.of('hello')"
+        ]
+      },
+      {
+        "name": "or",
+        "memberOnly": true,
+        "doc": "chain optional expressions together, picking the first valued optional expression",
+        "overloads": [
+          {
+            "id": "optional_or_optional",
+            "args": [
+              "optional_type(\u003cV\u003e)",
+              "optional_type(\u003cV\u003e)"
+            ],
+            "result": "optional_type(\u003cV\u003e)",
+            "member": true
+          }
+        ],
+        "examples": [
+          "optional.none().or(optional.of(1)) // optional.of(1)\n// either a value from the first list, a value from the second, or optional.none()\n[1, 2, 3][?x].or([3, 4, 5][?y])"
+        ]
+      },
+      {
+        "name": "orValue",
+        "memberOnly": true,
+        "doc": "chain optional expressions together picking the first valued optional or the default value",
+        "overloads": [
+          {
+            "id": "optional_orValue_value",
+            "args": [
+              "optional_type(\u003cV\u003e)",
+              "\u003cV\u003e"
+            ],
+            "result": "\u003cV\u003e",
+            "member": true
+          }
+        ],
+        "examples": [
+          "// pick the value for the given key if the key exists, otherwise return 'you'\n{'hello': 'world', 'goodbye': 'cruel world'}[?greeting].orValue('you')"
+        ]
+      },
+      {
+        "name": "pick",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "pick_interface{}",
+            "args": [
+              "google.protobuf.Any",
+              "list(string)"
+            ],
+            "result": "google.protobuf.Any",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "quote",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_quote",
+            "args": [
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "random.ASCII",
+        "namespace": "random",
+        "overloads": [
+          {
+            "id": "random.ASCII_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "random.Alpha",
+        "namespace": "random",
+        "overloads": [
+          {
+            "id": "random.Alpha_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "random.AlphaNum",
+        "namespace": "random",
+        "overloads": [
+          {
+            "id": "random.AlphaNum_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "random.Float",
+        "namespace": "random",
+        "overloads": [
+          {
+            "id": "random.Float_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "random.Item",
+        "namespace": "random",
+        "overloads": [
+          {
+            "id": "random.Item_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "random.Number",
+        "namespace": "random",
+        "overloads": [
+          {
+            "id": "random.Number_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "random.String",
+        "namespace": "random",
+        "overloads": [
+          {
+            "id": "random.String_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "regexp.Find",
+        "namespace": "regexp",
+        "overloads": [
+          {
+            "id": "regexp.Find_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "regexp.FindAll",
+        "namespace": "regexp",
+        "overloads": [
+          {
+            "id": "regexp.FindAll_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "regexp.Match",
+        "namespace": "regexp",
+        "overloads": [
+          {
+            "id": "regexp.Match_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "regexp.QuoteMeta",
+        "namespace": "regexp",
+        "overloads": [
+          {
+            "id": "regexp.QuoteMeta_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "regexp.Replace",
+        "namespace": "regexp",
+        "overloads": [
+          {
+            "id": "regexp.Replace_interface{}_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn",
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "regexp.ReplaceLiteral",
+        "namespace": "regexp",
+        "overloads": [
+          {
+            "id": "regexp.ReplaceLiteral_interface{}_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "regexp.Split",
+        "namespace": "regexp",
+        "overloads": [
+          {
+            "id": "regexp.Split_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "repeat",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_repeat",
+            "args": [
+              "string",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "replace",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_replace_string_string",
+            "args": [
+              "string",
+              "string",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "string_replace_string_string_int",
+            "args": [
+              "string",
+              "string",
+              "string",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "replaceAll",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "ReplaceAll_string_string_interface{}",
+            "args": [
+              "string",
+              "string",
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "replaceAllRegex",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_replaceAllRegex_string",
+            "args": [
+              "string",
+              "string",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "reverse",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_reverse",
+            "args": [
+              "list(\u003cT\u003e)"
+            ],
+            "result": "list(\u003cT\u003e)",
+            "member": true
+          },
+          {
+            "id": "string_reverse",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "runeCount",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_rune_count",
+            "args": [
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "sets.contains",
+        "namespace": "sets",
+        "overloads": [
+          {
+            "id": "list_sets_contains_list",
+            "args": [
+              "list(\u003cT\u003e)",
+              "list(\u003cT\u003e)"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "sets.equivalent",
+        "namespace": "sets",
+        "overloads": [
+          {
+            "id": "list_sets_equivalent_list",
+            "args": [
+              "list(\u003cT\u003e)",
+              "list(\u003cT\u003e)"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "sets.intersects",
+        "namespace": "sets",
+        "overloads": [
+          {
+            "id": "list_sets_intersects_list",
+            "args": [
+              "list(\u003cT\u003e)",
+              "list(\u003cT\u003e)"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "shellQuote",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_shell_quote",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "size",
+        "doc": "compute the size of a list or map, the number of characters in a string,\nor the number of bytes in a sequence",
+        "overloads": [
+          {
+            "id": "bytes_size",
+            "args": [
+              "bytes"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "list_size",
+            "args": [
+              "list(\u003cA\u003e)"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "map_size",
+            "args": [
+              "map(\u003cA\u003e, \u003cB\u003e)"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "size_bytes",
+            "args": [
+              "bytes"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "size_list",
+            "args": [
+              "list(\u003cA\u003e)"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "size_map",
+            "args": [
+              "map(\u003cA\u003e, \u003cB\u003e)"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "size_string",
+            "args": [
+              "string"
+            ],
+            "result": "int"
+          },
+          {
+            "id": "string_size",
+            "args": [
+              "string"
+            ],
+            "result": "int",
+            "member": true
+          }
+        ],
+        "examples": [
+          "size(b'123') // 3",
+          "b'123'.size() // 3",
+          "size([1, 2, 3]) // 3",
+          "[1, 2, 3].size() // 3",
+          "size({'a': 1, 'b': 2}) // 2",
+          "{'a': 1, 'b': 2}.size() // 2",
+          "size('hello') // 5",
+          "'hello'.size() // 5"
+        ]
+      },
+      {
+        "name": "slice",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_slice",
+            "args": [
+              "list(\u003cT\u003e)",
+              "int",
+              "int"
+            ],
+            "result": "list(\u003cT\u003e)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "slug",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_slug",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "snakeCase",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_snakeCase",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "sort",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_bool_sort",
+            "args": [
+              "list(bool)"
+            ],
+            "result": "list(bool)",
+            "member": true
+          },
+          {
+            "id": "list_bytes_sort",
+            "args": [
+              "list(bytes)"
+            ],
+            "result": "list(bytes)",
+            "member": true
+          },
+          {
+            "id": "list_double_sort",
+            "args": [
+              "list(double)"
+            ],
+            "result": "list(double)",
+            "member": true
+          },
+          {
+            "id": "list_google.protobuf.Duration_sort",
+            "args": [
+              "list(google.protobuf.Duration)"
+            ],
+            "result": "list(google.protobuf.Duration)",
+            "member": true
+          },
+          {
+            "id": "list_google.protobuf.Timestamp_sort",
+            "args": [
+              "list(google.protobuf.Timestamp)"
+            ],
+            "result": "list(google.protobuf.Timestamp)",
+            "member": true
+          },
+          {
+            "id": "list_int_sort",
+            "args": [
+              "list(int)"
+            ],
+            "result": "list(int)",
+            "member": true
+          },
+          {
+            "id": "list_string_sort",
+            "args": [
+              "list(string)"
+            ],
+            "result": "list(string)",
+            "member": true
+          },
+          {
+            "id": "list_uint_sort",
+            "args": [
+              "list(uint)"
+            ],
+            "result": "list(uint)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "sortBy",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "sortBy_interface{}",
+            "args": [
+              "list(google.protobuf.Any)",
+              "string"
+            ],
+            "result": "list(google.protobuf.Any)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "split",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_split_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "list(string)",
+            "member": true
+          },
+          {
+            "id": "string_split_string_int",
+            "args": [
+              "string",
+              "string",
+              "int"
+            ],
+            "result": "list(string)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "splitRegex",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_splitRegex_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "list(string)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "squote",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_squote",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "startsWith",
+        "memberOnly": true,
+        "doc": "test whether a string starts with a substring prefix",
+        "overloads": [
+          {
+            "id": "starts_with_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ],
+        "examples": [
+          "'hello world'.startsWith('hello') // true\n'hello world'.startsWith('world') // false"
+        ]
+      },
+      {
+        "name": "string",
+        "doc": "convert a value to a string",
+        "overloads": [
+          {
+            "id": "bool_to_string",
+            "args": [
+              "bool"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "bytes_to_string",
+            "args": [
+              "bytes"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "double_to_string",
+            "args": [
+              "double"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "duration_to_string",
+            "args": [
+              "google.protobuf.Duration"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "int64_to_string",
+            "args": [
+              "int"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "string_to_string",
+            "args": [
+              "string"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "timestamp_to_string",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "uint64_to_string",
+            "args": [
+              "uint"
+            ],
+            "result": "string"
+          }
+        ],
+        "examples": [
+          "string('hello') // 'hello'",
+          "string(true) // 'true'",
+          "string(b'hello') // 'hello'",
+          "string(-1.23e4) // '-12300'",
+          "string(duration('1h30m')) // '5400s'",
+          "string(-123) // '-123'",
+          "string(timestamp('1970-01-01T00:00:00Z')) // '1970-01-01T00:00:00Z'",
+          "string(123u) // '123'"
+        ]
+      },
+      {
+        "name": "strings.quote",
+        "namespace": "strings",
+        "overloads": [
+          {
+            "id": "strings_quote",
+            "args": [
+              "string"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "substring",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_substring_int",
+            "args": [
+              "string",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "string_substring_int_int",
+            "args": [
+              "string",
+              "int",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "sum",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_double_sum_double",
+            "args": [
+              "list(double)"
+            ],
+            "result": "double",
+            "member": true
+          },
+          {
+            "id": "list_duration_sum_duration",
+            "args": [
+              "list(google.protobuf.Duration)"
+            ],
+            "result": "google.protobuf.Duration",
+            "member": true
+          },
+          {
+            "id": "list_int_sum_int",
+            "args": [
+              "list(int)"
+            ],
+            "result": "int",
+            "member": true
+          },
+          {
+            "id": "list_uint_sum_uint",
+            "args": [
+              "list(uint)"
+            ],
+            "result": "uint",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "test.Assert",
+        "namespace": "test",
+        "overloads": [
+          {
+            "id": "test.Assert_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "test.Fail",
+        "namespace": "test",
+        "overloads": [
+          {
+            "id": "test.Fail_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "test.IsKind",
+        "namespace": "test",
+        "overloads": [
+          {
+            "id": "test.IsKind_string_interface{}",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "test.Kind",
+        "namespace": "test",
+        "overloads": [
+          {
+            "id": "test.Kind_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "test.Required",
+        "namespace": "test",
+        "overloads": [
+          {
+            "id": "test.Required_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "test.Ternary",
+        "namespace": "test",
+        "overloads": [
+          {
+            "id": "test.Ternary_interface{}_interface{}_interface{}",
+            "args": [
+              "dyn",
+              "dyn",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Hour",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Hour_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.InTimeRange",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.InTimeRange_any_string_string",
+            "args": [
+              "google.protobuf.Any",
+              "string",
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "time.Microsecond",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Microsecond_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Millisecond",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Millisecond_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Minute",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Minute_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Nanosecond",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Nanosecond_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Now",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Now_",
+            "args": [],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Parse",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Parse_string_interface{}",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.ParseDateTime",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.ParseDateTime_string",
+            "args": [
+              "string"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.ParseDuration",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.ParseDuration_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.ParseInLocation",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.ParseInLocation_string_string_interface{}",
+            "args": [
+              "string",
+              "string",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.ParseLocal",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.ParseLocal_string_interface{}",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Second",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Second_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Since",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Since_gotime.Time",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Unix",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Unix_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.Until",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.Until_gotime.Time",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "time.ZoneName",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.ZoneName_",
+            "args": [],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "time.ZoneOffset",
+        "namespace": "time",
+        "overloads": [
+          {
+            "id": "time.ZoneOffset_",
+            "args": [],
+            "result": "int"
+          }
+        ]
+      },
+      {
+        "name": "timestamp",
+        "doc": "convert a value to a google.protobuf.Timestamp",
+        "overloads": [
+          {
+            "id": "int64_to_timestamp",
+            "args": [
+              "int"
+            ],
+            "result": "google.protobuf.Timestamp"
+          },
+          {
+            "id": "string_to_timestamp",
+            "args": [
+              "string"
+            ],
+            "result": "google.protobuf.Timestamp"
+          },
+          {
+            "id": "timestamp_to_timestamp",
+            "args": [
+              "google.protobuf.Timestamp"
+            ],
+            "result": "google.protobuf.Timestamp"
+          }
+        ],
+        "examples": [
+          "timestamp(timestamp('2023-01-01T00:00:00Z')) // timestamp('2023-01-01T00:00:00Z')",
+          "timestamp(1) // timestamp('1970-01-01T00:00:01Z')",
+          "timestamp('2025-01-01T12:34:56Z') // timestamp('2025-01-01T12:34:56Z')"
+        ]
+      },
+      {
+        "name": "title",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_title",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "toCSV",
+        "overloads": [
+          {
+            "id": "toCSV_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "toJSON",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "dyn_toJSON",
+            "args": [
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "toJSONPretty",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "toJSONPretty_interface{}",
+            "args": [
+              "dyn",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "toLower",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_toLower",
+            "args": [
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "toTOML",
+        "overloads": [
+          {
+            "id": "toTOML_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "toUpper",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_toUpper",
+            "args": [
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "toYAML",
+        "overloads": [
+          {
+            "id": "toYAML_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "trim",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_trim",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "trimPrefix",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_trimPrefix",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "trimSpace",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_trimSpace",
+            "args": [
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "trimSuffix",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_trimSuffix",
+            "args": [
+              "string",
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "trunc",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_trunc",
+            "args": [
+              "int",
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "type",
+        "doc": "convert a value to its type identifier",
+        "overloads": [
+          {
+            "id": "type",
+            "args": [
+              "\u003cA\u003e"
+            ],
+            "result": "type(\u003cA\u003e)"
+          }
+        ],
+        "examples": [
+          "type(1) // int\ntype('hello') // string\ntype(int) // type\ntype(type) // type"
+        ]
+      },
+      {
+        "name": "uint",
+        "doc": "convert a value to a uint",
+        "overloads": [
+          {
+            "id": "double_to_uint64",
+            "args": [
+              "double"
+            ],
+            "result": "uint"
+          },
+          {
+            "id": "int64_to_uint64",
+            "args": [
+              "int"
+            ],
+            "result": "uint"
+          },
+          {
+            "id": "string_to_uint64",
+            "args": [
+              "string"
+            ],
+            "result": "uint"
+          },
+          {
+            "id": "uint64_to_uint64",
+            "args": [
+              "uint"
+            ],
+            "result": "uint"
+          }
+        ],
+        "examples": [
+          "uint(123u) // 123u",
+          "uint(123.45) // 123u",
+          "uint(123) // 123u",
+          "uint('123') // 123u"
+        ]
+      },
+      {
+        "name": "uniq",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "uniq_interface{}",
+            "args": [
+              "list(dyn)"
+            ],
+            "result": "list(dyn)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "upperAscii",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "string_upper_ascii",
+            "args": [
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "url",
+        "overloads": [
+          {
+            "id": "string_to_url",
+            "args": [
+              "string"
+            ],
+            "result": "kubernetes.URL"
+          }
+        ]
+      },
+      {
+        "name": "urldecode",
+        "overloads": [
+          {
+            "id": "urldecode.string",
+            "args": [
+              "string"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "urlencode",
+        "overloads": [
+          {
+            "id": "urlencode.string",
+            "args": [
+              "string"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "uuid.HashUUID",
+        "namespace": "uuid",
+        "overloads": [
+          {
+            "id": "uuid.HashUUID_list",
+            "args": [
+              "list(dyn)"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "uuid.IsValid",
+        "namespace": "uuid",
+        "overloads": [
+          {
+            "id": "uuid.IsValid_interface{}",
+            "args": [
+              "string"
+            ],
+            "result": "bool"
+          }
+        ]
+      },
+      {
+        "name": "uuid.Nil",
+        "namespace": "uuid",
+        "overloads": [
+          {
+            "id": "uuid.Nil_",
+            "args": [],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "uuid.Parse",
+        "namespace": "uuid",
+        "overloads": [
+          {
+            "id": "uuid.Parse_interface{}",
+            "args": [
+              "dyn"
+            ],
+            "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "uuid.V1",
+        "namespace": "uuid",
+        "overloads": [
+          {
+            "id": "uuid.V1_",
+            "args": [],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "uuid.V4",
+        "namespace": "uuid",
+        "overloads": [
+          {
+            "id": "uuid.V4_",
+            "args": [],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "value",
+        "memberOnly": true,
+        "doc": "obtain the value contained by the optional, error if optional.none()",
+        "overloads": [
+          {
+            "id": "optional_value",
+            "args": [
+              "optional_type(\u003cV\u003e)"
+            ],
+            "result": "\u003cV\u003e",
+            "member": true
+          }
+        ],
+        "examples": [
+          "optional.of(1).value() // 1\noptional.none().value() // error"
+        ]
+      },
+      {
+        "name": "values",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "map_values",
+            "args": [
+              "map(string, google.protobuf.Any)"
+            ],
+            "result": "list(google.protobuf.Any)",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "wordWrap",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "WordWrap_interface{}",
+            "args": [
+              "string",
+              "int"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "stringsWordWrapSeqAndWidthGen",
+            "args": [
+              "string",
+              "int",
+              "string"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "xpath",
+        "overloads": [
+          {
+            "id": "xpath_string_string",
+            "args": [
+              "string",
+              "string"
+            ],
+            "result": "dyn"
+          }
+        ]
+      }
+    ]
+  },
+  "gotemplate": {
+    "namespaces": [
+      "base64",
+      "coll",
+      "conv",
+      "crypto",
+      "data",
+      "filepath",
+      "k8s",
+      "math",
+      "net",
+      "path",
+      "random",
+      "regexp",
+      "strings",
+      "test",
+      "time",
+      "uuid"
+    ],
+    "keywords": [
+      "block",
+      "break",
+      "continue",
+      "define",
+      "else",
+      "end",
+      "if",
+      "nil",
+      "range",
+      "template",
+      "with"
+    ],
+    "builtins": [
+      "and",
+      "call",
+      "eq",
+      "ge",
+      "gt",
+      "html",
+      "index",
+      "js",
+      "le",
+      "len",
+      "lt",
+      "ne",
+      "not",
+      "or",
+      "print",
+      "printf",
+      "println",
+      "slice",
+      "urlquery"
+    ],
+    "delimiters": {
+      "left": "{{",
+      "right": "}}",
+      "leftComment": "/*",
+      "rightComment": "*/",
+      "trimMarker": "-"
+    },
+    "functions": [
+      {
+        "name": "add",
+        "signature": "(n ...interface {}) interface {}"
+      },
+      {
+        "name": "append",
+        "signature": "(v interface {}, list interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "assert",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "base64.Decode",
+        "namespace": "base64",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "base64.DecodeBytes",
+        "namespace": "base64",
+        "signature": "(in interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "base64.Encode",
+        "namespace": "base64",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "bool",
+        "signature": "(s interface {}) bool"
+      },
+      {
+        "name": "coalesce",
+        "signature": "(args ...interface {}) interface {}"
+      },
+      {
+        "name": "coll.Append",
+        "namespace": "coll",
+        "signature": "(v interface {}, list interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "coll.Coalesce",
+        "namespace": "coll",
+        "signature": "(args ...interface {}) interface {}"
+      },
+      {
+        "name": "coll.Dict",
+        "namespace": "coll",
+        "signature": "(in ...interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "coll.First",
+        "namespace": "coll",
+        "signature": "(in interface {}) interface {}"
+      },
+      {
+        "name": "coll.Flatten",
+        "namespace": "coll",
+        "signature": "(args ...interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "coll.Has",
+        "namespace": "coll",
+        "signature": "(in interface {}, key string) bool"
+      },
+      {
+        "name": "coll.JQ",
+        "namespace": "coll",
+        "signature": "(jqExpr string, in interface {}) (interface {}, error)"
+      },
+      {
+        "name": "coll.Keys",
+        "namespace": "coll",
+        "signature": "(in map[string]interface {}) []string"
+      },
+      {
+        "name": "coll.Last",
+        "namespace": "coll",
+        "signature": "(in interface {}) interface {}"
+      },
+      {
+        "name": "coll.Merge",
+        "namespace": "coll",
+        "signature": "(dst map[string]interface {}, src ...map[string]interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "coll.Omit",
+        "namespace": "coll",
+        "signature": "(args ...interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "coll.Pick",
+        "namespace": "coll",
+        "signature": "(args ...interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "coll.Prepend",
+        "namespace": "coll",
+        "signature": "(v interface {}, list interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "coll.Reverse",
+        "namespace": "coll",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "coll.Slice",
+        "namespace": "coll",
+        "signature": "(args ...interface {}) []interface {}"
+      },
+      {
+        "name": "coll.Sort",
+        "namespace": "coll",
+        "signature": "(args ...interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "coll.Uniq",
+        "namespace": "coll",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "coll.Values",
+        "namespace": "coll",
+        "signature": "(in map[string]interface {}) []interface {}"
+      },
+      {
+        "name": "contains",
+        "signature": "(s string, substr string) bool"
+      },
+      {
+        "name": "conv.Atoi",
+        "namespace": "conv",
+        "signature": "(s interface {}) int"
+      },
+      {
+        "name": "conv.Bool",
+        "namespace": "conv",
+        "signature": "(s interface {}) bool"
+      },
+      {
+        "name": "conv.Default",
+        "namespace": "conv",
+        "signature": "(def interface {}, in interface {}) interface {}"
+      },
+      {
+        "name": "conv.Dict",
+        "namespace": "conv",
+        "signature": "(in ...interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "conv.Has",
+        "namespace": "conv",
+        "signature": "(in interface {}, key string) bool"
+      },
+      {
+        "name": "conv.Join",
+        "namespace": "conv",
+        "signature": "(in interface {}, sep string) (string, error)"
+      },
+      {
+        "name": "conv.ParseFloat",
+        "namespace": "conv",
+        "signature": "(s interface {}, bitSize int) float64"
+      },
+      {
+        "name": "conv.ParseInt",
+        "namespace": "conv",
+        "signature": "(s interface {}, base int, bitSize int) int64"
+      },
+      {
+        "name": "conv.ParseUint",
+        "namespace": "conv",
+        "signature": "(s interface {}, base int, bitSize int) uint64"
+      },
+      {
+        "name": "conv.Slice",
+        "namespace": "conv",
+        "signature": "(args ...interface {}) []interface {}"
+      },
+      {
+        "name": "conv.ToBool",
+        "namespace": "conv",
+        "signature": "(in interface {}) bool"
+      },
+      {
+        "name": "conv.ToBools",
+        "namespace": "conv",
+        "signature": "(in ...interface {}) []bool"
+      },
+      {
+        "name": "conv.ToFloat64",
+        "namespace": "conv",
+        "signature": "(in interface {}) float64"
+      },
+      {
+        "name": "conv.ToFloat64s",
+        "namespace": "conv",
+        "signature": "(in ...interface {}) []float64"
+      },
+      {
+        "name": "conv.ToInt",
+        "namespace": "conv",
+        "signature": "(in interface {}) int"
+      },
+      {
+        "name": "conv.ToInt64",
+        "namespace": "conv",
+        "signature": "(in interface {}) int64"
+      },
+      {
+        "name": "conv.ToInt64s",
+        "namespace": "conv",
+        "signature": "(in ...interface {}) []int64"
+      },
+      {
+        "name": "conv.ToInts",
+        "namespace": "conv",
+        "signature": "(in ...interface {}) []int"
+      },
+      {
+        "name": "conv.ToString",
+        "namespace": "conv",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "conv.ToStrings",
+        "namespace": "conv",
+        "signature": "(in ...interface {}) []string"
+      },
+      {
+        "name": "conv.URL",
+        "namespace": "conv",
+        "signature": "(s interface {}) (*url.URL, error)"
+      },
+      {
+        "name": "crypto.SHA1",
+        "namespace": "crypto",
+        "signature": "(input interface {}) string"
+      },
+      {
+        "name": "crypto.SHA1Bytes",
+        "namespace": "crypto",
+        "signature": "(input interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "crypto.SHA224",
+        "namespace": "crypto",
+        "signature": "(input interface {}) string"
+      },
+      {
+        "name": "crypto.SHA224Bytes",
+        "namespace": "crypto",
+        "signature": "(input interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "crypto.SHA256",
+        "namespace": "crypto",
+        "signature": "(input interface {}) string"
+      },
+      {
+        "name": "crypto.SHA256Bytes",
+        "namespace": "crypto",
+        "signature": "(input interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "crypto.SHA384",
+        "namespace": "crypto",
+        "signature": "(input interface {}) string"
+      },
+      {
+        "name": "crypto.SHA384Bytes",
+        "namespace": "crypto",
+        "signature": "(input interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "crypto.SHA512",
+        "namespace": "crypto",
+        "signature": "(input interface {}) string"
+      },
+      {
+        "name": "crypto.SHA512Bytes",
+        "namespace": "crypto",
+        "signature": "(input interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "crypto.SHA512_224",
+        "namespace": "crypto",
+        "signature": "(input interface {}) string"
+      },
+      {
+        "name": "crypto.SHA512_224Bytes",
+        "namespace": "crypto",
+        "signature": "(input interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "crypto.SHA512_256",
+        "namespace": "crypto",
+        "signature": "(input interface {}) string"
+      },
+      {
+        "name": "crypto.SHA512_256Bytes",
+        "namespace": "crypto",
+        "signature": "(input interface {}) ([]uint8, error)"
+      },
+      {
+        "name": "csv",
+        "signature": "(args ...string) ([][]string, error)"
+      },
+      {
+        "name": "csvByColumn",
+        "signature": "(args ...string) (map[string][]string, error)"
+      },
+      {
+        "name": "csvByRow",
+        "signature": "(args ...string) ([]map[string]string, error)"
+      },
+      {
+        "name": "data.CSV",
+        "namespace": "data",
+        "signature": "(args ...string) ([][]string, error)"
+      },
+      {
+        "name": "data.CSVByColumn",
+        "namespace": "data",
+        "signature": "(args ...string) (map[string][]string, error)"
+      },
+      {
+        "name": "data.CSVByRow",
+        "namespace": "data",
+        "signature": "(args ...string) ([]map[string]string, error)"
+      },
+      {
+        "name": "data.JSON",
+        "namespace": "data",
+        "signature": "(in interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "data.JSONArray",
+        "namespace": "data",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "data.TOML",
+        "namespace": "data",
+        "signature": "(in interface {}) (interface {}, error)"
+      },
+      {
+        "name": "data.ToCSV",
+        "namespace": "data",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "data.ToJSON",
+        "namespace": "data",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "data.ToJSONPretty",
+        "namespace": "data",
+        "signature": "(indent string, in interface {}) (string, error)"
+      },
+      {
+        "name": "data.ToTOML",
+        "namespace": "data",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "data.ToYAML",
+        "namespace": "data",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "data.YAML",
+        "namespace": "data",
+        "signature": "(in interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "data.YAMLArray",
+        "namespace": "data",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "default",
+        "signature": "(def interface {}, in interface {}) interface {}"
+      },
+      {
+        "name": "dict",
+        "signature": "(in ...interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "div",
+        "signature": "(a interface {}, b interface {}) (interface {}, error)"
+      },
+      {
+        "name": "endsWith",
+        "signature": "(s string, suffix string) bool"
+      },
+      {
+        "name": "fail",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "filepath.Base",
+        "namespace": "filepath",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "filepath.Clean",
+        "namespace": "filepath",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "filepath.Dir",
+        "namespace": "filepath",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "filepath.Ext",
+        "namespace": "filepath",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "filepath.FromSlash",
+        "namespace": "filepath",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "filepath.IsAbs",
+        "namespace": "filepath",
+        "signature": "(in interface {}) bool"
+      },
+      {
+        "name": "filepath.Join",
+        "namespace": "filepath",
+        "signature": "(elem ...interface {}) string"
+      },
+      {
+        "name": "filepath.Match",
+        "namespace": "filepath",
+        "signature": "(pattern interface {}, name interface {}) (bool, error)"
+      },
+      {
+        "name": "filepath.Rel",
+        "namespace": "filepath",
+        "signature": "(basepath interface {}, targpath interface {}) (string, error)"
+      },
+      {
+        "name": "filepath.Split",
+        "namespace": "filepath",
+        "signature": "(in interface {}) []string"
+      },
+      {
+        "name": "filepath.ToSlash",
+        "namespace": "filepath",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "filepath.VolumeName",
+        "namespace": "filepath",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "first",
+        "signature": "(in interface {}) interface {}"
+      },
+      {
+        "name": "flatten",
+        "signature": "(args ...interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "getHealth",
+        "signature": "(in interface {}) kubernetes.HealthStatus"
+      },
+      {
+        "name": "getStatus",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "has",
+        "signature": "(in interface {}, key string) bool"
+      },
+      {
+        "name": "hasPrefix",
+        "signature": "(s string, prefix string) bool"
+      },
+      {
+        "name": "hasSuffix",
+        "signature": "(s string, suffix string) bool"
+      },
+      {
+        "name": "humanDuration",
+        "signature": "(duration interface {}) string"
+      },
+      {
+        "name": "humanSize",
+        "signature": "(size interface {}) string"
+      },
+      {
+        "name": "in_business_hours",
+        "signature": "(value string) (interface {}, error)"
+      },
+      {
+        "name": "indent",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "isHealthy",
+        "signature": "(in interface {}) bool"
+      },
+      {
+        "name": "isKind",
+        "signature": "(kind string, arg interface {}) bool"
+      },
+      {
+        "name": "isReady",
+        "signature": "(in interface {}) bool"
+      },
+      {
+        "name": "jmespath",
+        "signature": "(jmesPath string, in interface {}) (interface {}, error)"
+      },
+      {
+        "name": "join",
+        "signature": "(in interface {}, sep string) (string, error)"
+      },
+      {
+        "name": "jq",
+        "signature": "(jqExpr string, in interface {}) (interface {}, error)"
+      },
+      {
+        "name": "json",
+        "signature": "(in interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "jsonArray",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "jsonpath",
+        "signature": "(jsonPath string, in interface {}) (interface {}, error)"
+      },
+      {
+        "name": "k8s.GetHealth",
+        "namespace": "k8s",
+        "signature": "(in interface {}) kubernetes.HealthStatus"
+      },
+      {
+        "name": "k8s.GetHealthMap",
+        "namespace": "k8s",
+        "signature": "(in interface {}) map[string]string"
+      },
+      {
+        "name": "k8s.GetStatus",
+        "namespace": "k8s",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "k8s.IsHealthy",
+        "namespace": "k8s",
+        "signature": "(in interface {}) bool"
+      },
+      {
+        "name": "k8s.IsReady",
+        "namespace": "k8s",
+        "signature": "(in interface {}) bool"
+      },
+      {
+        "name": "k8s.Neat",
+        "namespace": "k8s",
+        "signature": "(in string) (string, error)"
+      },
+      {
+        "name": "keyValToMap",
+        "signature": "(s string) (map[string]string, error)"
+      },
+      {
+        "name": "keys",
+        "signature": "(in map[string]interface {}) []string"
+      },
+      {
+        "name": "kind",
+        "signature": "(arg interface {}) string"
+      },
+      {
+        "name": "last",
+        "signature": "(in interface {}) interface {}"
+      },
+      {
+        "name": "mapToKeyVal",
+        "signature": "(m map[string]interface {}) string"
+      },
+      {
+        "name": "matchLabel",
+        "signature": "(labels map[string]interface {}, key string, valuePatterns ...string) bool"
+      },
+      {
+        "name": "math.Abs",
+        "namespace": "math",
+        "signature": "(n interface {}) interface {}"
+      },
+      {
+        "name": "math.Add",
+        "namespace": "math",
+        "signature": "(n ...interface {}) interface {}"
+      },
+      {
+        "name": "math.Ceil",
+        "namespace": "math",
+        "signature": "(n interface {}) interface {}"
+      },
+      {
+        "name": "math.Div",
+        "namespace": "math",
+        "signature": "(a interface {}, b interface {}) (interface {}, error)"
+      },
+      {
+        "name": "math.Floor",
+        "namespace": "math",
+        "signature": "(n interface {}) interface {}"
+      },
+      {
+        "name": "math.IsFloat",
+        "namespace": "math",
+        "signature": "(n interface {}) bool"
+      },
+      {
+        "name": "math.IsInt",
+        "namespace": "math",
+        "signature": "(n interface {}) bool"
+      },
+      {
+        "name": "math.IsNum",
+        "namespace": "math",
+        "signature": "(n interface {}) bool"
+      },
+      {
+        "name": "math.Max",
+        "namespace": "math",
+        "signature": "(a interface {}, b ...interface {}) (interface {}, error)"
+      },
+      {
+        "name": "math.Min",
+        "namespace": "math",
+        "signature": "(a interface {}, b ...interface {}) (interface {}, error)"
+      },
+      {
+        "name": "math.Mul",
+        "namespace": "math",
+        "signature": "(n ...interface {}) interface {}"
+      },
+      {
+        "name": "math.Pow",
+        "namespace": "math",
+        "signature": "(a interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "math.Rem",
+        "namespace": "math",
+        "signature": "(a interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "math.Round",
+        "namespace": "math",
+        "signature": "(n interface {}) interface {}"
+      },
+      {
+        "name": "math.Seq",
+        "namespace": "math",
+        "signature": "(n ...interface {}) ([]int64, error)"
+      },
+      {
+        "name": "math.Sub",
+        "namespace": "math",
+        "signature": "(a interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "merge",
+        "signature": "(dst map[string]interface {}, src ...map[string]interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "mul",
+        "signature": "(n ...interface {}) interface {}"
+      },
+      {
+        "name": "neat",
+        "signature": "(in string) (string, error)"
+      },
+      {
+        "name": "net.ContainsCIDR",
+        "namespace": "net",
+        "signature": "(cidr string, ip string) bool"
+      },
+      {
+        "name": "net.IsValidIP",
+        "namespace": "net",
+        "signature": "(ip string) bool"
+      },
+      {
+        "name": "parseDateTime",
+        "signature": "(timeStr string) *time.Time"
+      },
+      {
+        "name": "path.Base",
+        "namespace": "path",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "path.Clean",
+        "namespace": "path",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "path.Dir",
+        "namespace": "path",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "path.Ext",
+        "namespace": "path",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "path.IsAbs",
+        "namespace": "path",
+        "signature": "(in interface {}) bool"
+      },
+      {
+        "name": "path.Join",
+        "namespace": "path",
+        "signature": "(elem ...interface {}) string"
+      },
+      {
+        "name": "path.Match",
+        "namespace": "path",
+        "signature": "(pattern interface {}, name interface {}) (bool, error)"
+      },
+      {
+        "name": "path.Split",
+        "namespace": "path",
+        "signature": "(in interface {}) []string"
+      },
+      {
+        "name": "pow",
+        "signature": "(a interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "prepend",
+        "signature": "(v interface {}, list interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "quote",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "random.ASCII",
+        "namespace": "random",
+        "signature": "(count interface {}) (string, error)"
+      },
+      {
+        "name": "random.Alpha",
+        "namespace": "random",
+        "signature": "(count interface {}) (string, error)"
+      },
+      {
+        "name": "random.AlphaNum",
+        "namespace": "random",
+        "signature": "(count interface {}) (string, error)"
+      },
+      {
+        "name": "random.Float",
+        "namespace": "random",
+        "signature": "(args ...interface {}) (float64, error)"
+      },
+      {
+        "name": "random.Item",
+        "namespace": "random",
+        "signature": "(items interface {}) (interface {}, error)"
+      },
+      {
+        "name": "random.Number",
+        "namespace": "random",
+        "signature": "(args ...interface {}) (int64, error)"
+      },
+      {
+        "name": "random.String",
+        "namespace": "random",
+        "signature": "(count interface {}, args ...interface {}) (string, error)"
+      },
+      {
+        "name": "regexp.Find",
+        "namespace": "regexp",
+        "signature": "(re interface {}, input interface {}) (string, error)"
+      },
+      {
+        "name": "regexp.FindAll",
+        "namespace": "regexp",
+        "signature": "(args ...interface {}) ([]string, error)"
+      },
+      {
+        "name": "regexp.Match",
+        "namespace": "regexp",
+        "signature": "(re interface {}, input interface {}) bool"
+      },
+      {
+        "name": "regexp.QuoteMeta",
+        "namespace": "regexp",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "regexp.Replace",
+        "namespace": "regexp",
+        "signature": "(re interface {}, replacement interface {}, input interface {}) string"
+      },
+      {
+        "name": "regexp.ReplaceLiteral",
+        "namespace": "regexp",
+        "signature": "(re interface {}, replacement interface {}, input interface {}) (string, error)"
+      },
+      {
+        "name": "regexp.Split",
+        "namespace": "regexp",
+        "signature": "(args ...interface {}) ([]string, error)"
+      },
+      {
+        "name": "rem",
+        "signature": "(a interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "replaceAll",
+        "signature": "(old string, new string, s interface {}) string"
+      },
+      {
+        "name": "required",
+        "signature": "(args ...interface {}) (interface {}, error)"
+      },
+      {
+        "name": "reverse",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "semver",
+        "signature": "(version string) (*semver.Version, error)"
+      },
+      {
+        "name": "semverCompare",
+        "signature": "(constraint string, version string) (bool, error)"
+      },
+      {
+        "name": "seq",
+        "signature": "(n ...interface {}) ([]int64, error)"
+      },
+      {
+        "name": "shellQuote",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "slice",
+        "signature": "(args ...interface {}) []interface {}"
+      },
+      {
+        "name": "sort",
+        "signature": "(args ...interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "split",
+        "signature": "(s string, sep string) []string"
+      },
+      {
+        "name": "splitN",
+        "signature": "(s string, sep string, n int) []string"
+      },
+      {
+        "name": "squote",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "startsWith",
+        "signature": "(s string, prefix string) bool"
+      },
+      {
+        "name": "strings.Abbrev",
+        "namespace": "strings",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "strings.CamelCase",
+        "namespace": "strings",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "strings.Contains",
+        "namespace": "strings",
+        "signature": "(substr string, s interface {}) bool"
+      },
+      {
+        "name": "strings.HasPrefix",
+        "namespace": "strings",
+        "signature": "(prefix string, s interface {}) bool"
+      },
+      {
+        "name": "strings.HasSuffix",
+        "namespace": "strings",
+        "signature": "(suffix string, s interface {}) bool"
+      },
+      {
+        "name": "strings.HumanDuration",
+        "namespace": "strings",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "strings.HumanSize",
+        "namespace": "strings",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "strings.Indent",
+        "namespace": "strings",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "strings.KebabCase",
+        "namespace": "strings",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "strings.Quote",
+        "namespace": "strings",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "strings.Repeat",
+        "namespace": "strings",
+        "signature": "(count int, s interface {}) (string, error)"
+      },
+      {
+        "name": "strings.ReplaceAll",
+        "namespace": "strings",
+        "signature": "(old string, new string, s interface {}) string"
+      },
+      {
+        "name": "strings.RuneCount",
+        "namespace": "strings",
+        "signature": "(args ...interface {}) (int, error)"
+      },
+      {
+        "name": "strings.Semver",
+        "namespace": "strings",
+        "signature": "(in string) (*semver.Version, error)"
+      },
+      {
+        "name": "strings.SemverCompare",
+        "namespace": "strings",
+        "signature": "(v1 string, v2 string) (bool, error)"
+      },
+      {
+        "name": "strings.SemverMap",
+        "namespace": "strings",
+        "signature": "(in string) (map[string]string, error)"
+      },
+      {
+        "name": "strings.ShellQuote",
+        "namespace": "strings",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "strings.Slug",
+        "namespace": "strings",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "strings.SnakeCase",
+        "namespace": "strings",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "strings.Sort",
+        "namespace": "strings",
+        "signature": "(list interface {}) ([]string, error)"
+      },
+      {
+        "name": "strings.Split",
+        "namespace": "strings",
+        "signature": "(sep string, s interface {}) []string"
+      },
+      {
+        "name": "strings.SplitN",
+        "namespace": "strings",
+        "signature": "(sep string, n int, s interface {}) []string"
+      },
+      {
+        "name": "strings.Squote",
+        "namespace": "strings",
+        "signature": "(in interface {}) string"
+      },
+      {
+        "name": "strings.Title",
+        "namespace": "strings",
+        "signature": "(s interface {}) string"
+      },
+      {
+        "name": "strings.ToLower",
+        "namespace": "strings",
+        "signature": "(s interface {}) string"
+      },
+      {
+        "name": "strings.ToUpper",
+        "namespace": "strings",
+        "signature": "(s interface {}) string"
+      },
+      {
+        "name": "strings.Trim",
+        "namespace": "strings",
+        "signature": "(cutset string, s interface {}) string"
+      },
+      {
+        "name": "strings.TrimPrefix",
+        "namespace": "strings",
+        "signature": "(cutset string, s interface {}) string"
+      },
+      {
+        "name": "strings.TrimSpace",
+        "namespace": "strings",
+        "signature": "(s interface {}) string"
+      },
+      {
+        "name": "strings.TrimSuffix",
+        "namespace": "strings",
+        "signature": "(cutset string, s interface {}) string"
+      },
+      {
+        "name": "strings.Trunc",
+        "namespace": "strings",
+        "signature": "(length int, s interface {}) string"
+      },
+      {
+        "name": "strings.WordWrap",
+        "namespace": "strings",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "sub",
+        "signature": "(a interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "ternary",
+        "signature": "(tval interface {}, fval interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "test.Assert",
+        "namespace": "test",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "test.Fail",
+        "namespace": "test",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "test.IsKind",
+        "namespace": "test",
+        "signature": "(kind string, arg interface {}) bool"
+      },
+      {
+        "name": "test.Kind",
+        "namespace": "test",
+        "signature": "(arg interface {}) string"
+      },
+      {
+        "name": "test.Required",
+        "namespace": "test",
+        "signature": "(args ...interface {}) (interface {}, error)"
+      },
+      {
+        "name": "test.Ternary",
+        "namespace": "test",
+        "signature": "(tval interface {}, fval interface {}, b interface {}) interface {}"
+      },
+      {
+        "name": "time.Hour",
+        "namespace": "time",
+        "signature": "(n interface {}) time.Duration"
+      },
+      {
+        "name": "time.InBusinessHour",
+        "namespace": "time",
+        "signature": "(value string) (interface {}, error)"
+      },
+      {
+        "name": "time.InTimeRange",
+        "namespace": "time",
+        "signature": "(t interface {}, start string, end string) (bool, error)"
+      },
+      {
+        "name": "time.Microsecond",
+        "namespace": "time",
+        "signature": "(n interface {}) time.Duration"
+      },
+      {
+        "name": "time.Millisecond",
+        "namespace": "time",
+        "signature": "(n interface {}) time.Duration"
+      },
+      {
+        "name": "time.Minute",
+        "namespace": "time",
+        "signature": "(n interface {}) time.Duration"
+      },
+      {
+        "name": "time.Nanosecond",
+        "namespace": "time",
+        "signature": "(n interface {}) time.Duration"
+      },
+      {
+        "name": "time.Now",
+        "namespace": "time",
+        "signature": "() time.Time"
+      },
+      {
+        "name": "time.Parse",
+        "namespace": "time",
+        "signature": "(layout string, value interface {}) (time.Time, error)"
+      },
+      {
+        "name": "time.ParseDuration",
+        "namespace": "time",
+        "signature": "(n interface {}) (time.Duration, error)"
+      },
+      {
+        "name": "time.ParseInLocation",
+        "namespace": "time",
+        "signature": "(layout string, location string, value interface {}) (time.Time, error)"
+      },
+      {
+        "name": "time.ParseLocal",
+        "namespace": "time",
+        "signature": "(layout string, value interface {}) (time.Time, error)"
+      },
+      {
+        "name": "time.Second",
+        "namespace": "time",
+        "signature": "(n interface {}) time.Duration"
+      },
+      {
+        "name": "time.Since",
+        "namespace": "time",
+        "signature": "(n time.Time) time.Duration"
+      },
+      {
+        "name": "time.Unix",
+        "namespace": "time",
+        "signature": "(in interface {}) (time.Time, error)"
+      },
+      {
+        "name": "time.Until",
+        "namespace": "time",
+        "signature": "(n time.Time) time.Duration"
+      },
+      {
+        "name": "time.ZoneName",
+        "namespace": "time",
+        "signature": "() string"
+      },
+      {
+        "name": "time.ZoneOffset",
+        "namespace": "time",
+        "signature": "() int"
+      },
+      {
+        "name": "title",
+        "signature": "(s interface {}) string"
+      },
+      {
+        "name": "toCSV",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "toJSON",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "toJSONPretty",
+        "signature": "(indent string, in interface {}) (string, error)"
+      },
+      {
+        "name": "toLower",
+        "signature": "(s interface {}) string"
+      },
+      {
+        "name": "toTOML",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "toUpper",
+        "signature": "(s interface {}) string"
+      },
+      {
+        "name": "toYAML",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "toml",
+        "signature": "(in interface {}) (interface {}, error)"
+      },
+      {
+        "name": "trim",
+        "signature": "(s string, cutset string) string"
+      },
+      {
+        "name": "uniq",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      },
+      {
+        "name": "urlParse",
+        "signature": "(s interface {}) (*url.URL, error)"
+      },
+      {
+        "name": "urldecode",
+        "signature": "(input string) (string, error)"
+      },
+      {
+        "name": "urlencode",
+        "signature": "(input string) string"
+      },
+      {
+        "name": "uuid.HashUUID",
+        "namespace": "uuid",
+        "signature": "(args ...interface {}) (string, error)"
+      },
+      {
+        "name": "uuid.IsValid",
+        "namespace": "uuid",
+        "signature": "(in interface {}) (bool, error)"
+      },
+      {
+        "name": "uuid.Nil",
+        "namespace": "uuid",
+        "signature": "() (string, error)"
+      },
+      {
+        "name": "uuid.Parse",
+        "namespace": "uuid",
+        "signature": "(in interface {}) (string, error)"
+      },
+      {
+        "name": "uuid.V1",
+        "namespace": "uuid",
+        "signature": "() (string, error)"
+      },
+      {
+        "name": "uuid.V4",
+        "namespace": "uuid",
+        "signature": "() (string, error)"
+      },
+      {
+        "name": "values",
+        "signature": "(in map[string]interface {}) []interface {}"
+      },
+      {
+        "name": "xpath",
+        "signature": "(xpathStr string, xmlStr string) ([]string, error)"
+      },
+      {
+        "name": "yaml",
+        "signature": "(in interface {}) (map[string]interface {}, error)"
+      },
+      {
+        "name": "yamlArray",
+        "signature": "(in interface {}) ([]interface {}, error)"
+      }
+    ]
+  }
+}
