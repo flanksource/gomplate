@@ -91,6 +91,12 @@ func compileCELProgram(data map[string]any, template Template, nativeTypes *nati
 		return nil, nil, oops.With("template", template.Expression).Errorf("issues: %s", issues.String())
 	}
 
+	// OptOptimize folds constants and precompiles regexes while the program is
+	// built. That makes this function -- the cache=miss path -- allocate a few
+	// percent more, which is the trade being bought: a program is compiled once
+	// and then evaluated from celExpressionCache for an hour, so the work moves
+	// off the hot path. Do not "fix" a compile-path allocation regression here by
+	// dropping it.
 	evalOptions := []cel.EvalOption{cel.OptOptimize}
 	if trackState {
 		evalOptions = append(evalOptions, cel.OptTrackState)
