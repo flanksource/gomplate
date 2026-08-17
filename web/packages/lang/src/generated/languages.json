@@ -1,0 +1,2299 @@
+{
+  "cel": {
+    "id": "cel",
+    "monarch": {
+      "defaultToken": "",
+      "tokenPostfix": ".cel",
+      "brackets": [
+        {
+          "open": "{",
+          "close": "}",
+          "token": "delimiter.curly"
+        },
+        {
+          "open": "[",
+          "close": "]",
+          "token": "delimiter.square"
+        },
+        {
+          "open": "(",
+          "close": ")",
+          "token": "delimiter.parenthesis"
+        }
+      ],
+      "constants": [
+        "false",
+        "null",
+        "true"
+      ],
+      "globalFunctions": [
+        "ASCII",
+        "Abs",
+        "Add",
+        "Age",
+        "Alpha",
+        "AlphaNum",
+        "Append",
+        "Assert",
+        "Base",
+        "CSV",
+        "CSVByColumn",
+        "CSVByRow",
+        "Ceil",
+        "Clean",
+        "Contains",
+        "ContainsCIDR",
+        "Dict",
+        "Dir",
+        "Div",
+        "Duration",
+        "Ext",
+        "Fail",
+        "Find",
+        "FindAll",
+        "Float",
+        "Floor",
+        "FromSlash",
+        "GetHealth",
+        "GetStatus",
+        "Has",
+        "HashUUID",
+        "Hour",
+        "HumanDuration",
+        "HumanSize",
+        "InTimeRange",
+        "IsAbs",
+        "IsFloat",
+        "IsHealthy",
+        "IsInt",
+        "IsKind",
+        "IsNum",
+        "IsReady",
+        "IsValid",
+        "IsValidIP",
+        "Item",
+        "Join",
+        "Kind",
+        "Match",
+        "Microsecond",
+        "Millisecond",
+        "Minute",
+        "Mul",
+        "Nanosecond",
+        "Nil",
+        "Now",
+        "Number",
+        "Parse",
+        "ParseDateTime",
+        "ParseDuration",
+        "ParseInLocation",
+        "ParseLocal",
+        "Pow",
+        "Prepend",
+        "QuoteMeta",
+        "Rel",
+        "Rem",
+        "Replace",
+        "ReplaceLiteral",
+        "Required",
+        "Round",
+        "SHA1",
+        "SHA1Bytes",
+        "SHA224",
+        "SHA224Bytes",
+        "SHA256",
+        "SHA256Bytes",
+        "SHA384",
+        "SHA384Bytes",
+        "SHA512",
+        "SHA512Bytes",
+        "SHA512_224",
+        "SHA512_224Bytes",
+        "SHA512_256",
+        "SHA512_256Bytes",
+        "Second",
+        "Semver",
+        "SemverCompare",
+        "Seq",
+        "Since",
+        "Sort",
+        "Split",
+        "SplitN",
+        "String",
+        "Sub",
+        "TOML",
+        "Ternary",
+        "ToSlash",
+        "Unix",
+        "Until",
+        "V1",
+        "V4",
+        "VolumeName",
+        "YAML",
+        "YAMLArray",
+        "ZoneName",
+        "ZoneOffset",
+        "abs",
+        "age",
+        "arnToMap",
+        "bitAnd",
+        "bitNot",
+        "bitOr",
+        "bitShiftLeft",
+        "bitShiftRight",
+        "bitXor",
+        "bool",
+        "bytes",
+        "ceil",
+        "coalesce",
+        "contains",
+        "containsFloat",
+        "cpuAsMillicores",
+        "debug",
+        "decode",
+        "double",
+        "duration",
+        "dyn",
+        "encode",
+        "equivalent",
+        "f",
+        "first",
+        "floor",
+        "fromAWSMap",
+        "getHealth",
+        "getResourcesLimit",
+        "getResourcesRequests",
+        "getStatus",
+        "in",
+        "in_business_hours",
+        "int",
+        "intersects",
+        "isFinite",
+        "isHealthy",
+        "isInf",
+        "isNaN",
+        "isReady",
+        "isURL",
+        "is_healthy",
+        "jmespath",
+        "jq",
+        "jsonpath",
+        "keyValToMap",
+        "labels",
+        "last",
+        "mapToKeyVal",
+        "matchLabel",
+        "matches",
+        "memoryAsBytes",
+        "merge",
+        "neat",
+        "nodeProperties",
+        "none",
+        "of",
+        "ofNonZeroValue",
+        "podProperties",
+        "quote",
+        "range",
+        "round",
+        "sign",
+        "size",
+        "sqrt",
+        "string",
+        "timestamp",
+        "toCSV",
+        "toTOML",
+        "toYAML",
+        "trunc",
+        "type",
+        "uint",
+        "url",
+        "urldecode",
+        "urlencode",
+        "xpath"
+      ],
+      "keywords": [
+        "as",
+        "break",
+        "const",
+        "continue",
+        "else",
+        "for",
+        "function",
+        "if",
+        "import",
+        "in",
+        "let",
+        "loop",
+        "namespace",
+        "package",
+        "return",
+        "type",
+        "var",
+        "void",
+        "while"
+      ],
+      "macros": [
+        "all",
+        "exists",
+        "exists_one",
+        "filter",
+        "fold",
+        "greatest",
+        "has",
+        "least",
+        "map",
+        "optFlatMap",
+        "optMap",
+        "sortBy"
+      ],
+      "memberFunctions": [
+        "JSON",
+        "JSONArray",
+        "abbrev",
+        "camelCase",
+        "charAt",
+        "contains",
+        "distinct",
+        "endsWith",
+        "find",
+        "findAll",
+        "flatten",
+        "format",
+        "getDate",
+        "getDayOfMonth",
+        "getDayOfWeek",
+        "getDayOfYear",
+        "getEscapedPath",
+        "getFullYear",
+        "getHost",
+        "getHostname",
+        "getHours",
+        "getMilliseconds",
+        "getMinutes",
+        "getMonth",
+        "getPort",
+        "getQuery",
+        "getScheme",
+        "getSeconds",
+        "hasValue",
+        "indent",
+        "indexOf",
+        "isSorted",
+        "join",
+        "kebabCase",
+        "keys",
+        "lastIndexOf",
+        "lowerAscii",
+        "match",
+        "max",
+        "min",
+        "omit",
+        "or",
+        "orValue",
+        "pick",
+        "quote",
+        "repeat",
+        "replace",
+        "replaceAll",
+        "replaceAllRegex",
+        "reverse",
+        "runeCount",
+        "shellQuote",
+        "slice",
+        "slug",
+        "snakeCase",
+        "sort",
+        "sortBy",
+        "split",
+        "splitRegex",
+        "squote",
+        "startsWith",
+        "substring",
+        "sum",
+        "title",
+        "toJSON",
+        "toJSONPretty",
+        "toLower",
+        "toUpper",
+        "trim",
+        "trimPrefix",
+        "trimSpace",
+        "trimSuffix",
+        "trunc",
+        "uniq",
+        "upperAscii",
+        "value",
+        "values",
+        "wordWrap"
+      ],
+      "namespaces": [
+        "aws",
+        "base64",
+        "crypto",
+        "data",
+        "filepath",
+        "json",
+        "k8s",
+        "lists",
+        "math",
+        "net",
+        "optional",
+        "random",
+        "regexp",
+        "sets",
+        "strings",
+        "test",
+        "time",
+        "uuid"
+      ],
+      "operators": [
+        "!",
+        "!=",
+        "%",
+        "\u0026\u0026",
+        "(",
+        ")",
+        "*",
+        "+",
+        ",",
+        "-",
+        ".",
+        "/",
+        ":",
+        "\u003c",
+        "\u003c=",
+        "==",
+        "\u003e",
+        "\u003e=",
+        "?",
+        "[",
+        "]",
+        "{",
+        "||",
+        "}"
+      ],
+      "typeKeywords": [
+        "bool",
+        "bytes",
+        "double",
+        "duration",
+        "dyn",
+        "int",
+        "list",
+        "map",
+        "null_type",
+        "string",
+        "timestamp",
+        "type",
+        "uint"
+      ],
+      "tokenizer": {
+        "root": [
+          {
+            "include": "@whitespace"
+          },
+          [
+            "[bB](?:[rR]\"\"\"[\\s\\S]*?\"\"\"|[rR]'''[\\s\\S]*?'''|\"\"\"(?:[^\\\\]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*?\"\"\"|'''(?:[^\\\\]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*?'''|[rR]\"[^\"\\n\\r]*\"|[rR]'[^'\\n\\r]*'|\"(?:[^\\\\\"\\n\\r]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*\"|'(?:[^\\\\'\\n\\r]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*')",
+            "string.bytes"
+          ],
+          [
+            "(?:[rR]\"\"\"[\\s\\S]*?\"\"\"|[rR]'''[\\s\\S]*?'''|\"\"\"(?:[^\\\\]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*?\"\"\"|'''(?:[^\\\\]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*?'''|[rR]\"[^\"\\n\\r]*\"|[rR]'[^'\\n\\r]*'|\"(?:[^\\\\\"\\n\\r]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*\"|'(?:[^\\\\'\\n\\r]|(?:\\\\[xX][0-9a-fA-F][0-9a-fA-F]|\\\\[0-3][0-7][0-7]|\\\\[abfnrtv\"'\\\\?`]|(?:\\\\U[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]|\\\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])))*')",
+            "string"
+          ],
+          [
+            "`[A-Za-z0-9_.\\-/ ]+`",
+            "identifier.escaped"
+          ],
+          [
+            "(?:\\.[0-9]+(?:[eE][+\\-]?[0-9]+)?|[0-9]+\\.[0-9]+(?:[eE][+\\-]?[0-9]+)?|[0-9]+[eE][+\\-]?[0-9]+)",
+            "number.float"
+          ],
+          [
+            "(?:0x[0-9a-fA-F]+[uU]|[0-9]+[uU])",
+            "number.uint"
+          ],
+          [
+            "(?:0x[0-9a-fA-F]+|[0-9]+)",
+            "number"
+          ],
+          [
+            "(\\.\\?)([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\()",
+            {
+              "cases": {
+                "$2@macros": [
+                  "operator.optional",
+                  "keyword.macro"
+                ],
+                "$2@memberFunctions": [
+                  "operator.optional",
+                  "function.member"
+                ],
+                "$2@globalFunctions": [
+                  "operator.optional",
+                  "function"
+                ],
+                "@default": [
+                  "operator.optional",
+                  "variable.field"
+                ]
+              }
+            }
+          ],
+          [
+            "(\\.\\?)([A-Za-z_][A-Za-z0-9_]*)",
+            [
+              "operator.optional",
+              "variable.field"
+            ]
+          ],
+          [
+            "\\.\\?",
+            "operator.optional"
+          ],
+          [
+            "\\[\\?",
+            "operator.optional"
+          ],
+          [
+            "\\?\\.",
+            "operator.optional"
+          ],
+          [
+            "([A-Za-z_][A-Za-z0-9_]*)(\\.)([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\()",
+            {
+              "cases": {
+                "$1@namespaces": [
+                  "namespace",
+                  "delimiter",
+                  "function"
+                ],
+                "$3@macros": [
+                  "identifier",
+                  "delimiter",
+                  "keyword.macro"
+                ],
+                "$3@memberFunctions": [
+                  "identifier",
+                  "delimiter",
+                  "function.member"
+                ],
+                "$3@globalFunctions": [
+                  "identifier",
+                  "delimiter",
+                  "function"
+                ],
+                "@default": [
+                  "identifier",
+                  "delimiter",
+                  "identifier"
+                ]
+              }
+            }
+          ],
+          [
+            "(\\.)([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\()",
+            {
+              "cases": {
+                "$2@macros": [
+                  "delimiter",
+                  "keyword.macro"
+                ],
+                "$2@memberFunctions": [
+                  "delimiter",
+                  "function.member"
+                ],
+                "$2@globalFunctions": [
+                  "delimiter",
+                  "function"
+                ],
+                "@default": [
+                  "delimiter",
+                  "variable.field"
+                ]
+              }
+            }
+          ],
+          [
+            "(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            [
+              "delimiter",
+              "variable.field"
+            ]
+          ],
+          [
+            "([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\()",
+            {
+              "cases": {
+                "$1@macros": "keyword.macro",
+                "$1@globalFunctions": "function",
+                "$1@keywords": "keyword",
+                "@default": "identifier"
+              }
+            }
+          ],
+          [
+            "[A-Za-z_][A-Za-z0-9_]*",
+            {
+              "cases": {
+                "@constants": "keyword.constant",
+                "@keywords": "keyword",
+                "@typeKeywords": "type",
+                "@default": "identifier"
+              }
+            }
+          ],
+          [
+            "[{}()\\[\\]]",
+            "@brackets"
+          ],
+          [
+            "(?:!=|\u0026\u0026|\u003c=|==|\u003e=|\\|\\||!|%|\\*|\\+|,|-|\\.|\\/|:|\u003c|\u003e|\\?)",
+            "operator"
+          ],
+          [
+            "[,;]",
+            "delimiter"
+          ]
+        ],
+        "whitespace": [
+          [
+            "[\\t \\r\\n\\f]+",
+            "white"
+          ],
+          [
+            "//[^\\n]*",
+            "comment"
+          ]
+        ]
+      }
+    },
+    "configuration": {
+      "comments": {
+        "lineComment": "//",
+        "blockComment": [
+          "",
+          ""
+        ]
+      },
+      "brackets": [
+        [
+          "{",
+          "}"
+        ],
+        [
+          "[",
+          "]"
+        ],
+        [
+          "(",
+          ")"
+        ]
+      ],
+      "autoClosingPairs": [
+        {
+          "open": "{",
+          "close": "}"
+        },
+        {
+          "open": "[",
+          "close": "]"
+        },
+        {
+          "open": "(",
+          "close": ")"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "'",
+          "close": "'"
+        }
+      ],
+      "surroundingPairs": [
+        {
+          "open": "{",
+          "close": "}"
+        },
+        {
+          "open": "[",
+          "close": "]"
+        },
+        {
+          "open": "(",
+          "close": ")"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "'",
+          "close": "'"
+        }
+      ],
+      "wordPattern": "[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*"
+    }
+  },
+  "gomplate": {
+    "id": "gomplate",
+    "monarch": {
+      "defaultToken": "source",
+      "tokenPostfix": ".gomplate",
+      "brackets": [
+        {
+          "open": "(",
+          "close": ")",
+          "token": "delimiter.parenthesis"
+        },
+        {
+          "open": "[",
+          "close": "]",
+          "token": "delimiter.square"
+        }
+      ],
+      "builtins": [
+        "and",
+        "call",
+        "eq",
+        "ge",
+        "gt",
+        "html",
+        "index",
+        "js",
+        "le",
+        "len",
+        "lt",
+        "ne",
+        "not",
+        "or",
+        "print",
+        "printf",
+        "println",
+        "slice",
+        "urlquery"
+      ],
+      "functions": [
+        "add",
+        "append",
+        "assert",
+        "bool",
+        "coalesce",
+        "contains",
+        "csv",
+        "csvByColumn",
+        "csvByRow",
+        "default",
+        "dict",
+        "div",
+        "endsWith",
+        "fail",
+        "first",
+        "flatten",
+        "getHealth",
+        "getStatus",
+        "has",
+        "hasPrefix",
+        "hasSuffix",
+        "humanDuration",
+        "humanSize",
+        "in_business_hours",
+        "indent",
+        "isHealthy",
+        "isKind",
+        "isReady",
+        "jmespath",
+        "join",
+        "jq",
+        "json",
+        "jsonArray",
+        "jsonpath",
+        "keyValToMap",
+        "keys",
+        "kind",
+        "last",
+        "mapToKeyVal",
+        "matchLabel",
+        "merge",
+        "mul",
+        "neat",
+        "parseDateTime",
+        "pow",
+        "prepend",
+        "quote",
+        "rem",
+        "replaceAll",
+        "required",
+        "reverse",
+        "semver",
+        "semverCompare",
+        "seq",
+        "shellQuote",
+        "slice",
+        "sort",
+        "split",
+        "splitN",
+        "squote",
+        "startsWith",
+        "sub",
+        "ternary",
+        "title",
+        "toCSV",
+        "toJSON",
+        "toJSONPretty",
+        "toLower",
+        "toTOML",
+        "toUpper",
+        "toYAML",
+        "toml",
+        "trim",
+        "uniq",
+        "urlParse",
+        "urldecode",
+        "urlencode",
+        "values",
+        "xpath",
+        "yaml",
+        "yamlArray"
+      ],
+      "keywords": [
+        "block",
+        "break",
+        "continue",
+        "define",
+        "else",
+        "end",
+        "if",
+        "nil",
+        "range",
+        "template",
+        "with"
+      ],
+      "namespaces": [
+        "base64",
+        "coll",
+        "conv",
+        "crypto",
+        "data",
+        "filepath",
+        "k8s",
+        "math",
+        "net",
+        "path",
+        "random",
+        "regexp",
+        "strings",
+        "test",
+        "time",
+        "uuid"
+      ],
+      "tokenizer": {
+        "root": [
+          [
+            "^#\\s*gotemplate:.*$",
+            "comment.directive"
+          ],
+          [
+            "\\{\\{-?\\/\\*",
+            {
+              "next": "@tmplComment",
+              "token": "comment"
+            }
+          ],
+          [
+            "\\{\\{-?",
+            {
+              "next": "@tmplAction",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "[\\s\\S]",
+            "source"
+          ]
+        ],
+        "tmplComment": [
+          [
+            "\\*\\/-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "comment"
+            }
+          ],
+          [
+            "[\\s\\S]",
+            "comment"
+          ]
+        ],
+        "tmplAction": [
+          [
+            "-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "[ \\t\\r\\n]+",
+            "white"
+          ],
+          [
+            "\"(?:[^\"\\\\]|\\\\.)*\"",
+            "string"
+          ],
+          [
+            "`[^`]*`",
+            "string"
+          ],
+          [
+            "'(?:[^'\\\\]|\\\\.)*'",
+            "string"
+          ],
+          [
+            "[+-]?(?:0[xX][0-9a-fA-F]+|(?:\\d+\\.\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?)",
+            "number"
+          ],
+          [
+            "\\$[A-Za-z_][A-Za-z0-9_]*",
+            "variable"
+          ],
+          [
+            "\\$",
+            "variable"
+          ],
+          [
+            "(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            [
+              "delimiter",
+              "variable.field"
+            ]
+          ],
+          [
+            "\\.",
+            "variable.field"
+          ],
+          [
+            "([A-Za-z_][A-Za-z0-9_]*)(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            {
+              "cases": {
+                "$1@namespaces": [
+                  "namespace",
+                  "delimiter",
+                  "function"
+                ],
+                "@default": [
+                  "identifier",
+                  "delimiter",
+                  "identifier"
+                ]
+              }
+            }
+          ],
+          [
+            "[A-Za-z_][A-Za-z0-9_]*",
+            {
+              "cases": {
+                "@keywords": "keyword",
+                "@builtins": "function.builtin",
+                "@functions": "function",
+                "@default": "identifier"
+              }
+            }
+          ],
+          [
+            "[()\\[\\]]",
+            "@brackets"
+          ],
+          [
+            "\\|",
+            "operator.pipe"
+          ],
+          [
+            ":=|=",
+            "operator"
+          ],
+          [
+            ",",
+            "delimiter"
+          ]
+        ]
+      }
+    },
+    "configuration": {
+      "comments": {
+        "blockComment": [
+          "{{/*",
+          "*/}}"
+        ]
+      },
+      "brackets": [
+        [
+          "{{",
+          "}}"
+        ],
+        [
+          "(",
+          ")"
+        ],
+        [
+          "[",
+          "]"
+        ]
+      ],
+      "autoClosingPairs": [
+        {
+          "open": "{{",
+          "close": " }}"
+        },
+        {
+          "open": "(",
+          "close": ")"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "`",
+          "close": "`"
+        }
+      ],
+      "surroundingPairs": [
+        {
+          "open": "(",
+          "close": ")"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "`",
+          "close": "`"
+        }
+      ],
+      "wordPattern": "[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*"
+    }
+  },
+  "json-gomplate": {
+    "id": "json-gomplate",
+    "monarch": {
+      "defaultToken": "",
+      "tokenPostfix": ".json-gomplate",
+      "brackets": [
+        {
+          "open": "{",
+          "close": "}",
+          "token": "delimiter.curly"
+        },
+        {
+          "open": "[",
+          "close": "]",
+          "token": "delimiter.square"
+        },
+        {
+          "open": "(",
+          "close": ")",
+          "token": "delimiter.parenthesis"
+        }
+      ],
+      "builtins": [
+        "and",
+        "call",
+        "eq",
+        "ge",
+        "gt",
+        "html",
+        "index",
+        "js",
+        "le",
+        "len",
+        "lt",
+        "ne",
+        "not",
+        "or",
+        "print",
+        "printf",
+        "println",
+        "slice",
+        "urlquery"
+      ],
+      "functions": [
+        "add",
+        "append",
+        "assert",
+        "bool",
+        "coalesce",
+        "contains",
+        "csv",
+        "csvByColumn",
+        "csvByRow",
+        "default",
+        "dict",
+        "div",
+        "endsWith",
+        "fail",
+        "first",
+        "flatten",
+        "getHealth",
+        "getStatus",
+        "has",
+        "hasPrefix",
+        "hasSuffix",
+        "humanDuration",
+        "humanSize",
+        "in_business_hours",
+        "indent",
+        "isHealthy",
+        "isKind",
+        "isReady",
+        "jmespath",
+        "join",
+        "jq",
+        "json",
+        "jsonArray",
+        "jsonpath",
+        "keyValToMap",
+        "keys",
+        "kind",
+        "last",
+        "mapToKeyVal",
+        "matchLabel",
+        "merge",
+        "mul",
+        "neat",
+        "parseDateTime",
+        "pow",
+        "prepend",
+        "quote",
+        "rem",
+        "replaceAll",
+        "required",
+        "reverse",
+        "semver",
+        "semverCompare",
+        "seq",
+        "shellQuote",
+        "slice",
+        "sort",
+        "split",
+        "splitN",
+        "squote",
+        "startsWith",
+        "sub",
+        "ternary",
+        "title",
+        "toCSV",
+        "toJSON",
+        "toJSONPretty",
+        "toLower",
+        "toTOML",
+        "toUpper",
+        "toYAML",
+        "toml",
+        "trim",
+        "uniq",
+        "urlParse",
+        "urldecode",
+        "urlencode",
+        "values",
+        "xpath",
+        "yaml",
+        "yamlArray"
+      ],
+      "keywords": [
+        "block",
+        "break",
+        "continue",
+        "define",
+        "else",
+        "end",
+        "if",
+        "nil",
+        "range",
+        "template",
+        "with"
+      ],
+      "namespaces": [
+        "base64",
+        "coll",
+        "conv",
+        "crypto",
+        "data",
+        "filepath",
+        "k8s",
+        "math",
+        "net",
+        "path",
+        "random",
+        "regexp",
+        "strings",
+        "test",
+        "time",
+        "uuid"
+      ],
+      "tokenizer": {
+        "root": [
+          [
+            "^#\\s*gotemplate:.*$",
+            "comment.directive"
+          ],
+          [
+            "\\{\\{-?\\/\\*",
+            {
+              "next": "@tmplComment",
+              "token": "comment"
+            }
+          ],
+          [
+            "\\{\\{-?",
+            {
+              "next": "@tmplAction",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "(\"(?:[^\"\\\\{]|\\\\.)*\")(\\s*)(:)",
+            [
+              "type.json",
+              "white",
+              "delimiter"
+            ]
+          ],
+          [
+            "\"",
+            {
+              "next": "@jsonString",
+              "token": "string"
+            }
+          ],
+          [
+            "\\b(?:true|false|null)\\b",
+            "keyword.constant"
+          ],
+          [
+            "-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?",
+            "number"
+          ],
+          [
+            "[{}\\[\\]]",
+            "@brackets"
+          ],
+          [
+            "[,:]",
+            "delimiter"
+          ],
+          [
+            "[\\s\\S]",
+            ""
+          ]
+        ],
+        "jsonString": [
+          [
+            "\\{\\{-?\\/\\*",
+            {
+              "next": "@tmplComment",
+              "token": "comment"
+            }
+          ],
+          [
+            "\\{\\{-?",
+            {
+              "next": "@tmplAction",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "\"",
+            {
+              "next": "@pop",
+              "token": "string"
+            }
+          ],
+          [
+            "\\\\.",
+            "string.escape"
+          ],
+          [
+            "[^\"\\\\{]+",
+            "string"
+          ],
+          [
+            "[\\s\\S]",
+            "string"
+          ]
+        ],
+        "tmplComment": [
+          [
+            "\\*\\/-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "comment"
+            }
+          ],
+          [
+            "[\\s\\S]",
+            "comment"
+          ]
+        ],
+        "tmplAction": [
+          [
+            "-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "[ \\t\\r\\n]+",
+            "white"
+          ],
+          [
+            "\"(?:[^\"\\\\]|\\\\.)*\"",
+            "string"
+          ],
+          [
+            "`[^`]*`",
+            "string"
+          ],
+          [
+            "'(?:[^'\\\\]|\\\\.)*'",
+            "string"
+          ],
+          [
+            "[+-]?(?:0[xX][0-9a-fA-F]+|(?:\\d+\\.\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?)",
+            "number"
+          ],
+          [
+            "\\$[A-Za-z_][A-Za-z0-9_]*",
+            "variable"
+          ],
+          [
+            "\\$",
+            "variable"
+          ],
+          [
+            "(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            [
+              "delimiter",
+              "variable.field"
+            ]
+          ],
+          [
+            "\\.",
+            "variable.field"
+          ],
+          [
+            "([A-Za-z_][A-Za-z0-9_]*)(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            {
+              "cases": {
+                "$1@namespaces": [
+                  "namespace",
+                  "delimiter",
+                  "function"
+                ],
+                "@default": [
+                  "identifier",
+                  "delimiter",
+                  "identifier"
+                ]
+              }
+            }
+          ],
+          [
+            "[A-Za-z_][A-Za-z0-9_]*",
+            {
+              "cases": {
+                "@keywords": "keyword",
+                "@builtins": "function.builtin",
+                "@functions": "function",
+                "@default": "identifier"
+              }
+            }
+          ],
+          [
+            "[()\\[\\]]",
+            "@brackets"
+          ],
+          [
+            "\\|",
+            "operator.pipe"
+          ],
+          [
+            ":=|=",
+            "operator"
+          ],
+          [
+            ",",
+            "delimiter"
+          ]
+        ]
+      }
+    },
+    "configuration": {
+      "brackets": [
+        [
+          "{",
+          "}"
+        ],
+        [
+          "[",
+          "]"
+        ]
+      ],
+      "autoClosingPairs": [
+        {
+          "open": "{",
+          "close": "}"
+        },
+        {
+          "open": "[",
+          "close": "]"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "'",
+          "close": "'"
+        }
+      ],
+      "wordPattern": "[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*"
+    }
+  },
+  "jsonpath": {
+    "id": "jsonpath",
+    "monarch": {
+      "defaultToken": "",
+      "tokenPostfix": ".jsonpath",
+      "brackets": [
+        {
+          "open": "[",
+          "close": "]",
+          "token": "delimiter.square"
+        },
+        {
+          "open": "(",
+          "close": ")",
+          "token": "delimiter.parenthesis"
+        }
+      ],
+      "filterOperators": [
+        "!",
+        "!=",
+        "\u0026\u0026",
+        "*",
+        "+",
+        "-",
+        "/",
+        "\u003c",
+        "\u003c=",
+        "==",
+        "=~",
+        "\u003e",
+        "\u003e=",
+        "||"
+      ],
+      "tokenizer": {
+        "root": [
+          [
+            "\\$",
+            "variable.root"
+          ],
+          [
+            "@",
+            "variable.current"
+          ],
+          [
+            "\\.\\.",
+            "operator.descendant"
+          ],
+          [
+            "\\*",
+            "operator.wildcard"
+          ],
+          [
+            "(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            [
+              "delimiter",
+              "variable.field"
+            ]
+          ],
+          [
+            "\\.",
+            "delimiter"
+          ],
+          [
+            "\\?\\(",
+            "keyword.filter"
+          ],
+          [
+            "[\\[\\]()]",
+            "@brackets"
+          ],
+          [
+            "\"(?:[^\"\\\\]|\\\\.)*\"",
+            "string"
+          ],
+          [
+            "'(?:[^'\\\\]|\\\\.)*'",
+            "string"
+          ],
+          [
+            "\\b(?:true|false|null)\\b",
+            "keyword.constant"
+          ],
+          [
+            "-?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?",
+            "number"
+          ],
+          [
+            "(?:==|!=|\u003c=|\u003e=|\u0026\u0026|\\|\\||=~|[\u003c\u003e!+\\-*/])",
+            "operator"
+          ],
+          [
+            ":",
+            "operator.slice"
+          ],
+          [
+            ",",
+            "delimiter"
+          ],
+          [
+            "[A-Za-z_][A-Za-z0-9_]*",
+            "variable.field"
+          ]
+        ]
+      }
+    },
+    "configuration": {
+      "brackets": [
+        [
+          "[",
+          "]"
+        ],
+        [
+          "(",
+          ")"
+        ]
+      ],
+      "autoClosingPairs": [
+        {
+          "open": "[",
+          "close": "]"
+        },
+        {
+          "open": "(",
+          "close": ")"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "'",
+          "close": "'"
+        }
+      ],
+      "wordPattern": "[A-Za-z_][A-Za-z0-9_]*"
+    }
+  },
+  "text-gomplate": {
+    "id": "text-gomplate",
+    "monarch": {
+      "defaultToken": "",
+      "tokenPostfix": ".text-gomplate",
+      "brackets": [
+        {
+          "open": "{",
+          "close": "}",
+          "token": "delimiter.curly"
+        },
+        {
+          "open": "[",
+          "close": "]",
+          "token": "delimiter.square"
+        },
+        {
+          "open": "(",
+          "close": ")",
+          "token": "delimiter.parenthesis"
+        }
+      ],
+      "builtins": [
+        "and",
+        "call",
+        "eq",
+        "ge",
+        "gt",
+        "html",
+        "index",
+        "js",
+        "le",
+        "len",
+        "lt",
+        "ne",
+        "not",
+        "or",
+        "print",
+        "printf",
+        "println",
+        "slice",
+        "urlquery"
+      ],
+      "functions": [
+        "add",
+        "append",
+        "assert",
+        "bool",
+        "coalesce",
+        "contains",
+        "csv",
+        "csvByColumn",
+        "csvByRow",
+        "default",
+        "dict",
+        "div",
+        "endsWith",
+        "fail",
+        "first",
+        "flatten",
+        "getHealth",
+        "getStatus",
+        "has",
+        "hasPrefix",
+        "hasSuffix",
+        "humanDuration",
+        "humanSize",
+        "in_business_hours",
+        "indent",
+        "isHealthy",
+        "isKind",
+        "isReady",
+        "jmespath",
+        "join",
+        "jq",
+        "json",
+        "jsonArray",
+        "jsonpath",
+        "keyValToMap",
+        "keys",
+        "kind",
+        "last",
+        "mapToKeyVal",
+        "matchLabel",
+        "merge",
+        "mul",
+        "neat",
+        "parseDateTime",
+        "pow",
+        "prepend",
+        "quote",
+        "rem",
+        "replaceAll",
+        "required",
+        "reverse",
+        "semver",
+        "semverCompare",
+        "seq",
+        "shellQuote",
+        "slice",
+        "sort",
+        "split",
+        "splitN",
+        "squote",
+        "startsWith",
+        "sub",
+        "ternary",
+        "title",
+        "toCSV",
+        "toJSON",
+        "toJSONPretty",
+        "toLower",
+        "toTOML",
+        "toUpper",
+        "toYAML",
+        "toml",
+        "trim",
+        "uniq",
+        "urlParse",
+        "urldecode",
+        "urlencode",
+        "values",
+        "xpath",
+        "yaml",
+        "yamlArray"
+      ],
+      "keywords": [
+        "block",
+        "break",
+        "continue",
+        "define",
+        "else",
+        "end",
+        "if",
+        "nil",
+        "range",
+        "template",
+        "with"
+      ],
+      "namespaces": [
+        "base64",
+        "coll",
+        "conv",
+        "crypto",
+        "data",
+        "filepath",
+        "k8s",
+        "math",
+        "net",
+        "path",
+        "random",
+        "regexp",
+        "strings",
+        "test",
+        "time",
+        "uuid"
+      ],
+      "tokenizer": {
+        "root": [
+          [
+            "^#\\s*gotemplate:.*$",
+            "comment.directive"
+          ],
+          [
+            "\\{\\{-?\\/\\*",
+            {
+              "next": "@tmplComment",
+              "token": "comment"
+            }
+          ],
+          [
+            "\\{\\{-?",
+            {
+              "next": "@tmplAction",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "[\\s\\S]",
+            "source"
+          ]
+        ],
+        "tmplComment": [
+          [
+            "\\*\\/-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "comment"
+            }
+          ],
+          [
+            "[\\s\\S]",
+            "comment"
+          ]
+        ],
+        "tmplAction": [
+          [
+            "-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "[ \\t\\r\\n]+",
+            "white"
+          ],
+          [
+            "\"(?:[^\"\\\\]|\\\\.)*\"",
+            "string"
+          ],
+          [
+            "`[^`]*`",
+            "string"
+          ],
+          [
+            "'(?:[^'\\\\]|\\\\.)*'",
+            "string"
+          ],
+          [
+            "[+-]?(?:0[xX][0-9a-fA-F]+|(?:\\d+\\.\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?)",
+            "number"
+          ],
+          [
+            "\\$[A-Za-z_][A-Za-z0-9_]*",
+            "variable"
+          ],
+          [
+            "\\$",
+            "variable"
+          ],
+          [
+            "(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            [
+              "delimiter",
+              "variable.field"
+            ]
+          ],
+          [
+            "\\.",
+            "variable.field"
+          ],
+          [
+            "([A-Za-z_][A-Za-z0-9_]*)(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            {
+              "cases": {
+                "$1@namespaces": [
+                  "namespace",
+                  "delimiter",
+                  "function"
+                ],
+                "@default": [
+                  "identifier",
+                  "delimiter",
+                  "identifier"
+                ]
+              }
+            }
+          ],
+          [
+            "[A-Za-z_][A-Za-z0-9_]*",
+            {
+              "cases": {
+                "@keywords": "keyword",
+                "@builtins": "function.builtin",
+                "@functions": "function",
+                "@default": "identifier"
+              }
+            }
+          ],
+          [
+            "[()\\[\\]]",
+            "@brackets"
+          ],
+          [
+            "\\|",
+            "operator.pipe"
+          ],
+          [
+            ":=|=",
+            "operator"
+          ],
+          [
+            ",",
+            "delimiter"
+          ]
+        ]
+      }
+    },
+    "configuration": {
+      "brackets": [
+        [
+          "{",
+          "}"
+        ],
+        [
+          "[",
+          "]"
+        ]
+      ],
+      "autoClosingPairs": [
+        {
+          "open": "{",
+          "close": "}"
+        },
+        {
+          "open": "[",
+          "close": "]"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "'",
+          "close": "'"
+        }
+      ],
+      "wordPattern": "[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*"
+    }
+  },
+  "yaml-gomplate": {
+    "id": "yaml-gomplate",
+    "monarch": {
+      "defaultToken": "",
+      "tokenPostfix": ".yaml-gomplate",
+      "brackets": [
+        {
+          "open": "{",
+          "close": "}",
+          "token": "delimiter.curly"
+        },
+        {
+          "open": "[",
+          "close": "]",
+          "token": "delimiter.square"
+        },
+        {
+          "open": "(",
+          "close": ")",
+          "token": "delimiter.parenthesis"
+        }
+      ],
+      "builtins": [
+        "and",
+        "call",
+        "eq",
+        "ge",
+        "gt",
+        "html",
+        "index",
+        "js",
+        "le",
+        "len",
+        "lt",
+        "ne",
+        "not",
+        "or",
+        "print",
+        "printf",
+        "println",
+        "slice",
+        "urlquery"
+      ],
+      "functions": [
+        "add",
+        "append",
+        "assert",
+        "bool",
+        "coalesce",
+        "contains",
+        "csv",
+        "csvByColumn",
+        "csvByRow",
+        "default",
+        "dict",
+        "div",
+        "endsWith",
+        "fail",
+        "first",
+        "flatten",
+        "getHealth",
+        "getStatus",
+        "has",
+        "hasPrefix",
+        "hasSuffix",
+        "humanDuration",
+        "humanSize",
+        "in_business_hours",
+        "indent",
+        "isHealthy",
+        "isKind",
+        "isReady",
+        "jmespath",
+        "join",
+        "jq",
+        "json",
+        "jsonArray",
+        "jsonpath",
+        "keyValToMap",
+        "keys",
+        "kind",
+        "last",
+        "mapToKeyVal",
+        "matchLabel",
+        "merge",
+        "mul",
+        "neat",
+        "parseDateTime",
+        "pow",
+        "prepend",
+        "quote",
+        "rem",
+        "replaceAll",
+        "required",
+        "reverse",
+        "semver",
+        "semverCompare",
+        "seq",
+        "shellQuote",
+        "slice",
+        "sort",
+        "split",
+        "splitN",
+        "squote",
+        "startsWith",
+        "sub",
+        "ternary",
+        "title",
+        "toCSV",
+        "toJSON",
+        "toJSONPretty",
+        "toLower",
+        "toTOML",
+        "toUpper",
+        "toYAML",
+        "toml",
+        "trim",
+        "uniq",
+        "urlParse",
+        "urldecode",
+        "urlencode",
+        "values",
+        "xpath",
+        "yaml",
+        "yamlArray"
+      ],
+      "keywords": [
+        "block",
+        "break",
+        "continue",
+        "define",
+        "else",
+        "end",
+        "if",
+        "nil",
+        "range",
+        "template",
+        "with"
+      ],
+      "namespaces": [
+        "base64",
+        "coll",
+        "conv",
+        "crypto",
+        "data",
+        "filepath",
+        "k8s",
+        "math",
+        "net",
+        "path",
+        "random",
+        "regexp",
+        "strings",
+        "test",
+        "time",
+        "uuid"
+      ],
+      "tokenizer": {
+        "root": [
+          [
+            "^#\\s*gotemplate:.*$",
+            "comment.directive"
+          ],
+          [
+            "\\{\\{-?\\/\\*",
+            {
+              "next": "@tmplComment",
+              "token": "comment"
+            }
+          ],
+          [
+            "\\{\\{-?",
+            {
+              "next": "@tmplAction",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "#.*$",
+            "comment"
+          ],
+          [
+            "^---\\s*$",
+            "keyword.directive"
+          ],
+          [
+            "^\\.\\.\\.\\s*$",
+            "keyword.directive"
+          ],
+          [
+            "^(\\s*)(-\\s+)([^-\\s#\"'][^:#]*?)(\\s*)(:)(?=\\s|$)",
+            [
+              "white",
+              "delimiter.list",
+              "type.yaml",
+              "white",
+              "delimiter"
+            ]
+          ],
+          [
+            "^(\\s*)([^-\\s#\"'][^:#]*?)(\\s*)(:)(?=\\s|$)",
+            [
+              "white",
+              "type.yaml",
+              "white",
+              "delimiter"
+            ]
+          ],
+          [
+            "^\\s*-\\s",
+            "delimiter.list"
+          ],
+          [
+            "[\u0026*][A-Za-z0-9_-]+",
+            "variable.anchor"
+          ],
+          [
+            "!!?[A-Za-z0-9_/-]*",
+            "type"
+          ],
+          [
+            "[|\u003e][-+]?",
+            "keyword.scalar"
+          ],
+          [
+            "\"",
+            {
+              "next": "@yamlDouble",
+              "token": "string"
+            }
+          ],
+          [
+            "'",
+            {
+              "next": "@yamlSingle",
+              "token": "string"
+            }
+          ],
+          [
+            "\\b(?:true|false|null|~|yes|no|on|off)\\b",
+            "keyword.constant"
+          ],
+          [
+            "[+-]?(?:0[xX][0-9a-fA-F]+|(?:\\d+\\.\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?)\\b",
+            "number"
+          ],
+          [
+            "[{}\\[\\]]",
+            "@brackets"
+          ],
+          [
+            ",",
+            "delimiter"
+          ],
+          [
+            "[\\s\\S]",
+            ""
+          ]
+        ],
+        "yamlDouble": [
+          [
+            "\\{\\{-?\\/\\*",
+            {
+              "next": "@tmplComment",
+              "token": "comment"
+            }
+          ],
+          [
+            "\\{\\{-?",
+            {
+              "next": "@tmplAction",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "\"",
+            {
+              "next": "@pop",
+              "token": "string"
+            }
+          ],
+          [
+            "\\\\.",
+            "string.escape"
+          ],
+          [
+            "[^\"\\\\{]+",
+            "string"
+          ],
+          [
+            "[\\s\\S]",
+            "string"
+          ]
+        ],
+        "yamlSingle": [
+          [
+            "\\{\\{-?\\/\\*",
+            {
+              "next": "@tmplComment",
+              "token": "comment"
+            }
+          ],
+          [
+            "\\{\\{-?",
+            {
+              "next": "@tmplAction",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "'",
+            {
+              "next": "@pop",
+              "token": "string"
+            }
+          ],
+          [
+            "\\\\.",
+            "string.escape"
+          ],
+          [
+            "[^'\\\\{]+",
+            "string"
+          ],
+          [
+            "[\\s\\S]",
+            "string"
+          ]
+        ],
+        "tmplComment": [
+          [
+            "\\*\\/-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "comment"
+            }
+          ],
+          [
+            "[\\s\\S]",
+            "comment"
+          ]
+        ],
+        "tmplAction": [
+          [
+            "-?\\}\\}",
+            {
+              "next": "@pop",
+              "token": "delimiter.template"
+            }
+          ],
+          [
+            "[ \\t\\r\\n]+",
+            "white"
+          ],
+          [
+            "\"(?:[^\"\\\\]|\\\\.)*\"",
+            "string"
+          ],
+          [
+            "`[^`]*`",
+            "string"
+          ],
+          [
+            "'(?:[^'\\\\]|\\\\.)*'",
+            "string"
+          ],
+          [
+            "[+-]?(?:0[xX][0-9a-fA-F]+|(?:\\d+\\.\\d*|\\.\\d+|\\d+)(?:[eE][+-]?\\d+)?)",
+            "number"
+          ],
+          [
+            "\\$[A-Za-z_][A-Za-z0-9_]*",
+            "variable"
+          ],
+          [
+            "\\$",
+            "variable"
+          ],
+          [
+            "(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            [
+              "delimiter",
+              "variable.field"
+            ]
+          ],
+          [
+            "\\.",
+            "variable.field"
+          ],
+          [
+            "([A-Za-z_][A-Za-z0-9_]*)(\\.)([A-Za-z_][A-Za-z0-9_]*)",
+            {
+              "cases": {
+                "$1@namespaces": [
+                  "namespace",
+                  "delimiter",
+                  "function"
+                ],
+                "@default": [
+                  "identifier",
+                  "delimiter",
+                  "identifier"
+                ]
+              }
+            }
+          ],
+          [
+            "[A-Za-z_][A-Za-z0-9_]*",
+            {
+              "cases": {
+                "@keywords": "keyword",
+                "@builtins": "function.builtin",
+                "@functions": "function",
+                "@default": "identifier"
+              }
+            }
+          ],
+          [
+            "[()\\[\\]]",
+            "@brackets"
+          ],
+          [
+            "\\|",
+            "operator.pipe"
+          ],
+          [
+            ":=|=",
+            "operator"
+          ],
+          [
+            ",",
+            "delimiter"
+          ]
+        ]
+      }
+    },
+    "configuration": {
+      "comments": {
+        "lineComment": "#",
+        "blockComment": [
+          "",
+          ""
+        ]
+      },
+      "brackets": [
+        [
+          "{",
+          "}"
+        ],
+        [
+          "[",
+          "]"
+        ]
+      ],
+      "autoClosingPairs": [
+        {
+          "open": "{",
+          "close": "}"
+        },
+        {
+          "open": "[",
+          "close": "]"
+        },
+        {
+          "open": "\"",
+          "close": "\""
+        },
+        {
+          "open": "'",
+          "close": "'"
+        }
+      ],
+      "wordPattern": "[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*"
+    }
+  }
+}
