@@ -6,18 +6,7 @@
 
 import type { ConformanceCase, LanguageDefinition, GomplateSpec } from "../types";
 
-import celMonarch from "./cel.monarch.json";
-import celConfig from "./cel.config.json";
-import gomplateMonarch from "./gomplate.monarch.json";
-import gomplateConfig from "./gomplate.config.json";
-import jsonGomplateMonarch from "./json-gomplate.monarch.json";
-import jsonGomplateConfig from "./json-gomplate.config.json";
-import jsonpathMonarch from "./jsonpath.monarch.json";
-import jsonpathConfig from "./jsonpath.config.json";
-import textGomplateMonarch from "./text-gomplate.monarch.json";
-import textGomplateConfig from "./text-gomplate.config.json";
-import yamlGomplateMonarch from "./yaml-gomplate.monarch.json";
-import yamlGomplateConfig from "./yaml-gomplate.config.json";
+import languagesJson from "./languages.json";
 import specJson from "./spec.json";
 import conformanceJson from "./conformance.json";
 
@@ -38,35 +27,4 @@ export const LANGUAGE_IDS = [
 
 export type LanguageId = (typeof LANGUAGE_IDS)[number];
 
-export const definitions: Record<LanguageId, LanguageDefinition> = {
-  "cel": {
-    id: "cel",
-    monarch: celMonarch as unknown as LanguageDefinition["monarch"],
-    configuration: celConfig as unknown as LanguageDefinition["configuration"],
-  },
-  "gomplate": {
-    id: "gomplate",
-    monarch: gomplateMonarch as unknown as LanguageDefinition["monarch"],
-    configuration: gomplateConfig as unknown as LanguageDefinition["configuration"],
-  },
-  "json-gomplate": {
-    id: "json-gomplate",
-    monarch: jsonGomplateMonarch as unknown as LanguageDefinition["monarch"],
-    configuration: jsonGomplateConfig as unknown as LanguageDefinition["configuration"],
-  },
-  "jsonpath": {
-    id: "jsonpath",
-    monarch: jsonpathMonarch as unknown as LanguageDefinition["monarch"],
-    configuration: jsonpathConfig as unknown as LanguageDefinition["configuration"],
-  },
-  "text-gomplate": {
-    id: "text-gomplate",
-    monarch: textGomplateMonarch as unknown as LanguageDefinition["monarch"],
-    configuration: textGomplateConfig as unknown as LanguageDefinition["configuration"],
-  },
-  "yaml-gomplate": {
-    id: "yaml-gomplate",
-    monarch: yamlGomplateMonarch as unknown as LanguageDefinition["monarch"],
-    configuration: yamlGomplateConfig as unknown as LanguageDefinition["configuration"],
-  },
-};
+export const definitions = languagesJson as unknown as Record<LanguageId, LanguageDefinition>;
