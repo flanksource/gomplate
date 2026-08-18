@@ -1,8 +1,6 @@
 package nilsafe
 
 import (
-	"time"
-
 	"github.com/google/cel-go/common/operators"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
@@ -24,10 +22,12 @@ func zeroValueFor(t ref.Type) ref.Val {
 		return types.String("")
 	case types.BytesType:
 		return types.Bytes{}
-	case types.DurationType:
-		return types.Duration{Duration: 0}
-	case types.TimestampType:
-		return types.Timestamp{Time: time.Unix(0, 0)}
+	// Deliberately no case for TimestampType or DurationType. A number has a
+	// zero and a string has an empty, but an instant has neither -- every moment
+	// is a real moment, and time.Unix(0, 0) is 1970 rather than "missing". A
+	// missing date substituted for the epoch is the oldest date there is, so
+	// `observed < deadline` answered "overdue" about a date nobody recorded:
+	// the most wrong answer available, and silently. Null propagates instead.
 	default:
 		return types.NullValue
 	}
@@ -82,6 +82,13 @@ func (c *zeroValueCall) eval(evalArg func(interpreter.InterpretableV2) ref.Val, 
 	for i, v := range vals {
 		if v == types.NullValue {
 			vals[i] = zeroValueFor(inferTypeFromPeers(vals, i))
+			// No zero value stands in for this type, so there is nothing to
+			// compute with. Null propagates, which is the library's own contract
+			// for a missing thing, rather than an arbitrary sentinel being
+			// invented or the operator reporting itself as unsupported.
+			if vals[i] == types.NullValue {
+				return types.NullValue
+			}
 		}
 	}
 	return dispatchOp(fn, vals)

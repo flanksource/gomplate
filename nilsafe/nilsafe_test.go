@@ -214,6 +214,32 @@ func TestNilSafe_ZeroValues(t *testing.T) {
 		{name: "null < 1 is true", expr: "a < 1", vars: map[string]any{"a": nil}, want: types.True},
 		{name: "null >= 0 is true", expr: "a >= 0", vars: map[string]any{"a": nil}, want: types.True},
 		{name: "null <= 0 is true", expr: "a <= 0", vars: map[string]any{"a": nil}, want: types.True},
+
+		// A number has a zero and a string has an empty, but an instant has
+		// neither: every moment is a real moment. Substituting one made a missing
+		// date read as 1970 -- the oldest date there is -- so `a < deadline` said
+		// "overdue" about a date nobody ever recorded. Null propagates instead.
+		{
+			name: "null before a timestamp is null, not the epoch",
+			expr: `a < timestamp("2026-03-24T00:00:00Z")`,
+			vars: map[string]any{"a": nil}, want: types.NullValue,
+		},
+		{
+			name: "null after a timestamp is null",
+			expr: `a > timestamp("2026-03-24T00:00:00Z")`,
+			vars: map[string]any{"a": nil}, want: types.NullValue,
+		},
+		{
+			name: "null under a duration is null",
+			expr: `a < duration("720h")`,
+			vars: map[string]any{"a": nil}, want: types.NullValue,
+		},
+		// Equality still answers: a date nobody recorded is not that date.
+		{
+			name: "null does not equal a timestamp",
+			expr: `a == timestamp("2026-03-24T00:00:00Z")`,
+			vars: map[string]any{"a": nil}, want: types.False,
+		},
 		{name: "method on null still returns null", expr: "a.size()", vars: map[string]any{"a": nil}, want: types.NullValue},
 		{name: "present variable works normally", expr: "x + 1", vars: map[string]any{"x": int64(41)}, want: types.Int(42)},
 		{name: "both present comparison", expr: "x > 0", vars: map[string]any{"x": int64(5)}, want: types.True},
