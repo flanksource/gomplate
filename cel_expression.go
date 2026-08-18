@@ -68,7 +68,7 @@ func RunExpressionContext(ctx commonsContext.Context, environment map[string]any
 	if ctx.Logger != nil && out.Value() != template.Expression && properties.On(false, "gomplate.log") {
 		ctx.Logger.V(4).Infof("templated %s => %v", template.ShortString(), out)
 	}
-	return out.Value(), nil
+	return celResultValue(out), nil
 }
 
 func compileCELProgram(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot, trackState bool) (cel.Program, *cel.Ast, error) {

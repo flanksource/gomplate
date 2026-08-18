@@ -31,6 +31,16 @@ var CelEnvOption = []cel.EnvOption{
 	celCoalesce,
 	celFirst,
 	celLast,
+
+	// The conversions cel-go's own are too strict for -- see cast.go. These are
+	// the exception to the note below: `string()` and `int()` do cover the typed
+	// cases, but neither reads a value whose type is only known at runtime, and
+	// neither renders a calendar day.
+	celText,
+	celInt,
+	celFloat,
+	celDate,
+
 	// NOTE: Conv Bool, int, Float, String are not needed
 	// as cel-go has native support for it.
 	// Slice, ToStrings are meaningless since
