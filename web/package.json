@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
+    "pretest": "pnpm --filter @flanksource/gomplate-lang build",
     "test": "pnpm -r test",
+    "pretypecheck": "pnpm --filter @flanksource/gomplate-lang build",
     "typecheck": "pnpm -r typecheck",
     "dev:playground": "pnpm --filter gomplate-playground dev"
   },

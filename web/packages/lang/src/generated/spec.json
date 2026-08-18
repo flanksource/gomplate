@@ -951,6 +951,26 @@
         ]
       },
       {
+        "name": "date",
+        "overloads": [
+          {
+            "id": "date_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "dyn_date",
+            "args": [
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          }
+        ]
+      },
+      {
         "name": "debug",
         "overloads": [
           {
@@ -1341,6 +1361,26 @@
             ],
             "result": "list(dyn)",
             "member": true
+          }
+        ]
+      },
+      {
+        "name": "float",
+        "overloads": [
+          {
+            "id": "dyn_float",
+            "args": [
+              "dyn"
+            ],
+            "result": "double",
+            "member": true
+          },
+          {
+            "id": "float_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "double"
           }
         ]
       },
@@ -1897,6 +1937,14 @@
               "google.protobuf.Duration"
             ],
             "result": "int"
+          },
+          {
+            "id": "dyn_int",
+            "args": [
+              "dyn"
+            ],
+            "result": "int",
+            "member": true
           },
           {
             "id": "int64_to_int64",
@@ -4141,6 +4189,26 @@
               "dyn"
             ],
             "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "text",
+        "overloads": [
+          {
+            "id": "dyn_text",
+            "args": [
+              "dyn"
+            ],
+            "result": "string",
+            "member": true
+          },
+          {
+            "id": "text_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
           }
         ]
       },
