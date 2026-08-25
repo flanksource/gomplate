@@ -3,13 +3,14 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite";
+import { defineConfig, type UserConfig } from "vite";
 
-import { evalServer } from "./plugins/eval-server";
+import { evalServer, findAvailablePort } from "./plugins/eval-server";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(root, "../../..");
 
+const EVAL_HOST = "127.0.0.1";
 const EVAL_PORT = 8321;
 const DEV_PORT = 5280;
 
@@ -37,14 +38,26 @@ const clickyAliases = [
   { find: /^@flanksource\/clicky-ui$/, replacement: resolve(clickySrc, "index.ts") },
 ];
 
-export default defineConfig(({ command, mode }) => {
+interface PlaygroundConfigOptions {
+  command: "build" | "serve";
+  mode: string;
+  clickySourceAvailable: boolean;
+  evalPort: number;
+}
+
+export function createPlaygroundConfig({
+  command,
+  mode,
+  clickySourceAvailable,
+  evalPort,
+}: PlaygroundConfigOptions): UserConfig {
   // Vitest also runs in `serve`, and it is the one mode that must not alias:
   // tests assert against the surface the package publishes, not against
   // whatever a sibling checkout happens to have mid-edit.
-  const useClickySource = clickySourceAvailable && mode !== "test";
+  const useClickySource = command === "serve" && clickySourceAvailable && mode !== "test";
 
   return {
-    plugins: [react(), tailwindcss(), evalServer({ repoRoot, port: EVAL_PORT })],
+    plugins: [react(), tailwindcss(), evalServer({ repoRoot, host: EVAL_HOST, port: evalPort })],
     resolve: {
       dedupe: ["react", "react-dom"],
       alias: command === "serve" && useClickySource ? clickyAliases : [],
@@ -54,7 +67,7 @@ export default defineConfig(({ command, mode }) => {
       strictPort: true,
       proxy: {
         "/api": {
-          target: `http://127.0.0.1:${EVAL_PORT}`,
+          target: `http://${EVAL_HOST}:${evalPort}`,
           changeOrigin: false,
         },
       },
@@ -62,10 +75,23 @@ export default defineConfig(({ command, mode }) => {
       fs: { allow: [root, resolve(root, "../.."), ...(useClickySource ? [clickySrc] : [])] },
     },
     optimizeDeps: {
+      // The sibling lockfile is outside Vite's cache inputs, so dependency
+      // paths can otherwise remain stale after clicky-ui upgrades a package.
+      force: useClickySource,
       exclude: [
         "@flanksource/gomplate-lang",
         ...(useClickySource ? ["@flanksource/clicky-ui"] : []),
       ],
     },
   };
+}
+
+export default defineConfig(async ({ command, mode }) => {
+  const managesEvalServer = process.env.GOMPLATE_PLAYGROUND_SERVER !== "0";
+  const evalPort =
+    command === "serve" && mode !== "test" && managesEvalServer
+      ? await findAvailablePort({ host: EVAL_HOST, preferredPort: EVAL_PORT })
+      : EVAL_PORT;
+
+  return createPlaygroundConfig({ command, mode, clickySourceAvailable, evalPort });
 });
