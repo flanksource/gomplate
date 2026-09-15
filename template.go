@@ -151,6 +151,13 @@ func (t Template) cacheKey(env map[string]any) string {
 	return t.autoCacheKey(env)
 }
 
+// goTemplateCacheKey includes the input and delimiters used for one parsing
+// pass. A RunTemplate call can have multiple passes sharing an explicit
+// CacheKey, but each pass may parse different text with different delimiters.
+func (t Template) goTemplateCacheKey() string {
+	return fmt.Sprintf("%q:%q:%q:%q", t.cacheKey(nil), t.LeftDelim, t.RightDelim, t.Template)
+}
+
 func (t Template) IsCacheable() bool {
 	// An explicit CacheKey is the caller asserting the program is reusable
 	// regardless of Functions/CelEnvs identity.
@@ -292,15 +299,27 @@ func runGoTemplate(ctx commonsContext.Context, template Template, environment ma
 
 func goTemplate(ctx commonsContext.Context, template Template, environment map[string]any) (string, error) {
 	var tpl *gotemplate.Template
+	funcs := make(gotemplate.FuncMap, len(funcMap)+len(template.Functions))
+	for k, v := range funcMap {
+		funcs[k] = v
+	}
+	for k, v := range template.Functions {
+		funcs[k] = v
+	}
 
 	if template.IsCacheable() {
-		cached, ok := goTemplateCache.Get(template.cacheKey(nil))
+		cached, ok := goTemplateCache.Get(template.goTemplateCacheKey())
 		if ok {
 			if cachedTpl, ok := cached.(*gotemplate.Template); ok {
 				if ctx.Logger != nil && properties.On(false, "gomplate.log") {
 					ctx.Logger.V(7).Infof("%s using cached template", template.ShortString())
 				}
-				tpl = cachedTpl
+				var err error
+				tpl, err = cachedTpl.Clone()
+				if err != nil {
+					return "", oops.With("template", template.Template).Wrap(err)
+				}
+				tpl = tpl.Funcs(funcs)
 			}
 		}
 	}
@@ -316,21 +335,24 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 			tpl = tpl.Delims(template.LeftDelim, template.RightDelim)
 		}
 
-		funcs := make(map[string]any)
-		for k, v := range funcMap {
-			funcs[k] = v
-		}
-		for k, v := range template.Functions {
-			funcs[k] = v
-		}
-
 		tpl, err = tpl.Funcs(funcs).Parse(template.Template)
 		if err != nil {
 			return "", oops.With("template", template.Template).Wrap(err)
 		}
 
 		if template.IsCacheable() {
-			goTemplateCache.Set(template.cacheKey(nil), tpl, template.CacheTime)
+			cachedTpl, err := tpl.Clone()
+			if err != nil {
+				return "", oops.With("template", template.Template).Wrap(err)
+			}
+			if template.ValueFunctions {
+				cachedFuncs := make(gotemplate.FuncMap, len(environment))
+				for name := range environment {
+					cachedFuncs[name] = unboundValueFunction
+				}
+				cachedTpl = cachedTpl.Funcs(cachedFuncs)
+			}
+			goTemplateCache.Set(template.goTemplateCacheKey(), cachedTpl, template.CacheTime)
 		}
 	}
 
@@ -354,6 +376,10 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 		ctx.Logger.V(4).Infof("templated %s ==> %s", template.ShortString(), out)
 	}
 	return out, nil
+}
+
+func unboundValueFunction() (any, error) {
+	return nil, fmt.Errorf("value function must be rebound before template execution")
 }
 
 // LoadSharedLibrary loads a shared library for Otto

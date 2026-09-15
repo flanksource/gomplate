@@ -1,7 +1,10 @@
 package gomplate
 
 import (
+	"bytes"
+	"sync"
 	"testing"
+	gotemplate "text/template"
 	"time"
 
 	_ "github.com/flanksource/gomplate/v3/js"
@@ -227,6 +230,212 @@ func TestRunTemplate_DelimSetsMultiPass(t *testing.T) {
 	}
 	if out != "hello world" {
 		t.Errorf("got %q, want %q", out, "hello world")
+	}
+}
+
+func TestRunTemplate_UncachedValueFunctionsWithMultipleDelimiters(t *testing.T) {
+	template := Template{
+		Template:       "node://kubernetes/$(tags.cluster)/$(.name)",
+		ValueFunctions: true,
+		DelimSets: []Delims{
+			{Left: "{{", Right: "}}"},
+			{Left: "$(", Right: ")"},
+		},
+	}
+
+	first, err := RunTemplate(map[string]any{
+		"name": "node-a",
+		"tags": map[string]string{"cluster": "production"},
+	}, template)
+	if err != nil {
+		t.Fatalf("first render: %v", err)
+	}
+	if first != "node://kubernetes/production/node-a" {
+		t.Errorf("first render: got %q, want %q", first, "node://kubernetes/production/node-a")
+	}
+
+	second, err := RunTemplate(map[string]any{
+		"name": "node-b",
+		"tags": map[string]string{"cluster": "staging"},
+	}, template)
+	if err != nil {
+		t.Fatalf("second render: %v", err)
+	}
+	if second != "node://kubernetes/staging/node-b" {
+		t.Errorf("second render: got %q, want %q", second, "node://kubernetes/staging/node-b")
+	}
+}
+
+func TestRunTemplate_CachedValueFunctionsWithMultipleDelimiters(t *testing.T) {
+	out, err := RunTemplate(map[string]any{
+		"name": "node-a",
+		"tags": map[string]string{"cluster": "production"},
+	}, Template{
+		Template:       "node://kubernetes/$(tags.cluster)/$(.name)",
+		CacheKey:       "cached-delimiters-braces-then-dollar",
+		CacheTime:      time.Hour,
+		ValueFunctions: true,
+		DelimSets: []Delims{
+			{Left: "{{", Right: "}}"},
+			{Left: "$(", Right: ")"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("render: %v", err)
+	}
+	if out != "node://kubernetes/production/node-a" {
+		t.Errorf("render: got %q, want %q", out, "node://kubernetes/production/node-a")
+	}
+}
+
+func TestRunTemplate_CachedValueFunctionsWithReversedDelimiters(t *testing.T) {
+	template := Template{
+		Template:       "node://kubernetes/{{ tags.cluster }}/$(.name)",
+		CacheKey:       "cached-delimiters-dollar-then-braces",
+		CacheTime:      time.Hour,
+		ValueFunctions: true,
+		DelimSets: []Delims{
+			{Left: "$(", Right: ")"},
+			{Left: "{{", Right: "}}"},
+		},
+	}
+
+	first, err := RunTemplate(map[string]any{
+		"name": "node-a",
+		"tags": map[string]string{"cluster": "production"},
+	}, template)
+	if err != nil {
+		t.Fatalf("first render: %v", err)
+	}
+	if first != "node://kubernetes/production/node-a" {
+		t.Errorf("first render: got %q, want %q", first, "node://kubernetes/production/node-a")
+	}
+
+	second, err := RunTemplate(map[string]any{
+		"name": "node-b",
+		"tags": map[string]string{"cluster": "staging"},
+	}, template)
+	if err != nil {
+		t.Fatalf("second render: %v", err)
+	}
+	if second != "node://kubernetes/staging/node-b" {
+		t.Errorf("second render: got %q, want %q", second, "node://kubernetes/staging/node-b")
+	}
+}
+
+func TestRunTemplate_CachedValueFunctionsUseCurrentEnvironment(t *testing.T) {
+	template := Template{
+		Template:       "node://kubernetes/$(tags.cluster)/$(.name)",
+		CacheKey:       "cached-value-functions-current-environment",
+		CacheTime:      time.Hour,
+		ValueFunctions: true,
+		DelimSets:      []Delims{{Left: "$(", Right: ")"}},
+	}
+
+	first, err := RunTemplate(map[string]any{
+		"name": "node-a",
+		"tags": map[string]string{"cluster": "production"},
+	}, template)
+	if err != nil {
+		t.Fatalf("first render: %v", err)
+	}
+	if first != "node://kubernetes/production/node-a" {
+		t.Errorf("first render: got %q, want %q", first, "node://kubernetes/production/node-a")
+	}
+	cachedPass := template
+	cachedPass.LeftDelim = "$("
+	cachedPass.RightDelim = ")"
+	cached, found := goTemplateCache.Get(cachedPass.goTemplateCacheKey())
+	if !found {
+		t.Fatal("expected template to be cached")
+	}
+	cachedTpl, ok := cached.(*gotemplate.Template)
+	if !ok {
+		t.Fatalf("cached value has type %T, want *template.Template", cached)
+	}
+	var buf bytes.Buffer
+	if err := cachedTpl.Execute(&buf, nil); err == nil {
+		t.Fatal("cached template executed without rebinding value functions")
+	}
+
+	second, err := RunTemplate(map[string]any{
+		"name": "node-b",
+		"tags": map[string]string{"cluster": "staging"},
+	}, template)
+	if err != nil {
+		t.Fatalf("second render: %v", err)
+	}
+	if second != "node://kubernetes/staging/node-b" {
+		t.Errorf("second render: got %q, want %q", second, "node://kubernetes/staging/node-b")
+	}
+	cachedAfter, found := goTemplateCache.Get(cachedPass.goTemplateCacheKey())
+	if !found {
+		t.Fatal("expected template to remain cached")
+	}
+	if cachedAfter != cached {
+		t.Error("expected repeated render to reuse the cached template")
+	}
+}
+
+func TestRunTemplate_CachedValueFunctionsAreSafeForConcurrentCalls(t *testing.T) {
+	template := Template{
+		Template:       "node://kubernetes/$(tags.cluster)/$(.name)",
+		CacheKey:       "cached-value-functions-concurrent",
+		CacheTime:      time.Hour,
+		ValueFunctions: true,
+		DelimSets:      []Delims{{Left: "$(", Right: ")"}},
+	}
+
+	_, err := RunTemplate(map[string]any{
+		"name": "node-warm",
+		"tags": map[string]string{"cluster": "warm"},
+	}, template)
+	if err != nil {
+		t.Fatalf("warm cache: %v", err)
+	}
+
+	type result struct {
+		out string
+		err error
+	}
+
+	firstResult := make(chan result, 1)
+	secondResult := make(chan result, 1)
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		out, err := RunTemplate(map[string]any{
+			"name": "node-a",
+			"tags": map[string]string{"cluster": "production"},
+		}, template)
+		firstResult <- result{out: out, err: err}
+	}()
+
+	go func() {
+		defer wg.Done()
+		out, err := RunTemplate(map[string]any{
+			"name": "node-b",
+			"tags": map[string]string{"cluster": "staging"},
+		}, template)
+		secondResult <- result{out: out, err: err}
+	}()
+
+	wg.Wait()
+	first := <-firstResult
+	second := <-secondResult
+	if first.err != nil {
+		t.Fatalf("first concurrent render: %v", first.err)
+	}
+	if first.out != "node://kubernetes/production/node-a" {
+		t.Errorf("first concurrent render: got %q, want %q", first.out, "node://kubernetes/production/node-a")
+	}
+	if second.err != nil {
+		t.Fatalf("second concurrent render: %v", second.err)
+	}
+	if second.out != "node://kubernetes/staging/node-b" {
+		t.Errorf("second concurrent render: got %q, want %q", second.out, "node://kubernetes/staging/node-b")
 	}
 }
 
