@@ -72,6 +72,11 @@ type Template struct {
 	// template, bypassing the IsCacheable() heuristic. The caller asserts that
 	// any two templates sharing this key may share the compiled cel.Program
 	// (same expression semantics, same env shape, same function semantics).
+	//
+	// NOTE: CacheKey applies to cel expressions only. The go template path ignores
+	// it and always derives its key from the template body and delimiters. A parsed
+	// go template keeps the Functions it was parsed with, and the caller cannot
+	// assert those are interchangeable across calls; see isGoTemplateCacheable.
 	CacheKey string `yaml:"-" json:"-"`
 
 	// CacheTime controls how long the compiled program/template is retained
@@ -167,6 +172,17 @@ func (t Template) IsCacheable() bool {
 	// 	> If v's Kind is Func, the returned pointer is an underlying code pointer,
 	//  > but not necessarily enough to identify a single function uniquely.
 	// 	> The only guarantee is that the result is zero if and only if v is a nil func Value.
+	return len(t.CelEnvs) == 0 && len(t.Functions) == 0
+}
+
+// isGoTemplateCacheable reports whether a parsed go template may be reused across
+// calls. It is IsCacheable without the CacheKey bypass.
+//
+// A parsed go template retains the Functions that were bound when it was parsed,
+// so reusing one would serve an earlier call's function values. An explicit
+// CacheKey cannot make that safe, and it also collapses each delimiter pass onto
+// a single entry, so the go template path ignores CacheKey entirely.
+func (t Template) isGoTemplateCacheable() bool {
 	return len(t.CelEnvs) == 0 && len(t.Functions) == 0
 }
 
@@ -293,8 +309,8 @@ func runGoTemplate(ctx commonsContext.Context, template Template, environment ma
 func goTemplate(ctx commonsContext.Context, template Template, environment map[string]any) (string, error) {
 	var tpl *gotemplate.Template
 
-	if template.IsCacheable() {
-		cached, ok := goTemplateCache.Get(template.cacheKey(nil))
+	if template.isGoTemplateCacheable() {
+		cached, ok := goTemplateCache.Get(template.autoCacheKey(nil))
 		if ok {
 			if cachedTpl, ok := cached.(*gotemplate.Template); ok {
 				if ctx.Logger != nil && properties.On(false, "gomplate.log") {
@@ -329,8 +345,8 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 			return "", oops.With("template", template.Template).Wrap(err)
 		}
 
-		if template.IsCacheable() {
-			goTemplateCache.Set(template.cacheKey(nil), tpl, template.CacheTime)
+		if template.isGoTemplateCacheable() {
+			goTemplateCache.Set(template.autoCacheKey(nil), tpl, template.CacheTime)
 		}
 	}
 
