@@ -17,7 +17,6 @@ import (
 	"github.com/flanksource/commons/properties"
 	_ "github.com/flanksource/gomplate/v3/js"
 	"github.com/google/cel-go/cel"
-	"github.com/patrickmn/go-cache"
 	"github.com/robertkrimen/otto"
 	"github.com/robertkrimen/otto/registry"
 	_ "github.com/robertkrimen/otto/underscore"
@@ -26,14 +25,11 @@ import (
 )
 
 var funcMap gotemplate.FuncMap
-
-var (
-	// keep the cache period low as lots of anonymous functions can pile up the cache.
-	goTemplateCache = cache.New(time.Hour, time.Hour)
-)
+var baseGoTemplate *gotemplate.Template
 
 func init() {
 	funcMap = CreateFuncs(context.Background())
+	baseGoTemplate = gotemplate.New("").Funcs(funcMap)
 }
 
 type Template struct {
@@ -149,13 +145,6 @@ func (t Template) cacheKey(env map[string]any) string {
 		return t.CacheKey
 	}
 	return t.autoCacheKey(env)
-}
-
-// goTemplateCacheKey includes the input and delimiters used for one parsing
-// pass. A RunTemplate call can have multiple passes sharing an explicit
-// CacheKey, but each pass may parse different text with different delimiters.
-func (t Template) goTemplateCacheKey() string {
-	return fmt.Sprintf("%q:%q:%q:%q", t.cacheKey(nil), t.LeftDelim, t.RightDelim, t.Template)
 }
 
 func (t Template) IsCacheable() bool {
@@ -298,61 +287,53 @@ func runGoTemplate(ctx commonsContext.Context, template Template, environment ma
 }
 
 func goTemplate(ctx commonsContext.Context, template Template, environment map[string]any) (string, error) {
-	var tpl *gotemplate.Template
-	funcs := make(gotemplate.FuncMap, len(funcMap)+len(template.Functions))
-	for k, v := range funcMap {
-		funcs[k] = v
-	}
-	for k, v := range template.Functions {
-		funcs[k] = v
+	template, err := parseAndStripTemplateHeader(template)
+	if err != nil {
+		return "", err
 	}
 
+	var tpl *gotemplate.Template
+	var cacheKey string
 	if template.IsCacheable() {
-		cached, ok := goTemplateCache.Get(template.goTemplateCacheKey())
+		cacheKey = template.goTemplateCacheKey()
+		cached, ok := goTemplateCache.Get(cacheKey)
 		if ok {
 			if cachedTpl, ok := cached.(*gotemplate.Template); ok {
 				if ctx.Logger != nil && properties.On(false, "gomplate.log") {
 					ctx.Logger.V(7).Infof("%s using cached template", template.ShortString())
 				}
-				var err error
-				tpl, err = cachedTpl.Clone()
-				if err != nil {
-					return "", oops.With("template", template.Template).Wrap(err)
+				tpl = cachedTpl
+				if len(template.Functions) > 0 {
+					tpl, err = cachedTpl.Clone()
+					if err != nil {
+						return "", oops.With("template", template.Template).Wrap(err)
+					}
+					tpl.Funcs(template.Functions)
 				}
-				tpl = tpl.Funcs(funcs)
 			}
 		}
 	}
 
 	if tpl == nil {
-		template, err := parseAndStripTemplateHeader(template)
+		tpl, err = baseGoTemplate.Clone()
 		if err != nil {
-			return "", err
+			return "", oops.With("template", template.Template).Wrap(err)
 		}
-
-		tpl = gotemplate.New("")
 		if template.LeftDelim != "" {
 			tpl = tpl.Delims(template.LeftDelim, template.RightDelim)
 		}
 
-		tpl, err = tpl.Funcs(funcs).Parse(template.Template)
+		tpl, err = tpl.Funcs(template.Functions).Parse(template.Template)
 		if err != nil {
 			return "", oops.With("template", template.Template).Wrap(err)
 		}
 
 		if template.IsCacheable() {
-			cachedTpl, err := tpl.Clone()
+			cachedTpl, err := reusableGoTemplate(tpl)
 			if err != nil {
 				return "", oops.With("template", template.Template).Wrap(err)
 			}
-			if template.ValueFunctions {
-				cachedFuncs := make(gotemplate.FuncMap, len(environment))
-				for name := range environment {
-					cachedFuncs[name] = unboundValueFunction
-				}
-				cachedTpl = cachedTpl.Funcs(cachedFuncs)
-			}
-			goTemplateCache.Set(template.goTemplateCacheKey(), cachedTpl, template.CacheTime)
+			goTemplateCache.Set(cacheKey, cachedTpl, template.CacheTime)
 		}
 	}
 
@@ -376,10 +357,6 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 		ctx.Logger.V(4).Infof("templated %s ==> %s", template.ShortString(), out)
 	}
 	return out, nil
-}
-
-func unboundValueFunction() (any, error) {
-	return nil, fmt.Errorf("value function must be rebound before template execution")
 }
 
 // LoadSharedLibrary loads a shared library for Otto
@@ -423,6 +400,9 @@ func parseAndStripTemplateHeader(template Template) (Template, error) {
 const templateHeaderPrefix = "# gotemplate: "
 
 func extractHeaderAndContent(template string) (string, string) {
+	if !strings.HasPrefix(template, "#") && !strings.HasPrefix(template, "---") {
+		return "", template
+	}
 	scanner := bufio.NewScanner(strings.NewReader(template))
 
 	// Loop through headers.

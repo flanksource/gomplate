@@ -345,6 +345,8 @@ func TestRunTemplate_CachedValueFunctionsUseCurrentEnvironment(t *testing.T) {
 	cachedPass := template
 	cachedPass.LeftDelim = "$("
 	cachedPass.RightDelim = ")"
+	// Only names participate in the key, including generated value functions.
+	cachedPass.Functions = map[string]any{"name": nil, "tags": nil}
 	cached, found := goTemplateCache.Get(cachedPass.goTemplateCacheKey())
 	if !found {
 		t.Fatal("expected template to be cached")
