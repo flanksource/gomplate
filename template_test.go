@@ -1,6 +1,8 @@
 package gomplate
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -322,5 +324,183 @@ func TestRunExpressionReusesProgramAcrossDifferentData(t *testing.T) {
 	}
 	if out2 != "bob-42" {
 		t.Errorf("second eval result: got %v (cached program should not leak first-call data)", out2)
+	}
+}
+
+// The go template path must ignore CacheKey. A parsed go template holds the
+// Functions it was parsed with, and CacheKey used to bypass both the check that
+// keeps such templates out of the cache and the key that keeps distinct parses
+// apart. The tests below cover each way that used to go wrong.
+
+func TestGoTemplate_CacheKeyDoesNotReuseValueFunctions(t *testing.T) {
+	template := Template{
+		Template:       "node://$(tags.cluster)/$(.name)",
+		CacheKey:       "gotemplate-value-functions",
+		CacheTime:      time.Hour,
+		ValueFunctions: true,
+		DelimSets:      []Delims{{Left: "$(", Right: ")"}},
+	}
+
+	first, err := RunTemplate(map[string]any{
+		"name": "node-a",
+		"tags": map[string]string{"cluster": "production"},
+	}, template)
+	if err != nil {
+		t.Fatalf("first render: %v", err)
+	}
+	if first != "node://production/node-a" {
+		t.Errorf("first render: got %q, want %q", first, "node://production/node-a")
+	}
+
+	second, err := RunTemplate(map[string]any{
+		"name": "node-b",
+		"tags": map[string]string{"cluster": "staging"},
+	}, template)
+	if err != nil {
+		t.Fatalf("second render: %v", err)
+	}
+	if second != "node://staging/node-b" {
+		t.Errorf("second render used the first render's value functions: got %q, want %q",
+			second, "node://staging/node-b")
+	}
+}
+
+func TestGoTemplate_CacheKeyDoesNotReuseCustomFunctions(t *testing.T) {
+	forUser := func(user string) Template {
+		return Template{
+			Template:  "user is {{ whoami }}",
+			CacheKey:  "gotemplate-custom-functions",
+			CacheTime: time.Hour,
+			Functions: map[string]any{
+				"whoami": func() any { return user },
+			},
+		}
+	}
+
+	first, err := RunTemplate(map[string]any{}, forUser("alice"))
+	if err != nil {
+		t.Fatalf("first render: %v", err)
+	}
+	if first != "user is alice" {
+		t.Errorf("first render: got %q, want %q", first, "user is alice")
+	}
+
+	second, err := RunTemplate(map[string]any{}, forUser("bob"))
+	if err != nil {
+		t.Fatalf("second render: %v", err)
+	}
+	if second != "user is bob" {
+		t.Errorf("second render used the first render's functions: got %q, want %q",
+			second, "user is bob")
+	}
+}
+
+func TestGoTemplate_CacheKeyDoesNotCollideAcrossDelimiterPasses(t *testing.T) {
+	// Each pass parses different text with different delimiters. Sharing one
+	// CacheKey made the second pass reuse the first pass's parsed template, so
+	// the $( ) placeholder was never resolved.
+	out, err := RunTemplate(map[string]any{}, Template{
+		Template:  "A={{ 1 }} B=$( 2 )",
+		CacheKey:  "gotemplate-delimiter-passes",
+		CacheTime: time.Hour,
+		DelimSets: []Delims{
+			{Left: "{{", Right: "}}"},
+			{Left: "$(", Right: ")"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("render: %v", err)
+	}
+	if out != "A=1 B=2" {
+		t.Errorf("second delimiter pass did not run: got %q, want %q", out, "A=1 B=2")
+	}
+}
+
+func TestGoTemplate_CacheKeyDoesNotCollideAcrossTemplates(t *testing.T) {
+	first, err := RunTemplate(map[string]any{}, Template{
+		Template:  "I am template A",
+		CacheKey:  "gotemplate-shared-label",
+		CacheTime: time.Hour,
+	})
+	if err != nil {
+		t.Fatalf("first render: %v", err)
+	}
+	if first != "I am template A" {
+		t.Errorf("first render: got %q, want %q", first, "I am template A")
+	}
+
+	second, err := RunTemplate(map[string]any{}, Template{
+		Template:  "I am template B",
+		CacheKey:  "gotemplate-shared-label",
+		CacheTime: time.Hour,
+	})
+	if err != nil {
+		t.Fatalf("second render: %v", err)
+	}
+	if second != "I am template B" {
+		t.Errorf("templates sharing a CacheKey collided: got %q, want %q",
+			second, "I am template B")
+	}
+}
+
+func TestGoTemplate_CacheKeyIsSafeForConcurrentRenders(t *testing.T) {
+	template := Template{
+		Template:       "$(.name)=$(tags.cluster)",
+		CacheKey:       "gotemplate-concurrent",
+		CacheTime:      time.Hour,
+		ValueFunctions: true,
+		DelimSets:      []Delims{{Left: "$(", Right: ")"}},
+	}
+
+	const workers = 8
+	errs := make(chan error, workers)
+	var wg sync.WaitGroup
+	for i := 0; i < workers; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			name := fmt.Sprintf("node-%d", i)
+			cluster := fmt.Sprintf("cluster-%d", i)
+			want := name + "=" + cluster
+			for j := 0; j < 100; j++ {
+				got, err := RunTemplate(map[string]any{
+					"name": name,
+					"tags": map[string]string{"cluster": cluster},
+				}, template)
+				if err != nil {
+					errs <- err
+					return
+				}
+				if got != want {
+					errs <- fmt.Errorf("got %q, want %q", got, want)
+					return
+				}
+			}
+		}(i)
+	}
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		t.Error(err)
+	}
+}
+
+// isGoTemplateCacheable must not honour CacheKey, unlike IsCacheable.
+func TestIsGoTemplateCacheable(t *testing.T) {
+	withFuncs := Template{
+		Template:  "{{ hello }}",
+		Functions: map[string]any{"hello": func() any { return "world" }},
+		CacheKey:  "stable",
+	}
+	if !withFuncs.IsCacheable() {
+		t.Error("IsCacheable must still honour CacheKey for cel expressions")
+	}
+	if withFuncs.isGoTemplateCacheable() {
+		t.Error("a go template with Functions must not be cached, even with a CacheKey")
+	}
+
+	plain := Template{Template: "{{ .name }}", CacheKey: "stable"}
+	if !plain.isGoTemplateCacheable() {
+		t.Error("a go template without Functions must be cacheable")
 	}
 }
