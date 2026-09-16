@@ -95,12 +95,6 @@ jobs:
             echo "Running head sample ${sample}/10"
             .tmp/bench/head.test -test.run=^$ -test.bench='Benchmark(Serialize|RunExpressionContext|CELEnvExtend|CELProgramEvaluation|RunExpressionNativeInput)' -test.benchmem=true -test.benchtime=1s -test.count=1 -test.timeout=20m >> bench-head.txt
           done
-      - name: Benchmark Go-template cache modes
-        run: |
-          # Compare cache modes on HEAD: the base may predate the correctness
-          # fixes required by the multi-pass and changing-function workloads.
-          .tmp/bench/head.test -test.run=^$ -test.bench='^BenchmarkRunTemplate' -test.benchmem=true -test.benchtime=1s -test.count=10 -test.timeout=20m > bench-gotemplate.txt
-          benchstat -filter '.name:RunTemplateCacheMatrix' -col /cache bench-gotemplate.txt > benchstat-gotemplate.txt
       - name: Compare
         run: |
           benchstat bench-base.txt bench-head.txt > benchstat.txt
@@ -130,13 +124,6 @@ jobs:
             echo '```'
             echo ""
             echo '</details>'
-            echo ""
-            echo '## Go-template cache on HEAD'
-            echo 'The same implementation and inputs, with caching disabled versus enabled.'
-            echo ""
-            echo '```text'
-            cat benchstat-gotemplate.txt
-            echo '```'
           } > bench-report.md
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -149,8 +136,6 @@ jobs:
             benchstat.csv
             bench-summary.md
             bench-report.md
-            bench-gotemplate.txt
-            benchstat-gotemplate.txt
           retention-days: 14
       - name: Post report to PR
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9

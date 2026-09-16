@@ -40,22 +40,6 @@ $message = "$[[.config.name]]"
 Write-Host "{{ $message }}"
 ```
 
-## Caching
-
-The Go API caches parsed templates and their referenced built-in functions, not final rendered output or live environment bindings. Templates without custom `Functions` or `CelEnvs` are cached automatically. A non-empty `CacheKey` also enables caching with custom functions or `ValueFunctions`.
-
-Each delimiter pass is keyed by its effective source, delimiters, explicit key, and custom function names. Changing values or function implementations does not reuse old bindings: custom functions are registered on a private execution copy. Static templates execute the cached object directly. Cached objects never retain caller-provided function closures.
-
-`CacheTime` defaults to one hour, with expiration measured from insertion rather than the latest hit. A positive duration overrides that TTL; a negative duration disables expiration. The cache retains the existing hourly cleanup policy and has no entry-count or byte limit. Multi-pass templates whose intermediate source changes can create separate entries for each intermediate source, including literal values embedded by earlier passes.
-
-Run the cache benchmarks with Go 1.26 or later (the command works in bash and fish):
-
-```sh
-go test -run='^$' -bench='^BenchmarkRunTemplate' -benchmem -benchtime=1s -count=10 .
-```
-
-`BenchmarkRunTemplateCacheMatrix` compares caching disabled versus explicitly enabled on the same inputs, including changing values, custom functions, named templates, multiple delimiters, large environments, and parallel execution. `BenchmarkRunTemplateNaturalStaticWarmHit` measures automatic caching without custom functions. `BenchmarkRunTemplateColdCache` expires entries between calls to measure parsing and cache population without accumulating unique keys. Allocated bytes per operation do not measure retained cache memory.
-
 ---
 
 ## base64
