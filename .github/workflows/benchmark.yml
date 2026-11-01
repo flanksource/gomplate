@@ -106,8 +106,8 @@ jobs:
           done
       - name: Compare
         run: |
-          benchstat bench-base.txt bench-head.txt > benchstat.txt
-          benchstat -format csv bench-base.txt bench-head.txt > benchstat.csv
+          benchstat -ignore pkg bench-base.txt bench-head.txt > benchstat.txt
+          benchstat -ignore pkg -format csv bench-base.txt bench-head.txt > benchstat.csv
           python3 .github/scripts/benchstat-summary.py --no-fail benchstat.csv > bench-summary.md
 
           {
