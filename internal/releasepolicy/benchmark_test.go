@@ -1,6 +1,7 @@
 package releasepolicy
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,21 +18,7 @@ var _ = Describe("benchmark preparation", func() {
 		func(module, expectedImport string) {
 			root, err := filepath.Abs(filepath.Join("..", ".."))
 			Expect(err).NotTo(HaveOccurred())
-			content, err := os.ReadFile(filepath.Join(root, ".github/workflows/benchmark.yml"))
-			Expect(err).NotTo(HaveOccurred())
-			var workflow struct {
-				Jobs map[string]struct {
-					Steps []struct{ Name, Run string }
-				}
-			}
-			Expect(yaml.Unmarshal(content, &workflow)).To(Succeed())
-			var prepare string
-			for _, step := range workflow.Jobs["bench"].Steps {
-				if step.Name == "Prepare base worktree" {
-					prepare = strings.ReplaceAll(step.Run, "${{ github.event.pull_request.base.sha }}", "base")
-				}
-			}
-			Expect(prepare).NotTo(BeEmpty())
+			prepare := strings.ReplaceAll(benchmarkWorkflowStep("Prepare base worktree"), "${{ github.event.pull_request.base.sha }}", "base")
 			Expect(os.MkdirAll(filepath.Join(root, ".tmp"), 0o755)).To(Succeed())
 			fixture, err := os.MkdirTemp(filepath.Join(root, ".tmp"), "bench-prepare-")
 			Expect(err).NotTo(HaveOccurred())
@@ -73,4 +60,57 @@ var _ = Describe("benchmark preparation", func() {
 		Entry("v4 base", "github.com/flanksource/gomplate/v4", "cel.dev/cel-go"),
 		Entry("unsupported base", "example.com/unexpected", ""),
 	)
+
+	It("compares matching benchmarks across module major versions", func() {
+		root, err := filepath.Abs(filepath.Join("..", ".."))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(os.MkdirAll(filepath.Join(root, ".tmp"), 0o755)).To(Succeed())
+		fixture, err := os.MkdirTemp(filepath.Join(root, ".tmp"), "bench-compare-")
+		Expect(err).NotTo(HaveOccurred())
+		DeferCleanup(os.RemoveAll, fixture)
+		Expect(os.MkdirAll(filepath.Join(fixture, ".github/scripts"), 0o755)).To(Succeed())
+		summary, err := os.ReadFile(filepath.Join(root, ".github/scripts/benchstat-summary.py"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(os.WriteFile(filepath.Join(fixture, ".github/scripts/benchstat-summary.py"), summary, 0o644)).To(Succeed())
+		for _, sample := range []struct {
+			file, module string
+			nanoseconds  int
+		}{{"bench-base.txt", "v3", 100}, {"bench-head.txt", "v4", 125}} {
+			results := fmt.Sprintf("goos: linux\ngoarch: amd64\npkg: github.com/flanksource/gomplate/%s\n", sample.module)
+			results += strings.Repeat(fmt.Sprintf("BenchmarkUpgrade 100 %d ns/op 100 B/op 1 allocs/op\n", sample.nanoseconds), 10)
+			Expect(os.WriteFile(filepath.Join(fixture, sample.file), []byte(results), 0o644)).To(Succeed())
+		}
+		install := exec.Command("go", "install", "golang.org/x/perf/cmd/benchstat@82a0b07e230d76fa1b3036c383d7a98172f87334")
+		install.Env = append(os.Environ(), "GOWORK=off", "GOBIN="+filepath.Join(fixture, "bin"))
+		output, err := install.CombinedOutput()
+		Expect(err).NotTo(HaveOccurred(), string(output))
+		compare := strings.SplitN(benchmarkWorkflowStep("Compare"), "\n\n", 2)[0]
+		command := exec.Command("/bin/bash", "-e", "-c", compare)
+		command.Dir = fixture
+		command.Env = append(os.Environ(), "PATH="+filepath.Join(fixture, "bin")+string(os.PathListSeparator)+os.Getenv("PATH"))
+		output, err = command.CombinedOutput()
+		Expect(err).NotTo(HaveOccurred(), string(output))
+		report, err := os.ReadFile(filepath.Join(fixture, "bench-summary.md"))
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(report)).To(ContainSubstring("| `Upgrade` | sec/op | 100 ns/op | 125 ns/op | **+25.00%** |"))
+	})
 })
+
+func benchmarkWorkflowStep(name string) string {
+	GinkgoHelper()
+	content, err := os.ReadFile(filepath.Join("..", "..", ".github/workflows/benchmark.yml"))
+	Expect(err).NotTo(HaveOccurred())
+	var workflow struct {
+		Jobs map[string]struct {
+			Steps []struct{ Name, Run string }
+		}
+	}
+	Expect(yaml.Unmarshal(content, &workflow)).To(Succeed())
+	for _, step := range workflow.Jobs["bench"].Steps {
+		if step.Name == name {
+			return step.Run
+		}
+	}
+	Fail("Missing benchmark workflow step: " + name)
+	return ""
+}
