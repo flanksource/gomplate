@@ -11,7 +11,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@flanksource/clicky-ui": "^0.3.19",
+    "@flanksource/clicky-ui": "^0.3.54",
     "@flanksource/gomplate-lang": "workspace:*",
     "monaco-editor": "catalog:",
     "react": "catalog:",
