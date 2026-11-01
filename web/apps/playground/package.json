@@ -11,11 +11,14 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.323",
     "@flanksource/clicky-ui": "^0.3.54",
     "@flanksource/gomplate-lang": "workspace:*",
+    "ai": "^6.0.320",
     "monaco-editor": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "streamdown": "^2.7.1",
     "yaml": "catalog:"
   },
   "devDependencies": {
