@@ -13,7 +13,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/flanksource/gomplate/v3/playground"
+	"github.com/flanksource/gomplate/v4/playground"
 )
 
 func main() {

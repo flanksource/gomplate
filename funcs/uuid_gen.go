@@ -2,9 +2,11 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
+import (
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+)
 
 var uuidV1Gen = cel.Function("uuid.V1",
 	cel.Overload("uuid.V1_",

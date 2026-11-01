@@ -1,5 +1,7 @@
 {
-  "extends": ["schedule:weekends"],
+  "extends": [
+    "schedule:weekends"
+  ],
   "separatePatchReleases": false,
   "prCreation": "immediate",
   "branchPrefix": "renovate/",
@@ -16,7 +18,9 @@
     "automerge": true
   },
   "docker": {
-    "fileMatch": ["(^|/)Dockerfile.*$"],
+    "fileMatch": [
+      "(^|/)Dockerfile.*$"
+    ],
     "major": {
       "enabled": true
     }
@@ -30,5 +34,41 @@
   "prHourlyLimit": 4,
   "labels": [
     "dependencies"
+  ],
+  "baseBranchPatterns": [
+    "main",
+    "3.x"
+  ],
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": false,
+    "vulnerabilityFixStrategy": "lowest",
+    "addLabels": [
+      "security"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Maintain v3 with reviewed security fixes only",
+      "matchBaseBranches": [
+        "3.x"
+      ],
+      "matchPackageNames": [
+        "*"
+      ],
+      "enabled": false,
+      "automerge": false
+    },
+    {
+      "description": "Preserve the CEL module path on v3",
+      "matchBaseBranches": [
+        "3.x"
+      ],
+      "matchPackageNames": [
+        "github.com/google/cel-go"
+      ],
+      "allowedVersions": "<0.32.0"
+    }
   ]
 }

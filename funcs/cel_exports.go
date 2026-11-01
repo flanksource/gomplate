@@ -1,8 +1,6 @@
 package funcs
 
-import (
-	"github.com/google/cel-go/cel"
-)
+import "cel.dev/cel-go/cel"
 
 var CelEnvOption = []cel.EnvOption{
 	fromAwsMap("aws.fromAWSMap"), fromAwsMap("fromAWSMap"),

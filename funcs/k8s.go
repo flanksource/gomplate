@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/flanksource/gomplate/v3/kubernetes"
+	"github.com/flanksource/gomplate/v4/kubernetes"
 )
 
 type KubernetesFuncs struct {

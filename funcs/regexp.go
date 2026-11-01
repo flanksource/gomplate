@@ -5,8 +5,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/flanksource/gomplate/v3/conv"
-	"github.com/flanksource/gomplate/v3/regexp"
+	"github.com/flanksource/gomplate/v4/conv"
+	"github.com/flanksource/gomplate/v4/regexp"
 )
 
 // ReNS -

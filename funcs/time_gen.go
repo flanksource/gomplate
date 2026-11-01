@@ -3,9 +3,9 @@
 package funcs
 
 import (
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 
 	gotime "time"
 )
@@ -75,7 +75,6 @@ var timeParseLocalGen = cel.Function("time.ParseLocal",
 				return types.WrapErr(err)
 			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
-
 
 		}),
 	),
@@ -237,8 +236,7 @@ var timeHourGen = cel.Function("time.Hour",
 	),
 )
 
-
-var timeParseDurationGen2= cel.Function("duration",
+var timeParseDurationGen2 = cel.Function("duration",
 	cel.Overload("duration_interface{}",
 
 		[]*cel.Type{
@@ -274,7 +272,6 @@ var timeParseDurationGen = cel.Function("time.ParseDuration",
 				return types.WrapErr(err)
 			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
-
 
 		}),
 	),

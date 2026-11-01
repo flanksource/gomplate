@@ -12,7 +12,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/flanksource/gomplate/v3/conv"
+	"github.com/flanksource/gomplate/v4/conv"
 
 	// XXX: replace once https://github.com/BurntSushi/toml/pull/179 is merged
 	"github.com/hairyhenderson/toml"

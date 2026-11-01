@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 	commonsContext "github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/properties"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
 	"github.com/patrickmn/go-cache"
 	"github.com/samber/oops"
 )

@@ -14,15 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Install Go
-        uses: buildjet/setup-go@555ce355a95ff01018ffcf8fbbd9c44654db8374 # v5.0.2
-        with:
-          go-version: 1.26.x
-          cache: false
       - name: Checkout code
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
+      - name: Install Go
+        uses: buildjet/setup-go@555ce355a95ff01018ffcf8fbbd9c44654db8374 # v5.0.2
+        with:
+          go-version-file: go.mod
+          cache: false
       - name: Post "benchmark running" comment
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
@@ -78,12 +78,21 @@ jobs:
           # the same benchmark suite — only the implementation under test differs.
           cp serialize_bench_test.go .tmp/bench/base/serialize_bench_test.go
           cp run_expression_bench_test.go .tmp/bench/base/run_expression_bench_test.go
+          base_module=$(go -C .tmp/bench/base list -m)
+          if [ "$base_module" = github.com/flanksource/gomplate/v3 ]
+          then
+            go run github.com/uber-go/gopatch@v0.4.0 -p .github/bench-v3.patch .tmp/bench/base/run_expression_bench_test.go
+          elif [ "$base_module" != github.com/flanksource/gomplate/v4 ]
+          then
+            echo "Unsupported benchmark base module: $base_module" >&2
+            exit 1
+          fi
       - name: Compile benchmark binaries
         run: |
           cd .tmp/bench/base
-          go test -c -o "$GITHUB_WORKSPACE/.tmp/bench/base.test" github.com/flanksource/gomplate/v3
+          go test -c -o "$GITHUB_WORKSPACE/.tmp/bench/base.test" .
           cd "$GITHUB_WORKSPACE"
-          go test -c -o .tmp/bench/head.test github.com/flanksource/gomplate/v3
+          go test -c -o .tmp/bench/head.test .
       - name: Benchmark interleaved base and head
         run: |
           : > bench-base.txt
@@ -97,8 +106,8 @@ jobs:
           done
       - name: Compare
         run: |
-          benchstat bench-base.txt bench-head.txt > benchstat.txt
-          benchstat -format csv bench-base.txt bench-head.txt > benchstat.csv
+          benchstat -ignore pkg bench-base.txt bench-head.txt > benchstat.txt
+          benchstat -ignore pkg -format csv bench-base.txt bench-head.txt > benchstat.csv
           python3 .github/scripts/benchstat-summary.py --no-fail benchstat.csv > bench-summary.md
 
           {

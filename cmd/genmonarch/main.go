@@ -17,7 +17,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/flanksource/gomplate/v3/genmonarch"
+	"github.com/flanksource/gomplate/v4/genmonarch"
 )
 
 func main() {

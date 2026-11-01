@@ -156,7 +156,7 @@ func indexOf(haystack []string, needle string) int {
 
 // upstreamCELGrammarPath locates CEL.g4 inside the resolved cel-go module.
 func upstreamCELGrammarPath() (string, error) {
-	out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", "github.com/google/cel-go").Output()
+	out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", "cel.dev/cel-go").Output()
 	if err != nil {
 		return "", err
 	}

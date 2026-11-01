@@ -19,13 +19,13 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/google/cel-go/cel"
+	"cel.dev/cel-go/cel"
 	"github.com/robertkrimen/otto"
 	ottoparser "github.com/robertkrimen/otto/parser"
 	"gopkg.in/yaml.v3"
 
-	gomplate "github.com/flanksource/gomplate/v3"
-	"github.com/flanksource/gomplate/v3/coll"
+	gomplate "github.com/flanksource/gomplate/v4"
+	"github.com/flanksource/gomplate/v4/coll"
 )
 
 // Options configure a playground for one host.

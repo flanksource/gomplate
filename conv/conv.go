@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	iconv "github.com/flanksource/gomplate/v3/internal/conv"
+	iconv "github.com/flanksource/gomplate/v4/internal/conv"
 	"github.com/pkg/errors"
 )
 

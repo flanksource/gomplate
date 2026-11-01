@@ -90,8 +90,8 @@ func (g *Generator) generateExports() {
 	// Print the header and package clause.
 	g.renderHeader(g.pkg.name,
 		PkgImport{importPath: "log"},
-		PkgImport{importPath: "github.com/google/cel-go/common/types/ref"},
-		PkgImport{importPath: "github.com/google/cel-go/cel"},
+		PkgImport{importPath: "cel.dev/cel-go/common/types/ref"},
+		PkgImport{importPath: "cel.dev/cel-go/cel"},
 	)
 
 	view := exportFuncsTemplateView{
@@ -116,9 +116,9 @@ func (g *Generator) generateFile(file *File) {
 	}
 
 	imports := []PkgImport{
-		{importPath: "github.com/google/cel-go/cel"},
-		{importPath: "github.com/google/cel-go/common/types"},
-		{importPath: "github.com/google/cel-go/common/types/ref"},
+		{importPath: "cel.dev/cel-go/cel"},
+		{importPath: "cel.dev/cel-go/common/types"},
+		{importPath: "cel.dev/cel-go/common/types/ref"},
 	}
 	if hardcodedImports, ok := importConf[file.name]; ok {
 		imports = append(imports, hardcodedImports...)

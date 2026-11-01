@@ -9,9 +9,9 @@ import (
 	_ "github.com/robertkrimen/otto/underscore"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/flanksource/gomplate/v3"
-	_ "github.com/flanksource/gomplate/v3/js"
-	"github.com/flanksource/gomplate/v3/kubernetes"
+	"github.com/flanksource/gomplate/v4"
+	_ "github.com/flanksource/gomplate/v4/js"
+	"github.com/flanksource/gomplate/v4/kubernetes"
 )
 
 func TestGomplateFunctions(t *testing.T) {

@@ -2,9 +2,11 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
+import (
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+)
 
 var randomASCIIGen = cel.Function("random.ASCII",
 	cel.Overload("random.ASCII_interface{}",
@@ -78,9 +80,9 @@ var randomStringGen = cel.Function("random.String",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 			list, err := sliceToNative[interface{}](args[1].(ref.Val))
 			if err != nil {
-					return types.WrapErr(err)
+				return types.WrapErr(err)
 			}
-			
+
 			var x RandomFuncs
 			result, err := x.String(args[0], list...)
 			if err != nil {

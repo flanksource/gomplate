@@ -14,8 +14,8 @@ import (
 	"strings"
 	"sync"
 
-	gomplate "github.com/flanksource/gomplate/v3"
-	"github.com/flanksource/gomplate/v3/genmonarch/grammar"
+	gomplate "github.com/flanksource/gomplate/v4"
+	"github.com/flanksource/gomplate/v4/genmonarch/grammar"
 )
 
 // ExtractGoTemplate reads the go-template surface from the FuncMap gomplate
@@ -307,7 +307,7 @@ func runtimeMethodIdentity(runtimeName string) (packagePath, receiver, method st
 }
 
 func packageSourceDir(packagePath string) (string, error) {
-	const modulePath = "github.com/flanksource/gomplate/v3"
+	const modulePath = "github.com/flanksource/gomplate/v4"
 	if packagePath != modulePath && !strings.HasPrefix(packagePath, modulePath+"/") {
 		return "", fmt.Errorf("package %s is outside %s", packagePath, modulePath)
 	}

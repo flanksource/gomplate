@@ -14,8 +14,8 @@ import (
 	"strings"
 
 	"github.com/flanksource/commons/collections"
-	"github.com/flanksource/gomplate/v3/conv"
-	iconv "github.com/flanksource/gomplate/v3/internal/conv"
+	"github.com/flanksource/gomplate/v4/conv"
+	iconv "github.com/flanksource/gomplate/v4/internal/conv"
 )
 
 // Slice creates a slice from a bunch of arguments
