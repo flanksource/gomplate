@@ -2,9 +2,11 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
+import (
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+)
 
 var cryptoSHA1Gen = cel.Function("crypto.SHA1",
 	cel.Overload("crypto.SHA1_interface{}",
@@ -137,7 +139,9 @@ var cryptoSHA1BytesGen = cel.Function("crypto.SHA1Bytes",
 			var x CryptoFuncs
 
 			result, err := x.SHA1Bytes(args[0])
-                         if err != nil {return types.WrapErr(err)}
+			if err != nil {
+				return types.WrapErr(err)
+			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
 
 		}),
@@ -156,7 +160,9 @@ var cryptoSHA224BytesGen = cel.Function("crypto.SHA224Bytes",
 			var x CryptoFuncs
 
 			result, err := x.SHA224Bytes(args[0])
-                         if err != nil {return types.WrapErr(err)}
+			if err != nil {
+				return types.WrapErr(err)
+			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
 
 		}),
@@ -175,7 +181,9 @@ var cryptoSHA256BytesGen = cel.Function("crypto.SHA256Bytes",
 			var x CryptoFuncs
 
 			result, err := x.SHA256Bytes(args[0])
-                         if err != nil {return types.WrapErr(err)}
+			if err != nil {
+				return types.WrapErr(err)
+			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
 
 		}),
@@ -194,7 +202,9 @@ var cryptoSHA384BytesGen = cel.Function("crypto.SHA384Bytes",
 			var x CryptoFuncs
 
 			result, err := x.SHA384Bytes(args[0])
-                         if err != nil {return types.WrapErr(err)}
+			if err != nil {
+				return types.WrapErr(err)
+			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
 
 		}),
@@ -213,7 +223,9 @@ var cryptoSHA512BytesGen = cel.Function("crypto.SHA512Bytes",
 			var x CryptoFuncs
 
 			result, err := x.SHA512Bytes(args[0])
-                         if err != nil {return types.WrapErr(err)}
+			if err != nil {
+				return types.WrapErr(err)
+			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
 
 		}),
@@ -232,7 +244,9 @@ var cryptoSHA512_224BytesGen = cel.Function("crypto.SHA512_224Bytes",
 			var x CryptoFuncs
 
 			result, err := x.SHA512_224Bytes(args[0])
-                         if err != nil {return types.WrapErr(err)}
+			if err != nil {
+				return types.WrapErr(err)
+			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
 
 		}),
@@ -251,7 +265,9 @@ var cryptoSHA512_256BytesGen = cel.Function("crypto.SHA512_256Bytes",
 			var x CryptoFuncs
 
 			result, err := x.SHA512_256Bytes(args[0])
-                         if err != nil {return types.WrapErr(err)}
+			if err != nil {
+				return types.WrapErr(err)
+			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
 
 		}),

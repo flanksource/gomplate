@@ -2,9 +2,11 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
+import (
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+)
 
 var filepathBaseGen = cel.Function("filepath.Base",
 	cel.Overload("filepath.Base_interface{}",
@@ -122,7 +124,6 @@ var filepathJoinGen = cel.Function("filepath.Join",
 			if err != nil {
 				return types.WrapErr(err)
 			}
-
 
 			return types.DefaultTypeAdapter.NativeToValue(x.Join(list...))
 

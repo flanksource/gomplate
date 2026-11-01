@@ -3,9 +3,9 @@ package genmonarch
 import (
 	"fmt"
 
-	"github.com/google/cel-go/cel"
+	"cel.dev/cel-go/cel"
 
-	"github.com/flanksource/gomplate/v3/genmonarch/grammar"
+	"github.com/flanksource/gomplate/v4/genmonarch/grammar"
 )
 
 // Bundle is everything the npm package ships: one Monarch definition and one

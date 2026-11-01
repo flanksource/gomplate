@@ -3,10 +3,10 @@ package strings
 import (
 	"time"
 
-	"github.com/flanksource/gomplate/v3/conv"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"github.com/flanksource/gomplate/v4/conv"
 )
 
 func age(value ref.Val) ref.Val {

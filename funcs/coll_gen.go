@@ -10,10 +10,10 @@ import (
 
 	"encoding/json"
 
-	"github.com/flanksource/gomplate/v3/coll"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"github.com/flanksource/gomplate/v4/coll"
 )
 
 var typeMapStringAny = reflect.TypeOf(map[string]interface{}{})
@@ -228,7 +228,6 @@ var collMergeGen = cel.Function("merge",
 	),
 )
 
-
 var collSortByGen = cel.Function("sortBy",
 	cel.MemberOverload("sortBy_interface{}",
 
@@ -309,7 +308,7 @@ var collJsonPathGen = cel.Function("jsonpath",
 				}
 			}
 
-			result, err := coll.JSONPath( query.Value().(string), input)
+			result, err := coll.JSONPath(query.Value().(string), input)
 			if err != nil {
 				return types.WrapErr(err)
 			}
@@ -341,7 +340,7 @@ var collJmesPathGen = cel.Function("jmespath",
 				}
 			}
 
-			result, err := coll.JMESPath( query.Value().(string), input)
+			result, err := coll.JMESPath(query.Value().(string), input)
 			if err != nil {
 				return types.WrapErr(err)
 			}
@@ -350,9 +349,6 @@ var collJmesPathGen = cel.Function("jmespath",
 		}),
 	),
 )
-
-
-
 
 var collXPathGen = cel.Function("xpath",
 	cel.Overload("xpath_string_string",
@@ -426,7 +422,7 @@ var collKeyValToMapGen = cel.Function("keyValToMap",
 		},
 		cel.MapType(cel.StringType, cel.AnyType),
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
-			result, err := coll.KeyValToMap(fmt.Sprintf("%s",args[0].Value()))
+			result, err := coll.KeyValToMap(fmt.Sprintf("%s", args[0].Value()))
 			if err != nil {
 				return types.WrapErr(err)
 			}
@@ -454,4 +450,3 @@ var collMapToKeyValGen = cel.Function("mapToKeyVal",
 		}),
 	),
 )
-

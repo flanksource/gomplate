@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/flanksource/gomplate/v3/genmonarch/grammar"
+	"github.com/flanksource/gomplate/v4/genmonarch/grammar"
 )
 
 // CELLanguageID is the Monaco language id for CEL expressions.

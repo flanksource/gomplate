@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/flanksource/gomplate/v3"
+	"github.com/flanksource/gomplate/v4"
 	"gopkg.in/yaml.v3"
 )
 

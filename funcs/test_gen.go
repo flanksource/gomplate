@@ -2,9 +2,11 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
+import (
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+)
 
 var testAssertGen = cel.Function("test.Assert",
 	cel.Overload("test.Assert_interface{}",

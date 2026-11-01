@@ -4,9 +4,10 @@ package funcs
 
 import (
 	"sort"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 var stringsHumanDurationGen = cel.Function("HumanDuration",
@@ -151,11 +152,10 @@ var stringsContainsGen = cel.Function("Contains",
 	),
 )
 
-
 var stringsRepeatGen = cel.Function("repeat",
 	cel.MemberOverload("string_repeat",
 		[]*cel.Type{
-			cel.StringType,cel.IntType,
+			cel.StringType, cel.IntType,
 		},
 		cel.StringType,
 		cel.BinaryBinding(func(lhs, rhs ref.Val) ref.Val {
@@ -205,8 +205,6 @@ var stringsSplitNGen = cel.Function("SplitN",
 	),
 )
 
-
-
 var stringsTrimPrefixGen = cel.Function("trimPrefix",
 	cel.MemberOverload("string_trimPrefix",
 
@@ -241,9 +239,6 @@ var stringsTrimSuffixGen = cel.Function("trimSuffix",
 	),
 )
 
-
-
-
 var stringsTitleGen = cel.Function("title",
 	cel.MemberOverload("string_title",
 		[]*cel.Type{
@@ -252,9 +247,9 @@ var stringsTitleGen = cel.Function("title",
 		cel.StringType,
 		cel.UnaryBinding(
 			func(arg ref.Val) ref.Val {
-			var x StringFuncs
-			return types.String(x.Title(arg))
-		}),
+				var x StringFuncs
+				return types.String(x.Title(arg))
+			}),
 	),
 )
 
@@ -334,7 +329,7 @@ var stringsIndentGen = cel.Function("indent",
 		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 			var x StringFuncs
-			list := []any{ args[1].Value().(string), args[0].Value().(string)}
+			list := []any{args[1].Value().(string), args[0].Value().(string)}
 			result, err := x.Indent(list...)
 			if err != nil {
 				return types.WrapErr(err)
@@ -347,7 +342,7 @@ var stringsIndentGen = cel.Function("indent",
 var stringsIndentWithWidthGen = cel.Function("indent",
 	cel.MemberOverload("string_indent_with_width",
 		[]*cel.Type{
-			cel.StringType, cel.IntType,  cel.StringType,
+			cel.StringType, cel.IntType, cel.StringType,
 		},
 		cel.StringType,
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {

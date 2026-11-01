@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/flanksource/gomplate/v3"
+	"github.com/flanksource/gomplate/v4"
 	"github.com/stretchr/testify/assert"
 )
 

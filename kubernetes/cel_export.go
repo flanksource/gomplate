@@ -1,6 +1,6 @@
 package kubernetes
 
-import "github.com/google/cel-go/cel"
+import "cel.dev/cel-go/cel"
 
 func Library() []cel.EnvOption {
 	return []cel.EnvOption{

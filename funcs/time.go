@@ -13,8 +13,8 @@ import (
 	"github.com/flanksource/commons/utils"
 	"github.com/timberio/go-datemath"
 
-	"github.com/flanksource/gomplate/v3/conv"
-	"github.com/flanksource/gomplate/v3/time"
+	"github.com/flanksource/gomplate/v4/conv"
+	"github.com/flanksource/gomplate/v4/time"
 )
 
 // TimeNS -

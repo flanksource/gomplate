@@ -3,7 +3,7 @@ package funcs
 import (
 	"fmt"
 
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/ref"
 )
 
 func convertMap(arg ref.Val) (map[string]any, error) {

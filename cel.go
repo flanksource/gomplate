@@ -7,18 +7,18 @@ import (
 	"sort"
 	"sync"
 
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/ext"
 	"github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/logger"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/ext"
 
-	"github.com/flanksource/gomplate/v3/conv"
-	"github.com/flanksource/gomplate/v3/funcs"
-	"github.com/flanksource/gomplate/v3/kubernetes"
-	"github.com/flanksource/gomplate/v3/nilsafe"
-	"github.com/flanksource/gomplate/v3/strings"
+	"github.com/flanksource/gomplate/v4/conv"
+	"github.com/flanksource/gomplate/v4/funcs"
+	"github.com/flanksource/gomplate/v4/kubernetes"
+	"github.com/flanksource/gomplate/v4/nilsafe"
+	"github.com/flanksource/gomplate/v4/strings"
 )
 
 const celRegexProgramSizeLimit = 10_000
