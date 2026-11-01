@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - 3.x
   pull_request:
 
 permissions:
@@ -17,12 +18,12 @@ jobs:
     name: generated definitions are current
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Install Go
         uses: buildjet/setup-go@555ce355a95ff01018ffcf8fbbd9c44654db8374 # v5.0.2
         with:
-          go-version: 1.22.x
-      - name: Checkout code
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+          go-version-file: go.mod
       - name: Check for drift
         run: make monarch-check
 
@@ -35,11 +36,11 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d # v3.0.0
         with:
-          version: 10
+          package_json_file: web/package.json
       - name: Install Node
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
           cache-dependency-path: web/pnpm-lock.yaml
       - name: Install dependencies
