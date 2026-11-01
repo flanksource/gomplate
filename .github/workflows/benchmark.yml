@@ -78,9 +78,14 @@ jobs:
           # the same benchmark suite — only the implementation under test differs.
           cp serialize_bench_test.go .tmp/bench/base/serialize_bench_test.go
           cp run_expression_bench_test.go .tmp/bench/base/run_expression_bench_test.go
-          if rg -q '^module github.com/flanksource/gomplate/v3$' .tmp/bench/base/go.mod
+          base_module=$(go -C .tmp/bench/base list -m)
+          if [ "$base_module" = github.com/flanksource/gomplate/v3 ]
           then
             go run github.com/uber-go/gopatch@v0.4.0 -p .github/bench-v3.patch .tmp/bench/base/run_expression_bench_test.go
+          elif [ "$base_module" != github.com/flanksource/gomplate/v4 ]
+          then
+            echo "Unsupported benchmark base module: $base_module" >&2
+            exit 1
           fi
       - name: Compile benchmark binaries
         run: |
