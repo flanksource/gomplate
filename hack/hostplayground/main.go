@@ -14,11 +14,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
 
-	"github.com/flanksource/gomplate/v3/playground"
+	"github.com/flanksource/gomplate/v4/playground"
 )
 
 // catalogQuery imitates duty's `catalog.query`: namespaced, one typed overload,

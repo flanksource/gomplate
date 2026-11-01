@@ -3,13 +3,14 @@
 package funcs
 
 import (
-	"github.com/google/cel-go/cel"
 	"encoding/json"
 	"reflect"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"github.com/flanksource/gomplate/v4/data"
 	"google.golang.org/protobuf/types/known/structpb"
-	"github.com/flanksource/gomplate/v3/data"
 )
 
 var dataJSONMemberGen = cel.Function("JSON",
@@ -104,7 +105,6 @@ var dataTOMLGen = cel.Function("TOML",
 				return types.WrapErr(err)
 			}
 			return types.DefaultTypeAdapter.NativeToValue(result)
-
 
 		}),
 	),
@@ -216,7 +216,7 @@ func toJson(val ref.Val) ref.Val {
 	case types.MapType:
 		typeDesc = mapType
 	default:
-		if result, err := json.Marshal(val.Value());  err != nil {
+		if result, err := json.Marshal(val.Value()); err != nil {
 			return types.WrapErr(err)
 		} else {
 			return types.String(result)

@@ -114,7 +114,7 @@ See [GO_TEMPLATE.md](GO_TEMPLATE.md) for full reference.
 ## Installation
 
 ```go
-import "github.com/flanksource/gomplate/v3"
+import "github.com/flanksource/gomplate/v4"
 ```
 
 ## Usage

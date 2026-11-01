@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flanksource/gomplate/v3"
-	"github.com/flanksource/gomplate/v3/data"
-	_ "github.com/flanksource/gomplate/v3/js"
+	"github.com/flanksource/gomplate/v4"
+	"github.com/flanksource/gomplate/v4/data"
+	_ "github.com/flanksource/gomplate/v4/js"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	_ "github.com/robertkrimen/otto/underscore"

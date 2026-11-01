@@ -7,7 +7,7 @@ import (
 
 	"github.com/ohler55/ojg/jp"
 
-	gomplate "github.com/flanksource/gomplate/v3"
+	gomplate "github.com/flanksource/gomplate/v4"
 )
 
 // ValidateCorpus parses every non-CEL snippet with the parser that actually

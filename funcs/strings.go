@@ -13,14 +13,14 @@ import (
 
 	"github.com/Masterminds/goutils"
 	"github.com/Masterminds/semver/v3"
-	"github.com/flanksource/gomplate/v3/conv"
+	"github.com/flanksource/gomplate/v4/conv"
 	"github.com/pkg/errors"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
 	"strings"
 
-	gompstrings "github.com/flanksource/gomplate/v3/strings"
+	gompstrings "github.com/flanksource/gomplate/v4/strings"
 	"github.com/gosimple/slug"
 )
 

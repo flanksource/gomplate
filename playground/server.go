@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/flanksource/gomplate/v3/genmonarch"
+	"github.com/flanksource/gomplate/v4/genmonarch"
 )
 
 // Handler serves the playground API.

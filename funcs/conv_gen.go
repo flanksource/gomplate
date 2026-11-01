@@ -2,9 +2,11 @@
 
 package funcs
 
-import "github.com/google/cel-go/cel"
-import "github.com/google/cel-go/common/types"
-import "github.com/google/cel-go/common/types/ref"
+import (
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+)
 
 var convBoolGen = cel.Function("conv.Bool",
 	cel.Overload("conv.Bool_interface{}",
@@ -50,7 +52,7 @@ var convToBoolsGen = cel.Function("conv.ToBools",
 		cel.FunctionBinding(func(args ...ref.Val) ref.Val {
 
 			var x ConvFuncs
-			list,err := sliceToNative[interface{}](args[0].(ref.Val))
+			list, err := sliceToNative[interface{}](args[0].(ref.Val))
 			if err != nil {
 				return types.WrapErr(err)
 			}
@@ -98,7 +100,6 @@ var convHasGen = cel.Function("conv.Has",
 		}),
 	),
 )
-
 
 var convToInt64Gen = cel.Function("conv.ToInt64",
 	cel.Overload("conv.ToInt64_interface{}",
@@ -149,7 +150,6 @@ var convToInt64sGen = cel.Function("conv.ToInt64s",
 				return types.WrapErr(err)
 			}
 
-
 			return types.DefaultTypeAdapter.NativeToValue(x.ToInt64s(list...))
 
 		}),
@@ -170,7 +170,6 @@ var convToIntsGen = cel.Function("conv.ToInts",
 			if err != nil {
 				return types.WrapErr(err)
 			}
-
 
 			return types.DefaultTypeAdapter.NativeToValue(x.ToInts(list...))
 
@@ -209,7 +208,6 @@ var convToFloat64sGen = cel.Function("conv.ToFloat64s",
 			if err != nil {
 				return types.WrapErr(err)
 			}
-
 
 			return types.DefaultTypeAdapter.NativeToValue(x.ToFloat64s(list...))
 
@@ -270,4 +268,3 @@ var convDefaultGen = cel.Function("conv.Default",
 		}),
 	),
 )
-
