@@ -5,10 +5,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common"
 
-	gomplate "github.com/flanksource/gomplate/v3"
+	gomplate "github.com/flanksource/gomplate/v4"
 )
 
 // celBuiltinTypes are the type names CEL exposes as identifiers. They come from

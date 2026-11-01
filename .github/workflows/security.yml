@@ -1,0 +1,35 @@
+name: Dependency security
+on:
+  push:
+    branches: [main, 3.x]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ref: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && fromJSON('["main", "3.x"]') || fromJSON(format('[{0}]', toJSON(github.ref))) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ matrix.ref }}
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491
+        with:
+          go-version-file: go.mod
+      - name: Scan Go dependencies
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b
+        with:
+          node-version: 24
+      - run: pnpm -C web install --frozen-lockfile
+      - name: Scan production web dependencies
+        run: pnpm -C web audit --prod --audit-level low

@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
+	celparser "cel.dev/cel-go/parser/gen"
 	"github.com/antlr4-go/antlr/v4"
-	celparser "github.com/google/cel-go/parser/gen"
 )
 
 // ConformanceCase is one snippet with the token boundaries the language's real

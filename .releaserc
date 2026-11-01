@@ -1,8 +1,12 @@
 branches:
+  - name: 3.x
+    range: 3.x
+    channel: 3.x
   - name: main
 plugins:
   - - "@semantic-release/commit-analyzer"
     - releaseRules:
+        - { breaking: true, release: major }
         - { type: doc, scope: README, release: patch }
         - { type: fix, release: patch }
         - { type: chore, release: patch }
@@ -13,8 +17,12 @@ plugins:
       parserOpts:
         noteKeywords:
           - MAJOR RELEASE
-  - "@semantic-release/release-notes-generator"
+          - BREAKING CHANGE
+          - BREAKING CHANGES
+  - - "@semantic-release/release-notes-generator"
+    - parserOpts:
+        noteKeywords: ["MAJOR RELEASE", "BREAKING CHANGE", "BREAKING CHANGES"]
   - - "@semantic-release/github"
       # From: https://github.com/semantic-release/github/pull/487#issuecomment-1486298997  
     - successComment: false
-      failTitle: false 
+      failTitle: false

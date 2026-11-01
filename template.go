@@ -12,11 +12,11 @@ import (
 	gotemplate "text/template"
 	"time"
 
+	"cel.dev/cel-go/cel"
 	commonsContext "github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/logger"
 	"github.com/flanksource/commons/properties"
-	_ "github.com/flanksource/gomplate/v3/js"
-	"github.com/google/cel-go/cel"
+	_ "github.com/flanksource/gomplate/v4/js"
 	"github.com/patrickmn/go-cache"
 	"github.com/robertkrimen/otto"
 	"github.com/robertkrimen/otto/registry"

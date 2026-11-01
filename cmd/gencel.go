@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/flanksource/gomplate/v3/gencel"
+	"github.com/flanksource/gomplate/v4/gencel"
 )
 
 func main() {

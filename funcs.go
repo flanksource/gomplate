@@ -4,7 +4,7 @@ import (
 	"context"
 	"text/template"
 
-	"github.com/flanksource/gomplate/v3/funcs" //nolint:staticcheck
+	"github.com/flanksource/gomplate/v4/funcs" //nolint:staticcheck
 )
 
 // CreateFuncs - function mappings are created here

@@ -2151,7 +2151,7 @@
   },
   {
     "language": "cel",
-    "source": "import \"github.com/flanksource/gomplate/v3\"",
+    "source": "import \"github.com/flanksource/gomplate/v4\"",
     "boundaries": [
       0,
       7

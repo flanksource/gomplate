@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/google/cel-go/common/types"
+	"cel.dev/cel-go/common/types"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

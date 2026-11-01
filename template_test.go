@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/flanksource/gomplate/v3/js"
+	_ "github.com/flanksource/gomplate/v4/js"
 	_ "github.com/robertkrimen/otto/underscore"
 )
 

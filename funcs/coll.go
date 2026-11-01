@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/flanksource/gomplate/v3/conv"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
-	"github.com/google/cel-go/common/types/traits"
+	"cel.dev/cel-go/cel"
+	"cel.dev/cel-go/common/types"
+	"cel.dev/cel-go/common/types/ref"
+	"cel.dev/cel-go/common/types/traits"
+	"github.com/flanksource/gomplate/v4/conv"
 
-	"github.com/flanksource/gomplate/v3/coll"
+	"github.com/flanksource/gomplate/v4/coll"
 	"github.com/pkg/errors"
 )
 

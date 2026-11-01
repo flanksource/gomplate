@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
-	"github.com/flanksource/gomplate/v3"
-	"github.com/flanksource/gomplate/v3/kubernetes"
+	"github.com/flanksource/gomplate/v4"
+	"github.com/flanksource/gomplate/v4/kubernetes"
 )
 
 func panIf(err error) {
