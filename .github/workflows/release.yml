@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - 3.x
 permissions:
   contents: read
 
@@ -18,6 +19,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         id: semantic
         env:
@@ -29,7 +32,7 @@ jobs:
   bump-clients:
     runs-on: ubuntu-latest
     needs: [semantic-release]
-    if: needs.semantic-release.outputs.new-release-published == 'true'
+    if: needs.semantic-release.outputs.new-release-published == 'true' && startsWith(needs.semantic-release.outputs.release-version, '3.')
     strategy:
       matrix:
         repos: ["mission-control", "canary-checker", "commons", "config-db", "duty"]
@@ -42,7 +45,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
         with:
-          go-version: v1.22.x
+          go-version-file: go.mod
 
       - name: Create commits
         run: |
@@ -51,7 +54,8 @@ jobs:
           go get github.com/flanksource/gomplate/v3@v${{ needs.semantic-release.outputs.release-version }}
           go mod tidy
           if [ -d "hack/generate-schemas" ]; then
-            cd hack/generate-schemas && go mod tidy
+            (cd hack/generate-schemas
+             go mod tidy)
           fi
 
       - name: Create Pull Request
