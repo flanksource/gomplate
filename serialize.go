@@ -72,7 +72,9 @@ func Serialize(in map[string]any) (out map[string]any, err error) {
 		}
 	})
 
-	out = alt.Alter(in, &opts).(map[string]any)
+	// Decompose copies: Alter would rewrite the caller's map in place, so a value such as a *time.Time in an
+	// environment the caller reuses would come back as a map after one expression.
+	out = alt.Decompose(in, &opts).(map[string]any)
 
 	for _, native := range nativeTypes {
 		if err := native.path.SetOne(out, native.val); err != nil {

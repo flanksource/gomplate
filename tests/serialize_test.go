@@ -295,3 +295,25 @@ func Test_serialize(t *testing.T) {
 		})
 	}
 }
+
+// A caller evaluates several expressions over one environment, so serializing it must leave the caller's values
+// as they were: a *time.Time nested in a map is still a *time.Time afterwards.
+func Test_serializeLeavesInputUnchanged(t *testing.T) {
+	t.Parallel()
+	created := time.Date(2026, time.November, 4, 11, 8, 19, 0, time.UTC)
+	step := map[string]any{"created": &created, "rows": []any{map[string]any{"due": "01/09/2026"}}}
+	in := map[string]any{"steps": map[string]any{"invoicestart": step}}
+
+	if _, err := gomplate.Serialize(in); err != nil {
+		t.Fatalf("serialize() error = %v", err)
+	}
+	if got, ok := step["created"].(*time.Time); !ok || !got.Equal(created) {
+		t.Fatalf("serialize() changed the input's created value to %T %v", step["created"], step["created"])
+	}
+	if _, err := gomplate.RunExpression(in, gomplate.Template{Expression: `steps.invoicestart.rows[0].due == "01/09/2026"`}); err != nil {
+		t.Fatalf("RunExpression() error = %v", err)
+	}
+	if _, ok := step["created"].(*time.Time); !ok {
+		t.Fatalf("RunExpression() changed the input's created value to %T", step["created"])
+	}
+}
