@@ -13,15 +13,21 @@ import (
 
 var plainDecimal = regexp.MustCompile(`^[+-]?[0-9]+(\.[0-9]+)?$`)
 
+const celDecimalStringLengthLimit = 4096
+
 func decimalSumOption() cel.EnvOption {
 	return cel.Function("sum", cel.MemberOverload("collection_sum_decimal_strings", []*cel.Type{cel.ListType(cel.StringType)}, cel.StringType, cel.UnaryBinding(sumDecimalStrings)))
 }
 
+// sumDecimalStrings adds bounded plain decimal strings without rounding.
 func sumDecimalStrings(value ref.Val) ref.Val {
 	total, scale := new(big.Rat), 0
 	for iterator := value.(traits.Lister).Iterator(); iterator.HasNext() == types.True; {
 		item := iterator.Next()
 		text, ok := item.(types.String)
+		if ok && len(text) > celDecimalStringLengthLimit {
+			return types.NewErr("sum decimal string exceeds limit of %d bytes", celDecimalStringLengthLimit)
+		}
 		if !ok || !plainDecimal.MatchString(string(text)) {
 			return types.NewErr("sum requires decimal strings, got %v", item)
 		}

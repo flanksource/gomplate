@@ -7,8 +7,11 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"io"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -18,6 +21,8 @@ import (
 
 func main() {
 	addr := flag.String("addr", ":8321", "address to listen on")
+	dynamic := flag.Bool("dynamic-port", false, "allocate another port if the requested port is occupied")
+	watchStdin := flag.Bool("watch-stdin", false, "stop when the parent closes standard input")
 	timeout := flag.Duration("timeout", 5*time.Second, "ceiling on one evaluation")
 	flag.Parse()
 
@@ -35,8 +40,19 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	fmt.Printf("playground: listening on %s\n", *addr)
-	if err := server.ListenAndServe(); err != nil {
+	listener, err := listen(*addr, *dynamic)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "playground:", err)
+		os.Exit(1)
+	}
+	if *watchStdin {
+		go func() {
+			_, _ = io.Copy(io.Discard, os.Stdin)
+			_ = listener.Close()
+		}()
+	}
+	fmt.Printf("playground: listening on %s\n", listener.Addr())
+	if err := server.Serve(listener); err != nil && !errors.Is(err, net.ErrClosed) && !errors.Is(err, http.ErrServerClosed) {
 		fmt.Fprintln(os.Stderr, "playground:", err)
 		os.Exit(1)
 	}

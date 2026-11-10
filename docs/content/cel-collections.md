@@ -21,6 +21,8 @@ funds.groupBy(r, r.fund).map(g, g.rows.latestBy(r, r.created))
 
 `left.joinBy(right, leftRow, leftKey, rightRow, rightKey)` is an inner join. It returns `{left, right}` pairs for every matching key, preserving left order and then right order. Unmatched rows are omitted; duplicate keys produce all matching pairs. Key rules match `groupBy`.
 
+Joins reject results exceeding 10,000 pairs. Decimal `sum()` rejects individual strings longer than 4,096 bytes before parsing them.
+
 ```cel
 before.joinBy(after, b, b.fund, a, a.fund)
 ```

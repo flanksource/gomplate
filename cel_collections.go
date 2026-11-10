@@ -11,8 +11,10 @@ import (
 	"github.com/google/cel-go/common/types/traits"
 )
 
+// collectionCelOptions registers collection macros and their runtime bindings.
 func collectionCelOptions() []cel.EnvOption {
-	options := []cel.EnvOption{cel.Macros(cel.ReceiverMacro("joinBy", 5, joinByMacro))}
+	options := make([]cel.EnvOption, 0, 9)
+	options = append(options, cel.Macros(cel.ReceiverMacro("joinBy", 5, joinByMacro)))
 	for name, binding := range map[string]func(ref.Val) ref.Val{
 		"groupBy": groupRows, "distinctBy": distinctRows, "latestBy": latestRow,
 	} {
@@ -27,6 +29,7 @@ func collectionCelOptions() []cel.EnvOption {
 	)
 }
 
+// collectionKeyMacro projects rows with their keys before calling a collection binding.
 func collectionKeyMacro(name string) cel.MacroFactory {
 	return func(factory cel.MacroExprFactory, target ast.Expr, args []ast.Expr) (ast.Expr, *cel.Error) {
 		projection, err := keyedRowsMacro(factory, target, args)
@@ -37,6 +40,7 @@ func collectionKeyMacro(name string) cel.MacroFactory {
 	}
 }
 
+// keyedRowsMacro builds row/key pairs while evaluating each key expression once.
 func keyedRowsMacro(factory cel.MacroExprFactory, target ast.Expr, args []ast.Expr) (ast.Expr, *cel.Error) {
 	variable, err := extractFoldIdent(factory, args[0])
 	if err != nil {
@@ -49,6 +53,7 @@ func keyedRowsMacro(factory cel.MacroExprFactory, target ast.Expr, args []ast.Ex
 		factory.NewIdent(accumulator)), nil
 }
 
+// joinByMacro projects both inputs into the keyed rows consumed by joinRows.
 func joinByMacro(factory cel.MacroExprFactory, target ast.Expr, args []ast.Expr) (ast.Expr, *cel.Error) {
 	left, err := keyedRowsMacro(factory, target, args[1:3])
 	if err != nil {
@@ -66,6 +71,7 @@ type collectionGroup struct {
 	rows []ref.Val
 }
 
+// indexedGroups validates scalar keys and indexes groups in first occurrence order.
 func indexedGroups(value ref.Val) ([]collectionGroup, map[any]int, ref.Val) {
 	list, ok := value.(traits.Lister)
 	if !ok {
@@ -95,6 +101,7 @@ func indexedGroups(value ref.Val) ([]collectionGroup, map[any]int, ref.Val) {
 	return groups, index, nil
 }
 
+// groupRows returns key/rows maps without converting native row values.
 func groupRows(value ref.Val) ref.Val {
 	groups, _, err := indexedGroups(value)
 	if err != nil {
@@ -109,6 +116,7 @@ func groupRows(value ref.Val) ref.Val {
 	return types.NewRefValList(types.DefaultTypeAdapter, rows)
 }
 
+// distinctRows returns the first row in each group, preserving group order.
 func distinctRows(value ref.Val) ref.Val {
 	groups, _, err := indexedGroups(value)
 	if err != nil {
@@ -121,6 +129,7 @@ func distinctRows(value ref.Val) ref.Val {
 	return types.NewRefValList(types.DefaultTypeAdapter, rows)
 }
 
+// oneRow rejects empty or ambiguous collections instead of selecting arbitrarily.
 func oneRow(value ref.Val) ref.Val {
 	list := value.(traits.Lister)
 	if list.Size() != types.Int(1) {
@@ -129,6 +138,7 @@ func oneRow(value ref.Val) ref.Val {
 	return list.Get(types.IntZero)
 }
 
+// latestRow selects the greatest comparable key and rejects ties at that maximum.
 func latestRow(value ref.Val) ref.Val {
 	list := value.(traits.Lister)
 	if list.Size() == types.IntZero {
@@ -163,6 +173,9 @@ func latestRow(value ref.Val) ref.Val {
 	return latest
 }
 
+const celJoinPairLimit = 10_000
+
+// joinRows materializes matching pairs in input order, bounded by celJoinPairLimit.
 func joinRows(left, right ref.Val) ref.Val {
 	_, _, err := indexedGroups(left)
 	if err != nil {
@@ -180,6 +193,9 @@ func joinRows(left, right ref.Val) ref.Val {
 			continue
 		}
 		for _, rightRow := range rightGroups[position].rows {
+			if len(rows) >= celJoinPairLimit {
+				return types.NewErr("joinBy exceeds limit of %d result pairs", celJoinPairLimit)
+			}
 			rows = append(rows, types.NewRefValMap(types.DefaultTypeAdapter, map[ref.Val]ref.Val{types.String("left"): pair.Get(types.IntZero), types.String("right"): rightRow}))
 		}
 	}

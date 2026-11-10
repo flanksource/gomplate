@@ -17,10 +17,12 @@ import (
 
 var celExpressionCache = cache.New(time.Hour, time.Hour)
 
+// RunExpression evaluates a CEL template and returns native result values.
 func RunExpression(environment map[string]any, template Template) (any, error) {
 	return RunExpressionContext(newContext(), environment, template)
 }
 
+// RunExpressionContext reuses eligible programs and records evaluation state when requested.
 func RunExpressionContext(ctx commonsContext.Context, environment map[string]any, template Template) (any, error) {
 	tracker := celTrackerFromContext(ctx)
 	if tracker != nil {
@@ -71,6 +73,7 @@ func RunExpressionContext(ctx commonsContext.Context, environment map[string]any
 	return CELValue(out), nil
 }
 
+// compileCELProgram applies strictness, native types and optional state tracking to compilation.
 func compileCELProgram(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot, trackState bool) (cel.Program, *cel.Ast, error) {
 	base, err := baseCelEnv()
 	if template.Strict {
@@ -111,6 +114,7 @@ func compileCELProgram(data map[string]any, template Template, nativeTypes *nati
 	return program, ast, nil
 }
 
+// celEnvOptions declares input variables and adds caller functions and native types.
 func celEnvOptions(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot) []cel.EnvOption {
 	envOptions := make([]cel.EnvOption, 0, len(data)+len(template.Functions)+len(template.CelEnvs)+1)
 	if nativeTypes.envOption != nil {
@@ -139,13 +143,8 @@ func celEnvOptions(data map[string]any, template Template, nativeTypes *nativeTy
 	return envOptions
 }
 
+// celCacheKey separates strict semantics and native type generations from caller keys.
 func (t Template) celCacheKey(environment map[string]any, nativeTypeGeneration uint64) string {
-	profile := ""
-	if t.Strict {
-		profile = "strict:"
-	}
-	if nativeTypeGeneration == 0 {
-		return profile + t.cacheKey(environment)
-	}
-	return profile + strconv.FormatUint(nativeTypeGeneration, 10) + ":" + t.cacheKey(environment)
+	key := t.cacheKey(environment)
+	return strconv.FormatBool(t.Strict) + ":" + strconv.FormatUint(nativeTypeGeneration, 10) + ":" + strconv.Itoa(len(key)) + ":" + key
 }

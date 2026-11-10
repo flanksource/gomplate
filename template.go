@@ -74,8 +74,8 @@ type Template struct {
 	// any two templates sharing this key may share the compiled cel.Program
 	// (same expression semantics, same env shape, same function semantics).
 	//
-	// NOTE: CacheKey applies to cel expressions only. The go template path ignores
-	// it and always derives its key from the template body and delimiters. A parsed
+	// The go template path includes this label alongside the body and delimiters.
+	// It cannot override go template cache eligibility. A parsed
 	// go template keeps the Functions it was parsed with, and the caller cannot
 	// assert those are interchangeable across calls; see isGoTemplateCacheable.
 	CacheKey string `yaml:"-" json:"-"`
@@ -130,8 +130,8 @@ func short(v string) string {
 	return fmt.Sprintf("%s .. %d more lines", lines[0], len(lines)-1)
 }
 
-// autoCacheKey derives a cache key from the template fields and the env shape.
-// Used when the caller has not supplied an explicit CacheKey.
+// autoCacheKey encodes template fields and environment variable names with length prefixes.
+// Go templates always use it; CEL uses it when CacheKey is not supplied.
 func (t Template) autoCacheKey(env map[string]any) string {
 	envVars := make([]string, 0, len(env)+1)
 	for k := range env {
@@ -139,13 +139,14 @@ func (t Template) autoCacheKey(env map[string]any) string {
 	}
 	sort.Slice(envVars, func(i, j int) bool { return envVars[i] < envVars[j] })
 
-	return strings.Join(envVars, "-") +
-		t.RightDelim +
-		t.LeftDelim +
-		t.Expression +
-		t.Javascript +
-		t.JSONPath +
-		t.Template
+	fields := append([]string{t.CacheKey, t.RightDelim, t.LeftDelim, t.Expression, t.Javascript, t.JSONPath, t.Template}, envVars...)
+	var key strings.Builder
+	for _, field := range fields {
+		key.WriteString(strconv.Itoa(len(field)))
+		key.WriteByte(':')
+		key.WriteString(field)
+	}
+	return key.String()
 }
 
 // cacheKey returns the key to use for the program/template cache. If the caller
@@ -181,8 +182,8 @@ func (t Template) IsCacheable() bool {
 //
 // A parsed go template retains the Functions that were bound when it was parsed,
 // so reusing one would serve an earlier call's function values. An explicit
-// CacheKey cannot make that safe, and it also collapses each delimiter pass onto
-// a single entry, so the go template path ignores CacheKey entirely.
+// CacheKey cannot make that safe. Using it alone would also collapse delimiter
+// passes onto a single entry, so keys always include the body and delimiters.
 func (t Template) isGoTemplateCacheable() bool {
 	return len(t.CelEnvs) == 0 && len(t.Functions) == 0
 }
@@ -256,6 +257,7 @@ func RunTemplateContext(ctx commonsContext.Context, environment map[string]any, 
 	return "", nil
 }
 
+// runGoTemplate binds value functions and renders each selected delimiter pass in order.
 func runGoTemplate(ctx commonsContext.Context, template Template, environment map[string]any) (string, error) {
 	// Parse the gotemplate header once up-front so we can detect whether the
 	// header set delimiters (which overrides DelimSets to a single pass).
@@ -307,11 +309,17 @@ func runGoTemplate(ctx commonsContext.Context, template Template, environment ma
 	return val, nil
 }
 
+// goTemplate caches eligible parses by their full identity and executes with fresh input.
 func goTemplate(ctx commonsContext.Context, template Template, environment map[string]any) (string, error) {
+	template, err := parseAndStripTemplateHeader(template)
+	if err != nil {
+		return "", err
+	}
+	cacheKey := template.autoCacheKey(nil)
 	var tpl *gotemplate.Template
 
 	if template.isGoTemplateCacheable() {
-		cached, ok := goTemplateCache.Get(template.autoCacheKey(nil))
+		cached, ok := goTemplateCache.Get(cacheKey)
 		if ok {
 			if cachedTpl, ok := cached.(*gotemplate.Template); ok {
 				if ctx.Logger != nil && properties.On(false, "gomplate.log") {
@@ -323,11 +331,6 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 	}
 
 	if tpl == nil {
-		template, err := parseAndStripTemplateHeader(template)
-		if err != nil {
-			return "", err
-		}
-
 		tpl = gotemplate.New("")
 		if template.LeftDelim != "" {
 			tpl = tpl.Delims(template.LeftDelim, template.RightDelim)
@@ -347,7 +350,7 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 		}
 
 		if template.isGoTemplateCacheable() {
-			goTemplateCache.Set(template.autoCacheKey(nil), tpl, template.CacheTime)
+			goTemplateCache.Set(cacheKey, tpl, template.CacheTime)
 		}
 	}
 

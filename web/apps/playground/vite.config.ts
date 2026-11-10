@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, type UserConfig } from "vite";
 
-import { evalServer, findAvailablePort } from "./plugins/eval-server";
+import { evalServer } from "./plugins/eval-server";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(root, "../../..");
@@ -45,6 +45,7 @@ interface PlaygroundConfigOptions {
   evalPort: number;
 }
 
+/** Configures source aliases, dependency optimization and the evaluator proxy. */
 export function createPlaygroundConfig({
   command,
   mode,
@@ -86,12 +87,6 @@ export function createPlaygroundConfig({
   };
 }
 
-export default defineConfig(async ({ command, mode }) => {
-  const managesEvalServer = process.env.GOMPLATE_PLAYGROUND_SERVER !== "0";
-  const evalPort =
-    command === "serve" && mode !== "test" && managesEvalServer
-      ? await findAvailablePort({ host: EVAL_HOST, preferredPort: EVAL_PORT })
-      : EVAL_PORT;
-
-  return createPlaygroundConfig({ command, mode, clickySourceAvailable, evalPort });
-});
+export default defineConfig(({ command, mode }) =>
+  createPlaygroundConfig({ command, mode, clickySourceAvailable, evalPort: EVAL_PORT }),
+);

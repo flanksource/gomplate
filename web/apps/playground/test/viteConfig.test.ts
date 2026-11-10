@@ -1,7 +1,5 @@
-import { createServer } from "node:net";
 import { describe, expect, it } from "vitest";
 
-import { findAvailablePort } from "../plugins/eval-server";
 import { createPlaygroundConfig } from "../vite.config";
 
 const SELECTED_EVAL_PORT = 49_153;
@@ -39,26 +37,4 @@ describe("playground Vite configuration", () => {
     });
   });
 
-  it("selects another loopback port when the preferred port is occupied", async () => {
-    const occupied = createServer();
-    await new Promise<void>((resolve, reject) => {
-      occupied.once("error", reject);
-      occupied.listen(0, "127.0.0.1", resolve);
-    });
-
-    try {
-      const address = occupied.address();
-      if (!address || typeof address === "string") throw new Error("test listener has no TCP port");
-      const selectedPort = await findAvailablePort({
-        host: "127.0.0.1",
-        preferredPort: address.port,
-      });
-
-      expect(selectedPort).not.toBe(address.port);
-    } finally {
-      await new Promise<void>((resolve, reject) => {
-        occupied.close((error) => (error ? reject(error) : resolve()));
-      });
-    }
-  });
 });

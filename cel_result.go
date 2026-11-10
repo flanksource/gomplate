@@ -10,6 +10,7 @@ import (
 
 // CELValue unwraps CEL-created aggregates without converting numbers through
 // JSON. Host-provided native objects retain their original type.
+// Maps with keys that Go cannot hash retain their CEL representation.
 func CELValue(out ref.Val) any {
 	if out == types.NullValue {
 		return nil
@@ -30,6 +31,9 @@ func CELValue(out ref.Val) any {
 		for iterator := value.Iterator(); iterator.HasNext() == types.True; {
 			key := iterator.Next()
 			nativeKey, nativeValue := CELValue(key), CELValue(value.Get(key))
+			if nativeKey != nil && !reflect.ValueOf(nativeKey).Comparable() {
+				return out.Value()
+			}
 			keys[nativeKey] = nativeValue
 			if name, ok := nativeKey.(string); ok {
 				strings[name] = nativeValue
