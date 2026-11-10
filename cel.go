@@ -14,6 +14,7 @@ import (
 	"github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/logger"
 
+	"github.com/flanksource/gomplate/v4/celvalues"
 	"github.com/flanksource/gomplate/v4/conv"
 	"github.com/flanksource/gomplate/v4/funcs"
 	"github.com/flanksource/gomplate/v4/kubernetes"
@@ -39,11 +40,13 @@ func staticCelEnvOptions() []cel.EnvOption {
 	opts = append(opts, ext.Strings(), ext.Encoders(), ext.Lists(), ext.Math(), ext.Sets())
 	opts = append(opts, cel.StdLib())
 	opts = append(opts, cel.OptionalTypes(cel.OptionalTypesVersion(1)))
-	opts = append(opts, nilsafe.Library(nilsafe.WithZeroValues()))
 	opts = append(opts, strings.Library...)
 	opts = append(opts, getGoTemplateCelFunction())
 	opts = append(opts, getDebugCelFunction())
 	opts = append(opts, getFoldCelLibrary())
+	opts = append(opts, collectionCelOptions()...)
+	opts = append(opts, decimalSumOption())
+	opts = append(opts, celvalues.Library())
 	opts = append(opts, cel.RegexProgramSizeLimit(celRegexProgramSizeLimit))
 	return opts
 }
@@ -61,10 +64,18 @@ func staticCelEnvOptions() []cel.EnvOption {
 //
 // Env.Extend uses copy-on-write and never mutates the receiver, so the cached
 // base env is safe to share across goroutines.
-var baseCelEnv = sync.OnceValues(func() (*cel.Env, error) {
+var strictBaseCelEnv = sync.OnceValues(func() (*cel.Env, error) {
 	opts := staticCelEnvOptions()
 	opts = append(opts, cel.EagerlyValidateDeclarations(true))
 	return cel.NewEnv(opts...)
+})
+
+var baseCelEnv = sync.OnceValues(func() (*cel.Env, error) {
+	base, err := strictBaseCelEnv()
+	if err != nil {
+		return nil, err
+	}
+	return base.Extend(nilsafe.Library(nilsafe.WithZeroValues()))
 })
 
 // GetCelEnv returns the full set of CEL env options: the static options, any
@@ -76,13 +87,14 @@ var baseCelEnv = sync.OnceValues(func() (*cel.Env, error) {
 // option set via staticCelEnvOptions.
 func GetCelEnv(environment map[string]any) []cel.EnvOption {
 	opts := staticCelEnvOptions()
+	opts = append(opts, nilsafe.Library(nilsafe.WithZeroValues()))
 	if nativeTypes := currentNativeTypes(); nativeTypes.envOption != nil {
 		opts = append(opts, nativeTypes.envOption)
 	}
 
 	// Load input as variables
 	for k := range environment {
-		opts = append(opts, cel.Variable(k, cel.AnyType))
+		opts = append(opts, cel.Variable(k, cel.DynType))
 	}
 
 	return opts
@@ -98,6 +110,9 @@ func GetCelEnv(environment map[string]any) []cel.EnvOption {
 // template's own Functions and CelEnvs as undeclared references.
 func CompileEnvOptions(environment map[string]any, template Template) []cel.EnvOption {
 	opts := staticCelEnvOptions()
+	if !template.Strict {
+		opts = append(opts, nilsafe.Library(nilsafe.WithZeroValues()))
+	}
 	return append(opts, celEnvOptions(environment, template, currentNativeTypes())...)
 }
 
