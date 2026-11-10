@@ -3,12 +3,12 @@ module github.com/flanksource/gomplate/v4
 go 1.26.10
 
 require (
-	cel.dev/cel-go v0.32.0
+	cel.dev/cel-go v0.33.2
 	github.com/Masterminds/goutils v1.1.1
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/antlr4-go/antlr/v4 v4.13.1
-	github.com/flanksource/commons v1.63.0
+	github.com/flanksource/commons v1.64.0
 	github.com/flanksource/is-healthy v1.0.93
 	github.com/flanksource/kubectl-neat v1.0.4
 	github.com/google/go-cmp v0.7.0
@@ -57,6 +57,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/pprof v0.0.0-20260402051712-545e8a4df936 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
+	github.com/govalues/decimal v0.1.36 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/itchyny/timefmt-go v0.1.8 // indirect
@@ -80,6 +81,7 @@ require (
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
+	github.com/woodsbury/decimal128 v1.4.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.opentelemetry.io/otel v1.44.0 // indirect
