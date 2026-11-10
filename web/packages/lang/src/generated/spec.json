@@ -75,6 +75,11 @@
         ]
       },
       {
+        "name": "distinctBy",
+        "argCount": 2,
+        "receiverStyle": true
+      },
+      {
         "name": "exists",
         "argCount": 2,
         "receiverStyle": true,
@@ -136,6 +141,11 @@
         "receiverStyle": true
       },
       {
+        "name": "groupBy",
+        "argCount": 2,
+        "receiverStyle": true
+      },
+      {
         "name": "has",
         "argCount": 1,
         "receiverStyle": false,
@@ -145,6 +155,16 @@
           "// test whether the 'key_name' is set on the map which defines it\nhas({'key_name': 'value'}.key_name) // true",
           "// test whether the 'id' field is set to a non-default value on the Expr{} message literal\nhas(Expr{}.id) // false"
         ]
+      },
+      {
+        "name": "joinBy",
+        "argCount": 5,
+        "receiverStyle": true
+      },
+      {
+        "name": "latestBy",
+        "argCount": 2,
+        "receiverStyle": true
       },
       {
         "name": "least",
@@ -3215,6 +3235,20 @@
         ]
       },
       {
+        "name": "one",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "collection_one",
+            "args": [
+              "list(dyn)"
+            ],
+            "result": "dyn",
+            "member": true
+          }
+        ]
+      },
+      {
         "name": "optional.none",
         "namespace": "optional",
         "doc": "singleton value representing an optional without a value",
@@ -4077,6 +4111,14 @@
         "name": "sum",
         "memberOnly": true,
         "overloads": [
+          {
+            "id": "collection_sum_decimal_strings",
+            "args": [
+              "list(string)"
+            ],
+            "result": "string",
+            "member": true
+          },
           {
             "id": "list_double_sum_double",
             "args": [

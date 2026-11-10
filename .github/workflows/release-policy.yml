@@ -1,0 +1,27 @@
+name: Release policy
+
+on:
+  pull_request:
+    branches: [main, 3.x]
+  push:
+    branches: [main, 3.x]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        with:
+          node-version: 24
+      - name: Install release verification dependencies
+        run: npm install --prefix .tmp/release-check --package-lock=false --no-audit --no-fund semantic-release@25.0.9 @semantic-release/commit-analyzer@13.0.1 yaml@2.8.1 semver@7.7.2
+      - name: Verify candidate release and branch range
+        env:
+          RELEASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+        run: node hack/verify-release.mjs "$RELEASE_BRANCH"
