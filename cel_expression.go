@@ -11,6 +11,7 @@ import (
 	"cel.dev/cel-go/common/types/ref"
 	commonsContext "github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/properties"
+	"github.com/flanksource/gomplate/v4/celvalues"
 	"github.com/patrickmn/go-cache"
 	"github.com/samber/oops"
 )
@@ -68,11 +69,14 @@ func RunExpressionContext(ctx commonsContext.Context, environment map[string]any
 	if ctx.Logger != nil && out.Value() != template.Expression && properties.On(false, "gomplate.log") {
 		ctx.Logger.V(4).Infof("templated %s => %v", template.ShortString(), out)
 	}
-	return celResultValue(out), nil
+	return CELValue(out), nil
 }
 
 func compileCELProgram(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot, trackState bool) (cel.Program, *cel.Ast, error) {
 	base, err := baseCelEnv()
+	if template.Strict {
+		base, err = strictBaseCelEnv()
+	}
 	if err != nil {
 		return nil, nil, err
 	}
@@ -114,7 +118,7 @@ func celEnvOptions(data map[string]any, template Template, nativeTypes *nativeTy
 		envOptions = append(envOptions, nativeTypes.envOption)
 	}
 	for key := range data {
-		envOptions = append(envOptions, cel.Variable(key, cel.AnyType))
+		envOptions = append(envOptions, cel.Variable(key, cel.DynType))
 	}
 	for name, function := range template.Functions {
 		functionName := name
@@ -128,7 +132,7 @@ func celEnvOptions(data map[string]any, template Template, nativeTypes *nativeTy
 				if !ok {
 					return types.WrapErr(fmt.Errorf("%s is expected to be of type func() any", functionName))
 				}
-				return types.DefaultTypeAdapter.NativeToValue(function())
+				return celvalues.NewAdapter(types.DefaultTypeAdapter).NativeToValue(function())
 			}),
 		)))
 	}
@@ -137,8 +141,12 @@ func celEnvOptions(data map[string]any, template Template, nativeTypes *nativeTy
 }
 
 func (t Template) celCacheKey(environment map[string]any, nativeTypeGeneration uint64) string {
-	if nativeTypeGeneration == 0 {
-		return t.cacheKey(environment)
+	profile := ""
+	if t.Strict {
+		profile = "strict:"
 	}
-	return strconv.FormatUint(nativeTypeGeneration, 10) + ":" + t.cacheKey(environment)
+	if nativeTypeGeneration == 0 {
+		return profile + t.cacheKey(environment)
+	}
+	return profile + strconv.FormatUint(nativeTypeGeneration, 10) + ":" + t.cacheKey(environment)
 }

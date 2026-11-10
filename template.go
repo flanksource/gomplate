@@ -56,6 +56,7 @@ type Template struct {
 	// zero-arg function in addition to dot-access. Enables {{ foo }} alongside
 	// the standard {{ .foo }}.
 	ValueFunctions bool `yaml:"-" json:"-"`
+	Strict         bool `yaml:"-" json:"-"`
 
 	// Pass in additional cel-env options like functions
 	// that aren't simple enough to be included in Functions

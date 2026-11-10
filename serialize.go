@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"cel.dev/cel-go/common/types/ref"
+	"github.com/flanksource/commons/bigdecimal"
+	"github.com/flanksource/commons/decimal"
 	"github.com/google/uuid"
 	"github.com/ohler55/ojg"
 	"github.com/ohler55/ojg/alt"
@@ -60,6 +62,8 @@ func Serialize(in map[string]any) (out map[string]any, err error) {
 		}
 
 		switch v := value.(type) {
+		case decimal.Money, bigdecimal.Money, *decimal.Money, *bigdecimal.Money:
+			add(v)
 		case ref.Val:
 			add(v)
 		case AsMapper:
