@@ -38,7 +38,7 @@ func (library) CompileOptions() []cel.EnvOption {
 			options = append(options, comparisonDeclarations(scalar, peer)...)
 		}
 	}
-	return options
+	return append(options, arithmeticDeclarations()...)
 }
 
 func comparisonDeclarations(scalar, peer *cel.Type) []cel.EnvOption {
@@ -59,21 +59,31 @@ func comparisonDeclarations(scalar, peer *cel.Type) []cel.EnvOption {
 func (library) ProgramOptions() []cel.ProgramOption {
 	return []cel.ProgramOption{cel.CustomDecoratorV2(func(value interpreter.InterpretableV2) (interpreter.InterpretableV2, error) {
 		call, ok := value.(interpreter.InterpretableCall)
-		if !ok || len(call.Args()) != 2 || !isComparison(call.Function()) {
+		if !ok {
 			return value, nil
 		}
-		bindings, err := nativeComparisons()
+		arithmetic := isArithmetic(call.Function(), len(call.Args()))
+		if !arithmetic && (len(call.Args()) != 2 || !isComparison(call.Function())) {
+			return value, nil
+		}
+		bindings, err := nativeOperators()
 		if err != nil {
 			return nil, err
+		}
+		if arithmetic {
+			return &arithmeticCall{InterpretableCall: call, native: bindings[call.Function()]}, nil
 		}
 		return &comparisonCall{InterpretableCall: call, native: bindings[call.Function()]}, nil
 	})}
 }
 
-var nativeComparisons = sync.OnceValues(func() (map[string]*functions.Overload, error) {
-	bindings := make(map[string]*functions.Overload, 4)
+// nativeOperators holds CEL's own ordering and arithmetic bindings, used for operands that are not Date or Money.
+var nativeOperators = sync.OnceValues(func() (map[string]*functions.Overload, error) {
+	bindings := make(map[string]*functions.Overload, 9)
 	for _, function := range stdlib.Functions() {
-		if !isComparison(function.Name()) || isEquality(function.Name()) {
+		name := function.Name()
+		unary := isArithmetic(name, 1)
+		if !unary && !isArithmetic(name, 2) && (!isComparison(name) || isEquality(name)) {
 			continue
 		}
 		overloads, err := function.Bindings()
@@ -81,12 +91,12 @@ var nativeComparisons = sync.OnceValues(func() (map[string]*functions.Overload, 
 			return nil, err
 		}
 		for _, overload := range overloads {
-			if overload.Operator == function.Name() && overload.Binary != nil {
-				bindings[function.Name()] = overload
+			if overload.Operator == name && ((unary && overload.Unary != nil) || (!unary && overload.Binary != nil)) {
+				bindings[name] = overload
 			}
 		}
-		if bindings[function.Name()] == nil {
-			return nil, fmt.Errorf("CEL comparison %s has no binary binding", function.Name())
+		if bindings[name] == nil {
+			return nil, fmt.Errorf("CEL operator %s has no singleton binding", name)
 		}
 	}
 	return bindings, nil

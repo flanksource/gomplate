@@ -113,10 +113,10 @@ func numericOperand(other ref.Val) (string, error) {
 		return strconv.FormatUint(uint64(v), 10), nil
 	case types.Double:
 		if math.IsNaN(float64(v)) || math.IsInf(float64(v), 0) {
-			return "", fmt.Errorf("money comparison requires a finite number")
+			return "", fmt.Errorf("money operand must be a finite number")
 		}
 		return strconv.FormatFloat(float64(v), 'f', -1, 64), nil
 	default:
-		return "", fmt.Errorf("money comparison expects money or a number, got %s", other.Type().TypeName())
+		return "", fmt.Errorf("money operand expects money or a number, got %s", other.Type().TypeName())
 	}
 }
