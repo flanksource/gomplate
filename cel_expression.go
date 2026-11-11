@@ -3,13 +3,14 @@ package gomplate
 import (
 	"fmt"
 	"maps"
+	"slices"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/common/types"
-	"cel.dev/cel-go/common/types/ref"
 	commonsContext "github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/properties"
 	"github.com/flanksource/gomplate/v4/celvalues"
@@ -32,13 +33,17 @@ func RunExpressionContext(ctx commonsContext.Context, environment map[string]any
 		defer tracker.abort()
 	}
 
+	functions := template.celFunctions()
+	impls, err := celFunctionImpls(functions)
+	if err != nil {
+		return nil, oops.With("template", template.Expression).Wrap(err)
+	}
 	nativeTypes := currentNativeTypes()
 	data := celInput(environment, nativeTypes)
-	cacheKey := template.celCacheKey(environment, nativeTypes.generation)
+	cacheKey := template.celCacheKey(environment, nativeTypes.generation, functions)
 
 	var program cel.Program
 	var ast *cel.Ast
-	var err error
 	if tracker == nil && template.IsCacheable() {
 		cached, found := celExpressionCache.Get(cacheKey)
 		if found {
@@ -58,7 +63,13 @@ func RunExpressionContext(ctx commonsContext.Context, environment map[string]any
 		}
 	}
 
-	out, details, err := program.Eval(data)
+	var activation any = data
+	if impls != nil {
+		if activation, err = cel.FunctionVars(data, impls); err != nil {
+			return nil, oops.With("template", template.Expression).Wrap(err)
+		}
+	}
+	out, details, err := program.Eval(activation)
 	if tracker != nil {
 		tracker.complete(ast, details, out)
 	}
@@ -93,16 +104,7 @@ func celInput(environment map[string]any, nativeTypes *nativeTypeSnapshot) map[s
 }
 
 func compileCELProgram(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot, trackState bool) (cel.Program, *cel.Ast, error) {
-	base, err := baseCelEnv()
-	if template.Strict {
-		base, err = strictBaseCelEnv()
-	}
-	if err != nil {
-		return nil, nil, err
-	}
-
-	envOptions := celEnvOptions(data, template, nativeTypes)
-	env, err := base.Extend(envOptions...)
+	env, err := extendedCelEnv(data, template, nativeTypes)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -132,41 +134,72 @@ func compileCELProgram(data map[string]any, template Template, nativeTypes *nati
 	return program, ast, nil
 }
 
-func celEnvOptions(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot) []cel.EnvOption {
-	envOptions := make([]cel.EnvOption, 0, len(data)+len(template.Functions)+len(template.CelEnvs)+1)
+var (
+	extendedCelEnvCache = cache.New(time.Hour, time.Hour)
+	// extendedCelEnvBuilds counts the environments built for the cache, for its specs.
+	extendedCelEnvBuilds atomic.Int64
+)
+
+// extendedCelEnv layers the per-call declarations over the base environment. Declarations
+// alone decide the result, so it is cached by them; CelEnvs are opaque and never cached.
+func extendedCelEnv(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot) (*cel.Env, error) {
+	functions := template.celFunctions()
+	base, err := baseCelEnv()
+	if template.Strict {
+		base, err = strictBaseCelEnv()
+	}
+	if err != nil {
+		return nil, err
+	}
+	options := celEnvOptions(data, template, nativeTypes, functions)
+	if len(template.CelEnvs) > 0 {
+		return base.Extend(options...)
+	}
+
+	key := celEnvCacheKey(data, template.Strict, nativeTypes.generation, functions)
+	if cached, found := extendedCelEnvCache.Get(key); found {
+		return cached.(*cel.Env), nil
+	}
+	env, err := base.Extend(options...)
+	if err != nil {
+		return nil, err
+	}
+	extendedCelEnvBuilds.Add(1)
+	extendedCelEnvCache.SetDefault(key, env)
+	return env, nil
+}
+
+func celEnvCacheKey(data map[string]any, strict bool, nativeTypeGeneration uint64, functions []CelFunction) string {
+	names := slices.Sorted(maps.Keys(data))
+	return fmt.Sprintf("%t:%d:%s:%s", strict, nativeTypeGeneration, strings.Join(names, ","), celFunctionSignature(functions))
+}
+
+func celEnvOptions(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot, functions []CelFunction) []cel.EnvOption {
+	envOptions := make([]cel.EnvOption, 0, len(data)+len(functions)+len(template.CelEnvs)+1)
 	if nativeTypes.envOption != nil {
 		envOptions = append(envOptions, nativeTypes.envOption)
 	}
 	for key := range data {
 		envOptions = append(envOptions, cel.Variable(key, cel.DynType))
 	}
-	for name, function := range template.Functions {
-		functionName := name
-		registeredFunction := function
-		envOptions = append(envOptions, cel.Function(functionName, cel.Overload(
-			functionName,
-			nil,
-			cel.AnyType,
-			cel.FunctionBinding(func(_ ...ref.Val) ref.Val {
-				function, ok := registeredFunction.(func() any)
-				if !ok {
-					return types.WrapErr(fmt.Errorf("%s is expected to be of type func() any", functionName))
-				}
-				return celvalues.NewAdapter(types.DefaultTypeAdapter).NativeToValue(function())
-			}),
-		)))
-	}
+	envOptions = append(envOptions, celFunctionDeclarations(functions)...)
 	envOptions = append(envOptions, template.CelEnvs...)
 	return envOptions
 }
 
-func (t Template) celCacheKey(environment map[string]any, nativeTypeGeneration uint64) string {
+// celCacheKey keys the program cache. The auto-derived key includes the function declarations,
+// so two templates that differ only in them never share a program; an explicit CacheKey is the
+// caller's assertion and is used as given.
+func (t Template) celCacheKey(environment map[string]any, nativeTypeGeneration uint64, functions []CelFunction) string {
 	profile := ""
 	if t.Strict {
 		profile = "strict:"
 	}
-	if nativeTypeGeneration == 0 {
+	if nativeTypeGeneration != 0 {
+		profile += strconv.FormatUint(nativeTypeGeneration, 10) + ":"
+	}
+	if t.CacheKey != "" || len(functions) == 0 {
 		return profile + t.cacheKey(environment)
 	}
-	return profile + strconv.FormatUint(nativeTypeGeneration, 10) + ":" + t.cacheKey(environment)
+	return profile + t.cacheKey(environment) + "\x00" + celFunctionSignature(functions)
 }

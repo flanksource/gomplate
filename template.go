@@ -58,15 +58,20 @@ type Template struct {
 	ValueFunctions bool `yaml:"-" json:"-"`
 	Strict         bool `yaml:"-" json:"-"`
 
-	// Pass in additional cel-env options like functions
-	// that aren't simple enough to be included in Functions
+	// CelEnvs are additional, opaque cel-env options. A template with CelEnvs is
+	// never cached: its compiled program could hold a binding that closes over
+	// an earlier call's state. Declare context-bound functions as CelFunctions.
 	CelEnvs []cel.EnvOption `yaml:"-" json:"-"`
+
+	// CelFunctions are CEL functions whose implementations are bound on each
+	// evaluation, so templates using them are still cached by their declarations.
+	CelFunctions []CelFunction `yaml:"-" json:"-"`
 
 	// A map of functions that are accessible to cel expressions
 	// and go templates.
 	// NOTE: For cel expressions, the functions must be of type func() any.
 	// If any other function type is used, an error will be returned.
-	// Opt to CelEnvs for those cases.
+	// Opt to CelFunctions for those cases.
 	Functions map[string]any `yaml:"-" json:"-"`
 
 	// CacheKey, when non-empty, is used as the program-cache key for this
@@ -159,21 +164,20 @@ func (t Template) cacheKey(env map[string]any) string {
 
 func (t Template) IsCacheable() bool {
 	// An explicit CacheKey is the caller asserting the program is reusable
-	// regardless of Functions/CelEnvs identity.
+	// regardless of CelEnvs identity.
 	if t.CacheKey != "" {
 		return true
 	}
 
-	// Note: If custom functions are provided then we don't cache the template
-	// because it's not possible to uniquely identify a function to be used as a cache key.
-	// Pointers don't work well because different functions, that are behaviourly different,
-	// but syntatically identical, will have the same pointer value.
+	// Functions and CelFunctions are declared with late bindings and supplied on
+	// each evaluation, so they never live in a cached program. CelEnvs are opaque
+	// options that may bind a closure into the program, and a function value cannot
+	// be identified to key on.
 	//
 	// Reference: https://pkg.go.dev/reflect#Value.Pointer
 	// 	> If v's Kind is Func, the returned pointer is an underlying code pointer,
 	//  > but not necessarily enough to identify a single function uniquely.
-	// 	> The only guarantee is that the result is zero if and only if v is a nil func Value.
-	return len(t.CelEnvs) == 0 && len(t.Functions) == 0
+	return len(t.CelEnvs) == 0
 }
 
 // isGoTemplateCacheable reports whether a parsed go template may be reused across
