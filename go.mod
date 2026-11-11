@@ -1,6 +1,6 @@
 module github.com/flanksource/gomplate/v4
 
-go 1.26.10
+go 1.27.1
 
 require (
 	cel.dev/cel-go v0.33.2
@@ -15,6 +15,9 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gosimple/slug v1.15.0
 	github.com/hairyhenderson/toml v0.4.2-0.20210923231440-40456b8e66cf
+	// TODO: replace with gopkg.in/yaml.v3 after https://github.com/go-yaml/yaml/pull/862
+	// is merged
+	github.com/hairyhenderson/yaml v0.0.0-20220618171115-2d35fca545ce
 	github.com/itchyny/gojq v0.12.19
 	github.com/jmespath/go-jmespath v0.4.1-0.20220621161143-b0104c826a24
 	github.com/mitchellh/reflectwalk v1.0.2
@@ -37,10 +40,6 @@ require (
 	k8s.io/apimachinery v0.36.2
 	sigs.k8s.io/yaml v1.6.0
 )
-
-// TODO: replace with gopkg.in/yaml.v3 after https://github.com/go-yaml/yaml/pull/862
-// is merged
-require github.com/hairyhenderson/yaml v0.0.0-20220618171115-2d35fca545ce
 
 require (
 	cel.dev/expr v0.25.1 // indirect
