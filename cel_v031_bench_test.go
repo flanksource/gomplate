@@ -40,10 +40,7 @@ func BenchmarkCELProgramEvaluation(b *testing.B) {
 		for _, optimize := range []bool{false, true} {
 			name := fmt.Sprintf("expression=%s/optimized=%t", benchmark.name, optimize)
 			b.Run(name, func(b *testing.B) {
-				data, err := serializeForCEL(benchmark.data, currentNativeTypes())
-				if err != nil {
-					b.Fatal(err)
-				}
+				data := celInput(benchmark.data, currentNativeTypes())
 				program, err := compileBenchmarkCELProgram(data, benchmark.expression, optimize)
 				if err != nil {
 					b.Fatal(err)

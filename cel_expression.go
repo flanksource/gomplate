@@ -2,6 +2,7 @@ package gomplate
 
 import (
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 	"time"
@@ -32,14 +33,12 @@ func RunExpressionContext(ctx commonsContext.Context, environment map[string]any
 	}
 
 	nativeTypes := currentNativeTypes()
-	data, err := serializeForCEL(environment, nativeTypes)
-	if err != nil {
-		return "", err
-	}
+	data := celInput(environment, nativeTypes)
 	cacheKey := template.celCacheKey(environment, nativeTypes.generation)
 
 	var program cel.Program
 	var ast *cel.Ast
+	var err error
 	if tracker == nil && template.IsCacheable() {
 		cached, found := celExpressionCache.Get(cacheKey)
 		if found {
@@ -70,6 +69,27 @@ func RunExpressionContext(ctx commonsContext.Context, environment map[string]any
 		ctx.Logger.V(4).Infof("templated %s => %v", template.ShortString(), out)
 	}
 	return CELValue(out), nil
+}
+
+// celInput presents the environment to CEL without copying it: each value is wrapped in its
+// CEL form, and the maps, lists and structs beneath it are converted only as an expression
+// reads them. Registered native types are left for the environment's native type provider.
+func celInput(environment map[string]any, nativeTypes *nativeTypeSnapshot) map[string]any {
+	var data map[string]any
+	adapter := celvalues.NewAdapter(types.DefaultTypeAdapter)
+	for key, value := range environment {
+		if nativeTypes.preserves(value) {
+			continue
+		}
+		if data == nil {
+			data = maps.Clone(environment)
+		}
+		data[key] = adapter.NativeToValue(value)
+	}
+	if data == nil {
+		return environment // every value is a registered native type, or there are none
+	}
+	return data
 }
 
 func compileCELProgram(data map[string]any, template Template, nativeTypes *nativeTypeSnapshot, trackState bool) (cel.Program, *cel.Ast, error) {

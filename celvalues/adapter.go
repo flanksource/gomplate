@@ -2,6 +2,7 @@ package celvalues
 
 import (
 	"reflect"
+	"time"
 
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/common/types"
@@ -9,6 +10,7 @@ import (
 	"cel.dev/cel-go/common/types/traits"
 	"github.com/flanksource/commons/bigdecimal"
 	"github.com/flanksource/commons/decimal"
+	"google.golang.org/protobuf/proto"
 )
 
 // NewAdapter extends an existing CEL adapter with Commons Money support.
@@ -58,16 +60,11 @@ func (a moneyAdapter) NativeToValue(value any) ref.Val {
 		return moneyValue{native: *v}
 	case ref.Val:
 		return v
+	case time.Time, time.Duration, proto.Message:
+		return a.base.NativeToValue(value)
 	}
-	if value != nil {
-		switch reflect.TypeOf(value).Kind() {
-		case reflect.Map:
-			return types.NewDynamicMap(a, value)
-		case reflect.Slice, reflect.Array:
-			if _, ok := value.([]byte); !ok {
-				return types.NewDynamicList(a, value)
-			}
-		}
+	if converted, ok := a.hostValue(value); ok {
+		return converted
 	}
 	return a.base.NativeToValue(value)
 }
