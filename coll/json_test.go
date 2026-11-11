@@ -183,6 +183,11 @@ func TestJQ_typeConversions(t *testing.T) {
 	assert.NoError(t, err)
 	assert.EqualValues(t, "hello", out)
 
+	// JSON bytes are queried as the document they encode, like a JSON string
+	out, err = JQ(ctx, ".Address.city_name", []byte(`{"Address":{"city_name":"Kathmandu"}}`))
+	assert.NoError(t, err)
+	assert.EqualValues(t, "Kathmandu", out)
+
 	out, err = JQ(ctx, ".", 1234)
 	assert.NoError(t, err)
 	assert.EqualValues(t, 1234, out)

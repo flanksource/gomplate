@@ -22,6 +22,11 @@ func JQ(ctx context.Context, jqExpr string, in interface{}) (interface{}, error)
 		return nil, fmt.Errorf("jq parsing expression %q: %w", jqExpr, err)
 	}
 
+	// gojq cannot traverse []byte, so bytes are read as text, like a string
+	if inBytes, ok := in.([]byte); ok {
+		in = string(inBytes)
+	}
+
 	// convert input to a supported type, if necessary
 	in, err = jqConvertType(in)
 	if err != nil {
