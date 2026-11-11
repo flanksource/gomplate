@@ -1,6 +1,6 @@
 module github.com/flanksource/gomplate/v4
 
-go 1.27.1
+go 1.27.4
 
 require (
 	cel.dev/cel-go v0.33.2

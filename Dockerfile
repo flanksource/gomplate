@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.3.1-labs
 ARG TARGETOS=linux
-FROM --platform=linux/amd64 golang:1.27-alpine@sha256:eb61c3873c97416fff0116553fff65d67a3549f72e11d9758849a689cdd8b523 AS build
+FROM --platform=linux/amd64 golang:1.27.4-alpine@sha256:0a5f7fe796599ff487605987432e7619ae45beeb2fba4c2ce0b907879932aebf AS build
 
 ARG TARGETOS
 ARG TARGETARCH
