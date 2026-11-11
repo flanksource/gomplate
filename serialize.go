@@ -41,7 +41,11 @@ type nativeType struct {
 
 // Serialize iterates over each key-value pair in the input map
 // serializes any struct value to map[string]any.
-func Serialize(in map[string]any) (out map[string]any, err error) {
+func Serialize(in map[string]any) (map[string]any, error) {
+	return serialize(in, false)
+}
+
+func serialize(in map[string]any, preserveBytes bool) (out map[string]any, err error) {
 	if in == nil {
 		return nil, nil
 	}
@@ -62,6 +66,10 @@ func Serialize(in map[string]any) (out map[string]any, err error) {
 		}
 
 		switch v := value.(type) {
+		case []byte:
+			if preserveBytes {
+				add(v)
+			}
 		case decimal.Money, bigdecimal.Money, *decimal.Money, *bigdecimal.Money:
 			add(v)
 		case ref.Val:
@@ -93,7 +101,7 @@ func Serialize(in map[string]any) (out map[string]any, err error) {
 
 func serializeForCEL(in map[string]any, nativeTypes *nativeTypeSnapshot) (map[string]any, error) {
 	if in == nil || nativeTypes == nil || len(nativeTypes.reflectTypes) == 0 {
-		return Serialize(in)
+		return serialize(in, true)
 	}
 
 	preserved := 0
@@ -103,7 +111,7 @@ func serializeForCEL(in map[string]any, nativeTypes *nativeTypeSnapshot) (map[st
 		}
 	}
 	if preserved == 0 {
-		return Serialize(in)
+		return serialize(in, true)
 	}
 	if preserved == len(in) {
 		return in, nil
@@ -115,7 +123,7 @@ func serializeForCEL(in map[string]any, nativeTypes *nativeTypeSnapshot) (map[st
 			serializedInput[key] = value
 		}
 	}
-	out, err := Serialize(serializedInput)
+	out, err := serialize(serializedInput, true)
 	if err != nil {
 		return nil, err
 	}

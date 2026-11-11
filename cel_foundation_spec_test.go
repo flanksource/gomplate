@@ -36,4 +36,17 @@ var _ = Describe("CEL evaluation foundation", func() {
 		Expect(value).To(Equal(int64(9007199254740993)))
 		Expect(environment["rows"].([]any)[0].(map[string]any)["native"]).To(BeIdenticalTo(native))
 	})
+
+	It("preserves captured CEL bytes when supplied to another expression", func() {
+		captured, err := RunExpression(nil, Template{Expression: `b"abc"`, Strict: true})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(captured).To(Equal([]byte("abc")))
+		for _, strict := range []bool{false, true} {
+			value, err := RunExpression(map[string]any{"saved": map[string]any{"payload": captured}}, Template{
+				Expression: `saved.payload == b"abc"`, Strict: strict,
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(value).To(BeTrue())
+		}
+	})
 })
