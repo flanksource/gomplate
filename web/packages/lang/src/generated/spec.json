@@ -18,7 +18,8 @@
       "strings",
       "test",
       "time",
-      "uuid"
+      "uuid",
+      "yaml"
     ],
     "keywords": [
       "as",
@@ -73,6 +74,11 @@
           "{'a': 1, 'b': 2, 'c': 3}.all(key, key != 'b') // false",
           "// an empty list or map as the range will result in a trivially true result\n[].all(x, x \u003e 0) // true"
         ]
+      },
+      {
+        "name": "distinctBy",
+        "argCount": 2,
+        "receiverStyle": true
       },
       {
         "name": "exists",
@@ -136,6 +142,11 @@
         "receiverStyle": true
       },
       {
+        "name": "groupBy",
+        "argCount": 2,
+        "receiverStyle": true
+      },
+      {
         "name": "has",
         "argCount": 1,
         "receiverStyle": false,
@@ -145,6 +156,16 @@
           "// test whether the 'key_name' is set on the map which defines it\nhas({'key_name': 'value'}.key_name) // true",
           "// test whether the 'id' field is set to a non-default value on the Expr{} message literal\nhas(Expr{}.id) // false"
         ]
+      },
+      {
+        "name": "joinBy",
+        "argCount": 5,
+        "receiverStyle": true
+      },
+      {
+        "name": "latestBy",
+        "argCount": 2,
+        "receiverStyle": true
       },
       {
         "name": "least",
@@ -575,11 +596,37 @@
         ]
       },
       {
+        "name": "base64.decodeUrl",
+        "namespace": "base64",
+        "overloads": [
+          {
+            "id": "base64_decode_url_string",
+            "args": [
+              "string"
+            ],
+            "result": "bytes"
+          }
+        ]
+      },
+      {
         "name": "base64.encode",
         "namespace": "base64",
         "overloads": [
           {
             "id": "base64_encode_bytes",
+            "args": [
+              "bytes"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "base64.encodeUrl",
+        "namespace": "base64",
+        "overloads": [
+          {
+            "id": "base64_encode_url_bytes",
             "args": [
               "bytes"
             ],
@@ -1811,6 +1858,66 @@
         ]
       },
       {
+        "name": "hasAll",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_hasAll_list",
+            "args": [
+              "list(\u003cT\u003e)",
+              "list(\u003cT\u003e)"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "hasAny",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_hasAny_list",
+            "args": [
+              "list(\u003cT\u003e)",
+              "list(\u003cT\u003e)"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "hasExactly",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_hasExactly_list",
+            "args": [
+              "list(\u003cT\u003e)",
+              "list(\u003cT\u003e)"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ]
+      },
+      {
+        "name": "hasOnly",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "list_hasOnly_list",
+            "args": [
+              "list(\u003cT\u003e)",
+              "list(\u003cT\u003e)"
+            ],
+            "result": "bool",
+            "member": true
+          }
+        ]
+      },
+      {
         "name": "hasValue",
         "memberOnly": true,
         "doc": "determine whether the optional contains a value",
@@ -2125,6 +2232,27 @@
               "dyn"
             ],
             "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "json.parse",
+        "namespace": "json",
+        "overloads": [
+          {
+            "id": "json_parse_string",
+            "args": [
+              "string"
+            ],
+            "result": "optional_type(dyn)"
+          },
+          {
+            "id": "json_parse_string_type",
+            "args": [
+              "string",
+              "type(\u003cT\u003e)"
+            ],
+            "result": "optional_type(\u003cT\u003e)"
           }
         ]
       },
@@ -3215,6 +3343,20 @@
         ]
       },
       {
+        "name": "one",
+        "memberOnly": true,
+        "overloads": [
+          {
+            "id": "collection_one",
+            "args": [
+              "list(dyn)"
+            ],
+            "result": "dyn",
+            "member": true
+          }
+        ]
+      },
+      {
         "name": "optional.none",
         "namespace": "optional",
         "doc": "singleton value representing an optional without a value",
@@ -4003,6 +4145,27 @@
             "result": "string"
           },
           {
+            "id": "string_bigdecimal.Money",
+            "args": [
+              "bigdecimal.Money"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "string_decimal.Money",
+            "args": [
+              "decimal.Money"
+            ],
+            "result": "string"
+          },
+          {
+            "id": "string_gomplate.Date",
+            "args": [
+              "gomplate.Date"
+            ],
+            "result": "string"
+          },
+          {
             "id": "string_to_string",
             "args": [
               "string"
@@ -4077,6 +4240,14 @@
         "name": "sum",
         "memberOnly": true,
         "overloads": [
+          {
+            "id": "collection_sum_decimal_strings",
+            "args": [
+              "list(string)"
+            ],
+            "result": "string",
+            "member": true
+          },
           {
             "id": "list_double_sum_double",
             "args": [
@@ -4917,6 +5088,40 @@
               "string"
             ],
             "result": "dyn"
+          }
+        ]
+      },
+      {
+        "name": "yaml.encode",
+        "namespace": "yaml",
+        "overloads": [
+          {
+            "id": "yaml_encode_dyn",
+            "args": [
+              "dyn"
+            ],
+            "result": "string"
+          }
+        ]
+      },
+      {
+        "name": "yaml.parse",
+        "namespace": "yaml",
+        "overloads": [
+          {
+            "id": "yaml_parse_string",
+            "args": [
+              "string"
+            ],
+            "result": "optional_type(dyn)"
+          },
+          {
+            "id": "yaml_parse_string_type",
+            "args": [
+              "string",
+              "type(\u003cT\u003e)"
+            ],
+            "result": "optional_type(\u003cT\u003e)"
           }
         ]
       }
