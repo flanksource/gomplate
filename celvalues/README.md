@@ -42,6 +42,22 @@ Money compares to numbers or money of the same precision type and currency. All 
 
 Doubles are read through their shortest decimal form, so `money - 0.1 - 0.2 == money - 0.3` holds exactly. Multiplying or dividing two Money values, dividing a number by Money, mixing currencies, dividing by zero, and any arithmetic on `decimal.Money` are errors. Numeric arithmetic that involves no Money keeps CEL's own behaviour. Dates and money remain native values through CEL-created maps/lists and custom functions; converting a value to JSON explicitly renders its string representation.
 
+## Go values in the environment
+
+`NewAdapter` reads host Go values lazily. Gomplate adapts each environment value without copying it, so an expression pays only for the fields it reads. Values registered with `gomplate.RegisterType` keep cel-go's native type handling instead.
+
+| Go value | CEL value |
+| --- | --- |
+| Struct, or pointer to one | Map keyed the way `encoding/json` names fields: json tag names, `json:"-"` and unexported fields absent, `omitempty` zero values absent, embedded struct fields promoted |
+| Map, slice, array | Map or list whose entries are converted as they are read |
+| `uuid.UUID` | String |
+| `AsMap(...string) map[string]any` | The returned map |
+| Unsigned integer | Int, when it fits in int64 |
+| Nil pointer | `null` |
+| `time.Time`, `*time.Time`, `time.Duration`, `[]byte`, Money | Timestamp, duration, bytes or Money, at any depth |
+
+A function or result that receives one of these maps or lists gets plain Go values: `map[string]any`, `[]any`, `int64` and strings, with dates, durations, bytes and Money kept. `celvalues.Plain(value)` performs the same conversion.
+
 String collection `.sum()` uses `commons/decimal` parsing and summation, rounding inputs and the final result to its precision without intermediate rounding of additions. Results have no insignificant trailing zeros. Invalid inputs and overflow return errors; sufficiently small inputs round to zero.
 
 Run the scalar and Gomplate integration specs from the module root:

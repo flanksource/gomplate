@@ -7,6 +7,7 @@ import (
 	"cel.dev/cel-go/common/types/ref"
 	"github.com/flanksource/commons/bigdecimal"
 	"github.com/flanksource/commons/decimal"
+	"github.com/flanksource/gomplate/v4/celvalues"
 	"github.com/google/uuid"
 	"github.com/ohler55/ojg"
 	"github.com/ohler55/ojg/alt"
@@ -30,22 +31,16 @@ var opts = oj.Options{
 	WriteLimit: 1024,
 }
 
-type AsMapper interface {
-	AsMap(fields ...string) map[string]any
-}
+type AsMapper = celvalues.AsMapper
 
 type nativeType struct {
 	path jp.Expr
 	val  any
 }
 
-// Serialize iterates over each key-value pair in the input map
-// serializes any struct value to map[string]any.
-func Serialize(in map[string]any) (map[string]any, error) {
-	return serialize(in, false)
-}
-
-func serialize(in map[string]any, preserveBytes bool) (out map[string]any, err error) {
+// Serialize iterates over each key-value pair in the input map and serializes any struct
+// value to map[string]any, for Go templates. CEL reads the environment lazily (celInput).
+func Serialize(in map[string]any) (out map[string]any, err error) {
 	if in == nil {
 		return nil, nil
 	}
@@ -66,10 +61,6 @@ func serialize(in map[string]any, preserveBytes bool) (out map[string]any, err e
 		}
 
 		switch v := value.(type) {
-		case []byte:
-			if preserveBytes {
-				add(v)
-			}
 		case decimal.Money, bigdecimal.Money, *decimal.Money, *bigdecimal.Money:
 			add(v)
 		case ref.Val:
@@ -94,42 +85,6 @@ func serialize(in map[string]any, preserveBytes bool) (out map[string]any, err e
 	for _, native := range nativeTypes {
 		if err := native.path.SetOne(out, native.val); err != nil {
 			return nil, err
-		}
-	}
-	return out, nil
-}
-
-func serializeForCEL(in map[string]any, nativeTypes *nativeTypeSnapshot) (map[string]any, error) {
-	if in == nil || nativeTypes == nil || len(nativeTypes.reflectTypes) == 0 {
-		return serialize(in, true)
-	}
-
-	preserved := 0
-	for _, value := range in {
-		if nativeTypes.preserves(value) {
-			preserved++
-		}
-	}
-	if preserved == 0 {
-		return serialize(in, true)
-	}
-	if preserved == len(in) {
-		return in, nil
-	}
-
-	serializedInput := make(map[string]any, len(in)-preserved)
-	for key, value := range in {
-		if !nativeTypes.preserves(value) {
-			serializedInput[key] = value
-		}
-	}
-	out, err := serialize(serializedInput, true)
-	if err != nil {
-		return nil, err
-	}
-	for key, value := range in {
-		if nativeTypes.preserves(value) {
-			out[key] = value
 		}
 	}
 	return out, nil
