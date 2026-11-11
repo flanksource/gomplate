@@ -69,11 +69,11 @@ func ParseGoTemplate() (*GoTemplateGrammar, error) {
 	g.Builtins = builtins
 
 	consts, err := stringConsts(files["text/template/parse"],
-		"leftDelim", "rightDelim", "leftComment", "rightComment")
+		"defaultLeftDelim", "defaultRightDelim", "leftComment", "rightComment")
 	if err != nil {
 		return nil, fmt.Errorf("text/template/parse: %w", err)
 	}
-	g.LeftDelim, g.RightDelim = consts["leftDelim"], consts["rightDelim"]
+	g.LeftDelim, g.RightDelim = consts["defaultLeftDelim"], consts["defaultRightDelim"]
 	g.LeftComment, g.RightComment = consts["leftComment"], consts["rightComment"]
 
 	marker, err := runeConst(files["text/template/parse"], "trimMarker")
