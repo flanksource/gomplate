@@ -1,0 +1,6 @@
+@@
+@@
+-func (setsLib) CompileOptions() []cel.EnvOption {
++func (lib setsLib) CompileOptions() []cel.EnvOption {
+ ...
+ }

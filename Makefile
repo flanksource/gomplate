@@ -251,3 +251,11 @@ playground-server:
 .PHONY: playground
 playground: web-install
 	pnpm -C web dev:playground
+
+.PHONY: celext
+celext:
+	GOWORK=off GOPATCH="$(GOPATCH)" $(GO) generate ./celext
+
+.PHONY: celext-check
+celext-check: celext
+	git diff --exit-code -- celext
