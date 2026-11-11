@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"cel.dev/cel-go/cel"
 	_ "github.com/flanksource/gomplate/v4/js"
 	_ "github.com/robertkrimen/otto/underscore"
 )
@@ -80,16 +81,16 @@ func TestExplicitCacheKey(t *testing.T) {
 		t.Errorf("template with explicit CacheKey must be cacheable")
 	}
 
-	withFuncs := Template{
+	withCelEnvs := Template{
 		Expression: "name",
-		Functions:  map[string]any{"hello": func() any { return "world" }},
+		CelEnvs:    []cel.EnvOption{cel.Variable("hello", cel.StringType)},
 	}
-	if withFuncs.IsCacheable() {
-		t.Errorf("template with Functions and no CacheKey must not be cacheable")
+	if withCelEnvs.IsCacheable() {
+		t.Errorf("template with CelEnvs and no CacheKey must not be cacheable")
 	}
-	withFuncs.CacheKey = "stable"
-	if !withFuncs.IsCacheable() {
-		t.Errorf("template with Functions but explicit CacheKey must be cacheable")
+	withCelEnvs.CacheKey = "stable"
+	if !withCelEnvs.IsCacheable() {
+		t.Errorf("template with CelEnvs but explicit CacheKey must be cacheable")
 	}
 }
 
@@ -104,7 +105,7 @@ func TestCacheTime(t *testing.T) {
 		if _, err := RunExpression(nil, tpl); err != nil {
 			t.Fatalf("eval: %v", err)
 		}
-		_, exp, ok := celExpressionCache.GetWithExpiration(tpl.celCacheKey(nil, currentNativeTypes().generation))
+		_, exp, ok := celExpressionCache.GetWithExpiration(tpl.celCacheKey(nil, currentNativeTypes().generation, tpl.celFunctions()))
 		if !ok {
 			t.Fatalf("entry not cached")
 		}
@@ -124,7 +125,7 @@ func TestCacheTime(t *testing.T) {
 		if _, err := RunExpression(nil, tpl); err != nil {
 			t.Fatalf("eval: %v", err)
 		}
-		_, exp, ok := celExpressionCache.GetWithExpiration(tpl.celCacheKey(nil, currentNativeTypes().generation))
+		_, exp, ok := celExpressionCache.GetWithExpiration(tpl.celCacheKey(nil, currentNativeTypes().generation, tpl.celFunctions()))
 		if !ok {
 			t.Fatalf("entry not cached")
 		}
@@ -144,7 +145,7 @@ func TestCacheTime(t *testing.T) {
 		if _, err := RunExpression(nil, tpl); err != nil {
 			t.Fatalf("eval: %v", err)
 		}
-		_, exp, ok := celExpressionCache.GetWithExpiration(tpl.celCacheKey(nil, currentNativeTypes().generation))
+		_, exp, ok := celExpressionCache.GetWithExpiration(tpl.celCacheKey(nil, currentNativeTypes().generation, tpl.celFunctions()))
 		if !ok {
 			t.Fatalf("entry not cached")
 		}

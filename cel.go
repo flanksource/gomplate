@@ -10,10 +10,10 @@ import (
 	"cel.dev/cel-go/cel"
 	"cel.dev/cel-go/common/types"
 	"cel.dev/cel-go/common/types/ref"
-	"cel.dev/cel-go/ext"
 	"github.com/flanksource/commons/context"
 	"github.com/flanksource/commons/logger"
 
+	"github.com/flanksource/gomplate/v4/celext"
 	"github.com/flanksource/gomplate/v4/celvalues"
 	"github.com/flanksource/gomplate/v4/conv"
 	"github.com/flanksource/gomplate/v4/funcs"
@@ -37,7 +37,15 @@ func staticCelEnvOptions() []cel.EnvOption {
 	var opts []cel.EnvOption //nolint:prealloc
 	opts = append(opts, funcs.CelEnvOption...)
 	opts = append(opts, kubernetes.Library()...)
-	opts = append(opts, ext.Strings(), ext.Encoders(), ext.Lists(), ext.Math(), ext.Sets())
+	// gomplate never estimates cost, and cel-go recompiles every registered cost model on each
+	// Env.Extend, so the extensions come from celext with their cost models left out.
+	opts = append(opts,
+		celext.Strings(celext.StringsWithoutCostModels()),
+		celext.Encoders(celext.EncodersWithoutCostModels()),
+		celext.Lists(celext.ListsWithoutCostModels()),
+		celext.Math(celext.MathWithoutCostModels()),
+		celext.Sets(celext.SetsWithoutCostModels()),
+	)
 	opts = append(opts, cel.StdLib())
 	opts = append(opts, cel.OptionalTypes(cel.OptionalTypesVersion(1)))
 	opts = append(opts, strings.Library...)
@@ -113,7 +121,7 @@ func CompileEnvOptions(environment map[string]any, template Template) []cel.EnvO
 	if !template.Strict {
 		opts = append(opts, nilsafe.Library(nilsafe.WithZeroValues()))
 	}
-	return append(opts, celEnvOptions(environment, template, currentNativeTypes())...)
+	return append(opts, celEnvOptions(environment, template, currentNativeTypes(), template.celFunctions())...)
 }
 
 // The following identifiers are reserved to allow easier embedding of CEL into a host language.

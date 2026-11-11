@@ -99,7 +99,7 @@ func compileBenchmarkCELProgram(data map[string]any, expression string, optimize
 	if err != nil {
 		return nil, err
 	}
-	env, err := base.Extend(celEnvOptions(data, Template{}, currentNativeTypes())...)
+	env, err := base.Extend(celEnvOptions(data, Template{}, currentNativeTypes(), Template{}.celFunctions())...)
 	if err != nil {
 		return nil, err
 	}
