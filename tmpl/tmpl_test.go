@@ -2,8 +2,8 @@ package tmpl
 
 import (
 	"testing"
-	"text/template"
 
+	template "github.com/flanksource/gomplate/v4/texttemplate"
 	"github.com/stretchr/testify/assert"
 )
 

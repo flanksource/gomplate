@@ -3,11 +3,11 @@ package genmonarch
 import (
 	"context"
 	"fmt"
-	"text/template"
 
 	"github.com/ohler55/ojg/jp"
 
 	gomplate "github.com/flanksource/gomplate/v4"
+	template "github.com/flanksource/gomplate/v4/texttemplate"
 )
 
 // ValidateCorpus parses every non-CEL snippet with the parser that actually

@@ -3,10 +3,10 @@ package funcs
 import (
 	"context"
 	"net/url"
-	"text/template"
 
 	"github.com/flanksource/gomplate/v4/coll"
 	"github.com/flanksource/gomplate/v4/conv"
+	template "github.com/flanksource/gomplate/v4/texttemplate"
 )
 
 // ConvNS -
