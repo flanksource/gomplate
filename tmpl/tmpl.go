@@ -4,8 +4,8 @@ package tmpl
 import (
 	"bytes"
 	"path/filepath"
-	"text/template"
 
+	template "github.com/flanksource/gomplate/v4/texttemplate"
 	"github.com/pkg/errors"
 )
 

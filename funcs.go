@@ -2,9 +2,9 @@ package gomplate
 
 import (
 	"context"
-	"text/template"
 
 	"github.com/flanksource/gomplate/v4/funcs" //nolint:staticcheck
+	template "github.com/flanksource/gomplate/v4/texttemplate"
 )
 
 // CreateFuncs - function mappings are created here
