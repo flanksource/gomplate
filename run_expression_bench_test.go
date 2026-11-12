@@ -114,32 +114,6 @@ func BenchmarkRunExpressionContextCompile(b *testing.B) {
 	}
 }
 
-// BenchmarkRunExpressionContextFunctions measures templates that carry functions: they are
-// cached by their declarations, with the implementation bound on each evaluation.
-func BenchmarkRunExpressionContextFunctions(b *testing.B) {
-	lateBound := CelFunction{
-		Name:      "bench_noop",
-		Overloads: []CelOverload{{ID: "bench_noop_string", Args: []*cel.Type{cel.StringType}, Result: cel.StringType}},
-		Impl:      func(_ string, args ...ref.Val) ref.Val { return args[0] },
-	}
-	cases := map[string]Template{
-		"celFunctions": {Expression: `bench_noop(config_type) == "Kubernetes::Pod"`, CelFunctions: []CelFunction{lateBound}},
-		"functions":    {Expression: `bench_fixed() == config_type`, Functions: map[string]any{"bench_fixed": func() any { return "Kubernetes::Pod" }}},
-	}
-	for name, template := range cases {
-		b.Run(name+"/cache=hit/environment=large", func(b *testing.B) {
-			env := benchExprEnv(true)
-			assertBenchmarkExpression(b, env, template)
-			b.ReportAllocs()
-			for b.Loop() {
-				if _, err := RunExpression(env, template); err != nil {
-					b.Fatal(err)
-				}
-			}
-		})
-	}
-}
-
 func BenchmarkCELEnvExtend(b *testing.B) {
 	base, err := baseCelEnv()
 	if err != nil {
