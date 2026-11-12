@@ -40,6 +40,44 @@ $message = "$[[.config.name]]"
 Write-Host "{{ $message }}"
 ```
 
+## Reading the environment
+
+Templates run on gomplate's fork of `text/template` ([`texttemplate`](texttemplate/README.md)), which reads the environment lazily: a template pays only for the values it touches, however large the environment is.
+
+- Struct fields are addressed by their `encoding/json` key (`{{ .config.metadata.name }}` for a `json:"name"` tag). Untagged fields use their Go name, `json:"-"` and unexported fields are absent, embedded struct fields are promoted. A key that matches no field falls back to methods and Go field names, then is missing.
+- A value that is printed, ranged over, tested by `if`/`with` or passed to a function is converted exactly as before: structs become `map[string]interface{}`, UUIDs strings, `AsMap()` values their map. Dates, durations and Money stay native, at any depth.
+
+### Nil-safe access
+
+A missing key or nil value renders as empty text. Field access through `nil`, and `index` of a nil value, a missing key or an out-of-range position, are missing too instead of failing:
+
+```
+{{ .check.status.lastRun.time }}   {{/* empty when status is nil */}}
+{{ index .results 5 }}             {{/* empty when there are fewer results */}}
+```
+
+Type errors, such as indexing a list with a string, still fail. Set `Strict: true` on the `Template` to restore `text/template` behaviour, as it does for CEL: those accesses fail, and a missing key renders `<no value>`.
+
+### Custom values providers
+
+Go callers can replace how fields are resolved and values converted by setting `Template.ValuesProvider` to a `texttemplate.ValuesProvider`. Embedding `gomplate.DefaultValuesProvider` keeps the default behaviour for everything the custom provider does not handle:
+
+```go
+type redacting struct{ gomplate.DefaultValuesProvider }
+
+func (p redacting) Field(receiver reflect.Value, name string) (reflect.Value, bool, error) {
+	if name == "password" {
+		return reflect.ValueOf("****"), true, nil
+	}
+	return p.DefaultValuesProvider.Field(receiver, name)
+}
+
+out, err := gomplate.RunTemplate(env, gomplate.Template{
+	Template:       "{{ .db.user }}:{{ .db.password }}",
+	ValuesProvider: redacting{},
+})
+```
+
 ---
 
 ## base64
