@@ -100,9 +100,9 @@ jobs:
           for sample in {1..10}
           do
             echo "Running base sample ${sample}/10"
-            .tmp/bench/base.test -test.run=^$ -test.bench='Benchmark(Serialize|RunExpressionContext|CELEnvExtend|CELProgramEvaluation|RunExpressionNativeInput)' -test.benchmem=true -test.benchtime=1s -test.count=1 -test.timeout=20m >> bench-base.txt
+            .tmp/bench/base.test -test.run=^$ -test.bench='Benchmark(Serialize|RunTemplate|RunExpressionContext|CELEnvExtend|CELProgramEvaluation|RunExpressionNativeInput)' -test.benchmem=true -test.benchtime=1s -test.count=1 -test.timeout=20m >> bench-base.txt
             echo "Running head sample ${sample}/10"
-            .tmp/bench/head.test -test.run=^$ -test.bench='Benchmark(Serialize|RunExpressionContext|CELEnvExtend|CELProgramEvaluation|RunExpressionNativeInput)' -test.benchmem=true -test.benchtime=1s -test.count=1 -test.timeout=20m >> bench-head.txt
+            .tmp/bench/head.test -test.run=^$ -test.bench='Benchmark(Serialize|RunTemplate|RunExpressionContext|CELEnvExtend|CELProgramEvaluation|RunExpressionNativeInput)' -test.benchmem=true -test.benchtime=1s -test.count=1 -test.timeout=20m >> bench-head.txt
           done
       - name: Compare
         run: |
