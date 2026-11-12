@@ -24,16 +24,30 @@ type benchPerson struct {
 	Addresses []benchAddress `json:"addresses,omitempty"`
 }
 
+// benchmarkFreshInput runs fn on a newly built input each iteration, with the build untimed. The
+// benchmark workflow runs this file against older bases whose Serialize rewrote its input in place,
+// so reusing one input there would time a no-op walk over already serialized maps.
+func benchmarkFreshInput(b *testing.B, build func() map[string]any, fn func(map[string]any) error) {
+	b.ReportAllocs()
+	for b.Loop() {
+		b.StopTimer()
+		input := build()
+		b.StartTimer()
+		if err := fn(input); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+func serializeBenchmark(input map[string]any) error {
+	_, err := Serialize(input)
+	return err
+}
+
 func BenchmarkSerialize(b *testing.B) {
 	for _, size := range []int{10, 100, 1000, 10000} {
 		b.Run(fmt.Sprintf("items=%d/native_values=true", size), func(b *testing.B) {
-			input := newSerializeBenchmarkInput(size)
-			b.ReportAllocs()
-			for b.Loop() {
-				if _, err := Serialize(input); err != nil {
-					b.Fatal(err)
-				}
-			}
+			benchmarkFreshInput(b, func() map[string]any { return newSerializeBenchmarkInput(size) }, serializeBenchmark)
 		})
 	}
 }
@@ -41,10 +55,22 @@ func BenchmarkSerialize(b *testing.B) {
 func BenchmarkSerialize_NoNativeTypes(b *testing.B) {
 	for _, size := range []int{100, 1000, 10000} {
 		b.Run(fmt.Sprintf("items=%d/native_values=false", size), func(b *testing.B) {
-			input := newPlainBenchmarkInput(size)
+			benchmarkFreshInput(b, func() map[string]any { return newPlainBenchmarkInput(size) }, serializeBenchmark)
+		})
+	}
+}
+
+// BenchmarkRunTemplate_LargeEnv reads two fields of a large environment through a go template. The
+// input is reused because rebuilding it would dwarf a lazy read; an in-place serializing base only
+// gains from that.
+func BenchmarkRunTemplate_LargeEnv(b *testing.B) {
+	const text = "{{ .nested.labels.app }} {{ (index .items 7).name }}"
+	for _, size := range []int{10, 1000, 10000} {
+		b.Run(fmt.Sprintf("items=%d", size), func(b *testing.B) {
+			input := newSerializeBenchmarkInput(size)
 			b.ReportAllocs()
 			for b.Loop() {
-				if _, err := Serialize(input); err != nil {
+				if _, err := RunTemplate(input, Template{Template: text}); err != nil {
 					b.Fatal(err)
 				}
 			}
