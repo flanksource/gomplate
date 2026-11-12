@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	gotemplate "text/template"
 	"time"
 
 	"cel.dev/cel-go/cel"
@@ -17,6 +16,7 @@ import (
 	"github.com/flanksource/commons/logger"
 	"github.com/flanksource/commons/properties"
 	_ "github.com/flanksource/gomplate/v4/js"
+	gotemplate "github.com/flanksource/gomplate/v4/texttemplate"
 	"github.com/patrickmn/go-cache"
 	"github.com/robertkrimen/otto"
 	"github.com/robertkrimen/otto/registry"
@@ -56,7 +56,15 @@ type Template struct {
 	// zero-arg function in addition to dot-access. Enables {{ foo }} alongside
 	// the standard {{ .foo }}.
 	ValueFunctions bool `yaml:"-" json:"-"`
-	Strict         bool `yaml:"-" json:"-"`
+
+	// Strict disables nil-safe evaluation: for cel expressions missing attributes are errors, and
+	// for go templates field access through nil and out-of-range or nil index are errors.
+	Strict bool `yaml:"-" json:"-"`
+
+	// ValuesProvider resolves fields and shapes consumed values for go templates, so the
+	// environment is read lazily instead of being serialized up front.
+	// Nil uses DefaultValuesProvider.
+	ValuesProvider gotemplate.ValuesProvider `yaml:"-" json:"-"`
 
 	// CelEnvs are additional, opaque cel-env options. A template with CelEnvs is
 	// never cached: its compiled program could hold a binding that closes over
@@ -355,15 +363,13 @@ func goTemplate(ctx commonsContext.Context, template Template, environment map[s
 		}
 	}
 
-	data, err := Serialize(environment)
-	if err != nil {
-		return "", oops.
-			// With("environment", environment)
-			Wrapf(err, "error serializing env")
+	provider := template.ValuesProvider
+	if provider == nil {
+		provider = DefaultValuesProvider{}
 	}
 
 	var buf bytes.Buffer
-	if err := tpl.Execute(&buf, data); err != nil {
+	if err := tpl.ExecuteWith(&buf, environment, gotemplate.ExecuteOptions{Values: provider, NilSafe: !template.Strict}); err != nil {
 		return "", oops.
 			With("template", template.Template).
 			// With("environment", environment).
