@@ -56,6 +56,8 @@ Doubles are read through their shortest decimal form, so `money - 0.1 - 0.2 == m
 | Nil pointer | `null` |
 | `time.Time`, `*time.Time`, `time.Duration`, `[]byte`, Money | Timestamp, duration, bytes or Money, at any depth |
 
+Go templates resolve struct fields with the same keys through `celvalues.Field`, except that `omitempty` zero fields stay present; see [Reading the environment](../GO_TEMPLATE.md#reading-the-environment).
+
 A function or result that receives one of these maps or lists gets plain Go values: `map[string]any`, `[]any`, `int64` and strings, with dates, durations, bytes and Money kept. `celvalues.Plain(value)` performs the same conversion.
 
 String collection `.sum()` uses `commons/decimal` parsing and summation, rounding inputs and the final result to its precision without intermediate rounding of additions. Results have no insignificant trailing zeros. Invalid inputs and overflow return errors; sufficiently small inputs round to zero.

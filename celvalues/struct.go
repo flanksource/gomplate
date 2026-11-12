@@ -193,6 +193,22 @@ func structFields(value reflect.Value) map[string]any {
 	return fields
 }
 
+// Field reads one field of a struct by the key encoding/json names it with, following the same
+// rules as the CEL view of the struct except omitempty: a zero field is still present.
+func Field(value reflect.Value, key string) (reflect.Value, bool) {
+	for _, field := range fieldsOf(value.Type()) {
+		if field.key != key {
+			continue
+		}
+		fieldValue, err := value.FieldByIndexErr(field.index)
+		if err != nil {
+			return reflect.Value{}, false // promoted through a nil embedded pointer
+		}
+		return fieldValue, true
+	}
+	return reflect.Value{}, false
+}
+
 // isEmptyValue is encoding/json's omitempty rule: a struct is never empty.
 func isEmptyValue(value reflect.Value) bool {
 	switch value.Kind() {
