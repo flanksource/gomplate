@@ -329,10 +329,8 @@ func call(name string, fn reflect.Value, args ...reflect.Value) (reflect.Value, 
 			return reflect.Value{}, fmt.Errorf("wrong number of args for %s: got %d want at least %d", name, len(args), numIn-1)
 		}
 		dddType = typ.In(numIn - 1).Elem()
-	} else {
-		if len(args) != numIn {
-			return reflect.Value{}, fmt.Errorf("wrong number of args for %s: got %d want %d", name, len(args), numIn)
-		}
+	} else if len(args) != numIn { // gomplate: lint
+		return reflect.Value{}, fmt.Errorf("wrong number of args for %s: got %d want %d", name, len(args), numIn)
 	}
 	argv := make([]reflect.Value, len(args))
 	for i, arg := range args {
