@@ -25,4 +25,4 @@ Options are per execution, so one parsed template can be shared by executions wi
 
 ## Upstream sync
 
-Every deviation from upstream is tagged `gomplate:`; `rg "gomplate:" texttemplate` lists them. The additions themselves live in `values.go`. To sync, copy the upstream files over, re-apply the tagged hunks and run `go test ./texttemplate`.
+Every deviation from upstream is tagged `gomplate:`; `rg "gomplate:" texttemplate` lists them. The additions themselves live in `values.go`. Changes tagged `gomplate: lint` only satisfy this repository's golangci-lint rules (error naming, camelCase, `else if`, no `log.Fatal` after `defer`) and do not change behaviour. To sync, copy the upstream files over, re-apply the tagged hunks and run `go test ./texttemplate`.

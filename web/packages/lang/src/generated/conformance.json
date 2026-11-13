@@ -1092,6 +1092,19 @@
   },
   {
     "language": "cel",
+    "source": "ValuesProvider: redacting{},",
+    "boundaries": [
+      0,
+      14,
+      16,
+      25,
+      26,
+      27
+    ],
+    "origin": "GO_TEMPLATE.md"
+  },
+  {
+    "language": "cel",
     "source": "[\"a\", \"b\", \"a\", \"c\"].distinct()",
     "boundaries": [
       0,
@@ -2122,6 +2135,38 @@
   },
   {
     "language": "cel",
+    "source": "func (p redacting) Field(receiver reflect.Value, name string) (reflect.Value, bool, error) {",
+    "boundaries": [
+      0,
+      5,
+      6,
+      8,
+      17,
+      19,
+      24,
+      25,
+      34,
+      41,
+      42,
+      47,
+      49,
+      54,
+      60,
+      62,
+      63,
+      70,
+      71,
+      76,
+      78,
+      82,
+      84,
+      89,
+      91
+    ],
+    "origin": "GO_TEMPLATE.md"
+  },
+  {
+    "language": "cel",
     "source": "gomplate.Template{Expression: \"person.display_name\"},",
     "boundaries": [
       0,
@@ -2148,6 +2193,18 @@
       15
     ],
     "origin": "CEL.md"
+  },
+  {
+    "language": "cel",
+    "source": "if name == \"password\" {",
+    "boundaries": [
+      0,
+      3,
+      8,
+      11,
+      22
+    ],
+    "origin": "GO_TEMPLATE.md"
   },
   {
     "language": "cel",
@@ -3980,6 +4037,42 @@
   },
   {
     "language": "cel",
+    "source": "return p.DefaultValuesProvider.Field(receiver, name)",
+    "boundaries": [
+      0,
+      7,
+      8,
+      9,
+      30,
+      31,
+      36,
+      37,
+      45,
+      47,
+      51
+    ],
+    "origin": "GO_TEMPLATE.md"
+  },
+  {
+    "language": "cel",
+    "source": "return reflect.ValueOf(\"****\"), true, nil",
+    "boundaries": [
+      0,
+      7,
+      14,
+      15,
+      22,
+      23,
+      29,
+      30,
+      32,
+      36,
+      38
+    ],
+    "origin": "GO_TEMPLATE.md"
+  },
+  {
+    "language": "cel",
     "source": "script: \u003e",
     "boundaries": [
       0,
@@ -4494,6 +4587,21 @@
       19
     ],
     "origin": "CEL.md"
+  },
+  {
+    "language": "cel",
+    "source": "type redacting struct{ gomplate.DefaultValuesProvider }",
+    "boundaries": [
+      0,
+      5,
+      15,
+      21,
+      23,
+      31,
+      32,
+      54
+    ],
+    "origin": "GO_TEMPLATE.md"
   },
   {
     "language": "cel",

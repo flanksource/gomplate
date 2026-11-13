@@ -87,7 +87,7 @@ type T struct {
 	ErrFunc                func() (string, error)
 	PanicFunc              func() string
 	TooFewReturnCountFunc  func()
-	TooManyReturnCountFunc func() (string, error, int)
+	TooManyReturnCountFunc func() (string, int, error) // gomplate: lint, error last
 	InvalidReturnTypeFunc  func() (string, bool)
 	// Template to test evaluation of templates.
 	Tmpl *Template
@@ -179,7 +179,7 @@ var tVal = &T{
 	ErrFunc:                   func() (string, error) { return "bla", nil },
 	PanicFunc:                 func() string { panic("test panic") },
 	TooFewReturnCountFunc:     func() {},
-	TooManyReturnCountFunc:    func() (string, error, int) { return "", nil, 0 },
+	TooManyReturnCountFunc:    func() (string, int, error) { return "", 0, nil },
 	InvalidReturnTypeFunc:     func() (string, bool) { return "", false },
 	Tmpl:                      Must(New("x").Parse("test template")), // "x" is the value of .X
 }
@@ -244,12 +244,12 @@ func (t *T) MAdd(a int, b []int) []int {
 	return v
 }
 
-var myError = errors.New("my error")
+var errMy = errors.New("my error") // gomplate: lint, renamed from myError
 
 // MyError returns a value and an error according to its argument.
 func (t *T) MyError(error bool) (bool, error) {
 	if error {
-		return true, myError
+		return true, errMy
 	}
 	return false, nil
 }
@@ -975,11 +975,11 @@ func TestExecuteError(t *testing.T) {
 	err = tmpl.Execute(b, tVal)
 	if err == nil {
 		t.Errorf("expected error; got none")
-	} else if !strings.Contains(err.Error(), myError.Error()) {
+	} else if !strings.Contains(err.Error(), errMy.Error()) {
 		if *debug {
 			fmt.Printf("test execute error: %s\n", err)
 		}
-		t.Errorf("expected myError; got %s", err)
+		t.Errorf("expected errMy; got %s", err)
 	}
 }
 
@@ -1439,12 +1439,12 @@ func TestUnterminatedStringError(t *testing.T) {
 
 const alwaysErrorText = "always be failing"
 
-var alwaysError = errors.New(alwaysErrorText)
+var errAlways = errors.New(alwaysErrorText) // gomplate: lint, renamed from alwaysError
 
 type ErrorWriter int
 
 func (e ErrorWriter) Write(p []byte) (int, error) {
-	return 0, alwaysError
+	return 0, errAlways
 }
 
 func TestExecuteGivesExecError(t *testing.T) {
@@ -1515,8 +1515,8 @@ func TestBadFuncNames(t *testing.T) {
 }
 
 func TestIsTrue(t *testing.T) {
-	var nil_ptr *int
-	var nil_chan chan int
+	var nilPtr *int // gomplate: lint, camelCase names in TestIsTrue
+	var nilChan chan int
 	tests := []struct {
 		v    any
 		want bool
@@ -1538,16 +1538,16 @@ func TestIsTrue(t *testing.T) {
 		{map[string]int{"a": 1, "b": 2}, true},
 		{map[string]int{}, false},
 		{make(chan int), true},
-		{nil_chan, false},
+		{nilChan, false},
 		{new(int), true},
-		{nil_ptr, false},
+		{nilPtr, false},
 		{unsafe.Pointer(new(int)), true},
-		{unsafe.Pointer(nil_ptr), false},
+		{unsafe.Pointer(nilPtr), false},
 	}
-	for _, test_case := range tests {
-		got, _ := IsTrue(test_case.v)
-		if got != test_case.want {
-			t.Fatalf("expect result %v, got %v", test_case.want, got)
+	for _, testCase := range tests {
+		got, _ := IsTrue(testCase.v)
+		if got != testCase.want {
+			t.Fatalf("expect result %v, got %v", testCase.want, got)
 		}
 	}
 }
@@ -1937,6 +1937,9 @@ func TestIssue31810(t *testing.T) {
 	// Works if the function is explicitly called.
 	const textCall = "{{ (call .)  }}"
 	tmpl, err = New("").Parse(textCall)
+	if err != nil { // gomplate: lint
+		t.Fatal(err)
+	}
 	b.Reset()
 	err = tmpl.Execute(&b, f)
 	if err != nil {

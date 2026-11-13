@@ -29,8 +29,11 @@ func createTestDir(files []templateFile) string {
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer f.Close()
+		// gomplate: lint, close before a fatal exit instead of deferring
 		_, err = io.WriteString(f, file.contents)
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -51,7 +54,7 @@ func ExampleTemplate_glob() {
 		// T2.tmpl defines a template T2.
 		{"T2.tmpl", `{{define "T2"}}This is T2{{end}}`},
 	})
-	// Clean up after the test; another quirk of running as an example.
+	// Clean up after the test; another quirk of running as an example. gomplate: lint, log.Panic below so this defer runs.
 	defer os.RemoveAll(dir)
 
 	// pattern is the glob pattern used to find all the template files.
@@ -64,7 +67,7 @@ func ExampleTemplate_glob() {
 
 	err := tmpl.Execute(os.Stdout, nil)
 	if err != nil {
-		log.Fatalf("template execution: %s", err)
+		log.Panicf("template execution: %s", err)
 	}
 	// Output:
 	// T0 invokes T1: (T1 invokes T2: (This is T2))
@@ -83,7 +86,7 @@ func ExampleTemplate_helpers() {
 		// T2.tmpl defines a template T2.
 		{"T2.tmpl", `{{define "T2"}}This is T2{{end}}`},
 	})
-	// Clean up after the test; another quirk of running as an example.
+	// Clean up after the test; another quirk of running as an example. gomplate: lint, log.Panic below so this defer runs.
 	defer os.RemoveAll(dir)
 
 	// pattern is the glob pattern used to find all the template files.
@@ -95,22 +98,22 @@ func ExampleTemplate_helpers() {
 	// Add one driver template to the bunch; we do this with an explicit template definition.
 	_, err := templates.Parse("{{define `driver1`}}Driver 1 calls T1: ({{template `T1`}})\n{{end}}")
 	if err != nil {
-		log.Fatal("parsing driver1: ", err)
+		log.Panic("parsing driver1: ", err)
 	}
 	// Add another driver template.
 	_, err = templates.Parse("{{define `driver2`}}Driver 2 calls T2: ({{template `T2`}})\n{{end}}")
 	if err != nil {
-		log.Fatal("parsing driver2: ", err)
+		log.Panic("parsing driver2: ", err)
 	}
 	// We load all the templates before execution. This package does not require
 	// that behavior but html/template's escaping does, so it's a good habit.
 	err = templates.ExecuteTemplate(os.Stdout, "driver1", nil)
 	if err != nil {
-		log.Fatalf("driver1 execution: %s", err)
+		log.Panicf("driver1 execution: %s", err)
 	}
 	err = templates.ExecuteTemplate(os.Stdout, "driver2", nil)
 	if err != nil {
-		log.Fatalf("driver2 execution: %s", err)
+		log.Panicf("driver2 execution: %s", err)
 	}
 	// Output:
 	// Driver 1 calls T1: (T1 invokes T2: (This is T2))
@@ -129,7 +132,7 @@ func ExampleTemplate_share() {
 		// T1.tmpl defines a template, T1 that invokes T2. Note T2 is not defined
 		{"T1.tmpl", `{{define "T1"}}T1 invokes T2: ({{template "T2"}}){{end}}`},
 	})
-	// Clean up after the test; another quirk of running as an example.
+	// Clean up after the test; another quirk of running as an example. gomplate: lint, log.Panic below so this defer runs.
 	defer os.RemoveAll(dir)
 
 	// pattern is the glob pattern used to find all the template files.
@@ -145,35 +148,35 @@ func ExampleTemplate_share() {
 	// 1. Clone the helper set to create a new name space from which to run them.
 	first, err := drivers.Clone()
 	if err != nil {
-		log.Fatal("cloning helpers: ", err)
+		log.Panic("cloning helpers: ", err)
 	}
 	// 2. Define T2, version A, and parse it.
 	_, err = first.Parse("{{define `T2`}}T2, version A{{end}}")
 	if err != nil {
-		log.Fatal("parsing T2: ", err)
+		log.Panic("parsing T2: ", err)
 	}
 
 	// Now repeat the whole thing, using a different version of T2.
 	// 1. Clone the drivers.
 	second, err := drivers.Clone()
 	if err != nil {
-		log.Fatal("cloning drivers: ", err)
+		log.Panic("cloning drivers: ", err)
 	}
 	// 2. Define T2, version B, and parse it.
 	_, err = second.Parse("{{define `T2`}}T2, version B{{end}}")
 	if err != nil {
-		log.Fatal("parsing T2: ", err)
+		log.Panic("parsing T2: ", err)
 	}
 
 	// Execute the templates in the reverse order to verify the
 	// first is unaffected by the second.
 	err = second.ExecuteTemplate(os.Stdout, "T0.tmpl", "second")
 	if err != nil {
-		log.Fatalf("second execution: %s", err)
+		log.Panicf("second execution: %s", err)
 	}
 	err = first.ExecuteTemplate(os.Stdout, "T0.tmpl", "first")
 	if err != nil {
-		log.Fatalf("first: execution: %s", err)
+		log.Panicf("first: execution: %s", err)
 	}
 
 	// Output:
