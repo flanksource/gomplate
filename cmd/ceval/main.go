@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/flanksource/gomplate/v4"
+	"github.com/flanksource/gomplate/v4/version"
 	"gopkg.in/yaml.v3"
 )
 
@@ -50,6 +51,18 @@ func printValue(w io.Writer, value any) error {
 }
 
 func run(args []string, stdout, stderr io.Writer) int {
+	if len(args) > 0 {
+		switch args[0] {
+		case "serve":
+			return runServe(args[1:], stdout, stderr)
+		case "version", "--version":
+			_, err := fmt.Fprintf(stdout, "ceval %s (%s)\n", version.Version, version.GitCommit)
+			if err != nil {
+				return 1
+			}
+			return 0
+		}
+	}
 	fs := flag.NewFlagSet("ceval", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 
@@ -66,6 +79,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	if file == "" || expr == "" {
 		_, _ = fmt.Fprintln(stderr, "usage: ceval -f env.yaml -e \"labels['a/b/c']\"")
+		_, _ = fmt.Fprintln(stderr, "       ceval serve [-addr 127.0.0.1:8321] [-timeout 5s]")
 		fs.PrintDefaults()
 		return 2
 	}

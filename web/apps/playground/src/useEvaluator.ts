@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { evaluate, type EvalRequest, type EvalResponse } from "./api";
+import { evaluateWasm } from "./wasm";
+
+export type EvalBackend = "server" | "wasm";
 
 const AUTO_RUN_STORAGE_KEY = "gomplate-playground:auto-run";
 
@@ -7,6 +10,8 @@ const AUTO_RUN_STORAGE_KEY = "gomplate-playground:auto-run";
 const DEBOUNCE_MS = 250;
 
 export interface Evaluator {
+  backend: EvalBackend;
+  setBackend: (backend: EvalBackend) => void;
   response: EvalResponse | null;
   /** A request is in flight or a debounce is pending. */
   pending: boolean;
@@ -18,7 +23,7 @@ export interface Evaluator {
   run: () => void;
 }
 
-type Payload = Pick<EvalRequest, "language" | "source" | "input">;
+type Payload = Pick<EvalRequest, "language" | "source" | "input"> & { backend: EvalBackend };
 
 /**
  * Runs an expression against the Go evaluator.
@@ -29,7 +34,11 @@ type Payload = Pick<EvalRequest, "language" | "source" | "input">;
  * available -- which is also the only way to re-run an expression whose value
  * changes on its own (`time.Now()`, `uuid.V4()`, `random.*`).
  */
-export function useEvaluator(payload: Payload): Evaluator {
+export function useEvaluator(request: Omit<Payload, "backend">): Evaluator {
+  const [backend, setBackendState] = useState<EvalBackend>(() =>
+    new URLSearchParams(window.location.search).get("eval") === "wasm" ? "wasm" : "server",
+  );
+  const payload = { ...request, backend };
   const [response, setResponse] = useState<EvalResponse | null>(null);
   const [pending, setPending] = useState(false);
   const [autoRun, setAutoRunState] = useState(readAutoRun);
@@ -57,14 +66,19 @@ export function useEvaluator(payload: Payload): Evaluator {
     abortRef.current = controller;
 
     setPending(true);
-    evaluate(current, controller.signal)
+    const evaluateRequest = current.backend === "wasm" ? evaluateWasm : evaluate;
+    evaluateRequest(current, controller.signal)
       .then((next) => {
+        if (controller.signal.aborted) return;
         setResponse(next);
         setEvaluated(current);
         setPending(false);
       })
-      .catch(() => {
-        // Superseded by a newer run; that one owns the state.
+      .catch((cause: unknown) => {
+        if (controller.signal.aborted) return;
+        setResponse({ result: "", durationMs: 0, error: { message: String(cause) } });
+        setEvaluated(current);
+        setPending(false);
       });
   }, []);
 
@@ -72,14 +86,25 @@ export function useEvaluator(payload: Payload): Evaluator {
     if (!autoRun) return;
     const timer = setTimeout(evaluateNow, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [payload.language, payload.source, payload.input, autoRun, evaluateNow]);
+  }, [payload.language, payload.source, payload.input, payload.backend, autoRun, evaluateNow]);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   // Switching language changes what the source even means, so show nothing
   // rather than the previous language's result.
   useEffect(() => {
+    abortRef.current?.abort();
+    setPending(false);
     setResponse(null);
     setEvaluated(null);
-  }, [payload.language]);
+  }, [payload.language, payload.backend]);
+
+  const setBackend = useCallback((next: EvalBackend) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("eval", next);
+    window.history.replaceState(null, "", url);
+    setBackendState(next);
+  }, []);
 
   const setAutoRun = useCallback(
     (next: boolean) => {
@@ -91,6 +116,8 @@ export function useEvaluator(payload: Payload): Evaluator {
   );
 
   return {
+    backend,
+    setBackend,
     response,
     pending,
     stale: isStale(evaluated, payload),
@@ -106,7 +133,8 @@ function isStale(evaluated: Payload | null, current: Payload): boolean {
   return (
     evaluated.source !== current.source ||
     evaluated.input !== current.input ||
-    evaluated.language !== current.language
+    evaluated.language !== current.language ||
+    evaluated.backend !== current.backend
   );
 }
 

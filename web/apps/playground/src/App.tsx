@@ -83,7 +83,10 @@ function Playground() {
   const [served, setServed] = useState<GomplateSpec>();
   const servedRef = useRef<GomplateSpec>(undefined);
   servedRef.current = served;
-  const activeSpec = useMemo(() => mergeSpec(spec, served), [served]);
+  const activeSpec = useMemo(
+    () => evaluator.backend === "wasm" ? spec : mergeSpec(spec, served),
+    [served, evaluator.backend],
+  );
 
   const catalogue = functionCatalogue(language.evalLanguage, activeSpec);
   const catalogueFlavour = functionCatalogueFlavour(language.evalLanguage);
@@ -102,16 +105,17 @@ function Playground() {
   }, []);
 
   useEffect(() => {
+    if (evaluator.backend === "wasm") return;
     const controller = new AbortController();
     void fetchSpec(controller.signal).then((spec) => {
       if (!controller.signal.aborted) setServed(spec);
     });
     return () => controller.abort();
-  }, []);
+  }, [evaluator.backend]);
 
   useEffect(() => {
-    if (served) languages.current?.setSpec(served);
-  }, [served]);
+    languages.current?.setSpec(activeSpec);
+  }, [activeSpec]);
 
   const [sourceModel, setSourceModel] = useState<monacoEditor.editor.ITextModel | null>(null);
   useMarkers(evaluator.response, sourceModel);
@@ -190,7 +194,7 @@ function Playground() {
         </div>
       }
       bodyActions={
-        <div className="flex items-center gap-3">
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-3 md:w-auto">
           {examples.length > 0 ? (
             <Combobox
               options={examples.map((example) => ({
@@ -201,7 +205,7 @@ function Playground() {
               allowCustomValue={false}
               placeholder="Load an example…"
               ariaLabel="Load an example"
-              className="w-64"
+              className="w-full sm:w-64"
               onChange={(name) => {
                 const example = examples.find((candidate) => candidate.name === name);
                 if (example) setState({ source: example.source, input: example.input });

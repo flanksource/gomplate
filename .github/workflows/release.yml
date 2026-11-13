@@ -4,20 +4,20 @@ on:
     branches:
       - main
       - 3.x
+  workflow_dispatch:
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
 permissions:
   contents: read
 
 jobs:
   semantic-release:
+    if: github.ref == 'refs/heads/3.x'
     permissions:
-      contents: write # for codfish/semantic-release-action to create release tags
+      contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
-        with:
-          egress-policy: audit
-
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
@@ -30,6 +30,113 @@ jobs:
     outputs:
       release-version: ${{ steps.semantic.outputs.new_release_version }}
       new-release-published: ${{ steps.semantic.outputs.new_release_published }}
+
+  tag:
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        with:
+          node-version: 24
+      - name: Enable pnpm
+        run: corepack enable
+      # Release tags carry dist on a commit off main, so version discovery must
+      # include tags from every branch, as it does in Gavel and commons-db.
+      - name: Calculate next version
+        id: version
+        uses: charlesthomas/github-action-svu@da0337f57ff7d77c58363c32e9f863bfb01c0098 # v1.1.4+3.2.3
+        with:
+          cmd: patch
+          pushTag: false
+          tagMode: all
+          tagPattern: "v4.*"
+      - name: Build embedded playground
+        if: steps.version.outputs.changed == 'true'
+        run: make web-build
+      # Only the release tag carries this commit; main keeps generated assets ignored.
+      # This also makes go install at the release tag work without Node or pnpm.
+      - name: Include dist in the release tag
+        if: steps.version.outputs.changed == 'true'
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.next }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f web/apps/playground/dist
+          git commit -m "chore(embed): bundle playground assets for ${RELEASE_TAG}"
+          git tag "$RELEASE_TAG"
+          git push origin "refs/tags/$RELEASE_TAG"
+    outputs:
+      tag: ${{ steps.version.outputs.next }}
+      created: ${{ steps.version.outputs.changed }}
+
+  build-binaries:
+    needs: tag
+    if: needs.tag.outputs.created == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        goos: [linux, darwin, windows]
+        goarch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.tag.outputs.tag }}
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        with:
+          go-version-file: go.mod
+      - name: Build standalone binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: make build-binary VERSION=${{ needs.tag.outputs.tag }}
+      - name: Archive binary
+        run: |
+          mkdir -p .tmp/release
+          tar -czf .tmp/release/ceval_${{ matrix.goos }}_${{ matrix.goarch }}.tar.gz -C bin ceval${{ matrix.goos == 'windows' && '.exe' || '' }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: binary-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: .tmp/release/*.tar.gz
+          if-no-files-found: error
+
+  release-binaries:
+    needs: [tag, build-binaries]
+    if: needs.tag.outputs.created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: binary-*
+          merge-multiple: true
+          path: .tmp/release
+      - name: Generate checksums
+        working-directory: .tmp/release
+        run: sha256sum ceval_*.tar.gz > checksums.txt
+      - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: ${{ needs.tag.outputs.tag }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            .tmp/release/ceval_*.tar.gz
+            .tmp/release/checksums.txt
 
   bump-clients:
     runs-on: ubuntu-latest

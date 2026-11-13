@@ -151,6 +151,11 @@ cfg := Config{Message: "Hello, {{ .name }}!"}
 
 err := gomplate.Walk(map[string]any{"name": "world"}, &cfg)
 // cfg.Message == "Hello, world!"
+```
+
+## Playground
+
+`make build` creates `bin/ceval` with the playground UI and Go WASM evaluator embedded. Run `./bin/ceval serve` and open `http://127.0.0.1:8321`; select Server or Browser (WASM) evaluation. See the [playground guide](playground/README.md#standalone-binary-and-browser-evaluation) for development, hosting and binary releases.
 
 ## CEL eval helper
 

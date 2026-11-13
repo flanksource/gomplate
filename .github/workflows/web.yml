@@ -49,5 +49,9 @@ jobs:
         run: pnpm -C web typecheck
       - name: Test
         run: pnpm -C web test
+      - name: Install Go
+        uses: buildjet/setup-go@555ce355a95ff01018ffcf8fbbd9c44654db8374 # v5.0.2
+        with:
+          go-version-file: go.mod
       - name: Build
-        run: pnpm -C web build
+        run: make web-build

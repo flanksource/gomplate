@@ -26,6 +26,7 @@ import (
 
 	gomplate "github.com/flanksource/gomplate/v4"
 	"github.com/flanksource/gomplate/v4/coll"
+	"github.com/flanksource/gomplate/v4/genmonarch"
 )
 
 // Options configure a playground for one host.
@@ -35,6 +36,9 @@ import (
 // `map[string]func(Context) cel.EnvOption`, because a function like
 // `catalog.query` closes over the database handle it queries through.
 type Options struct {
+	// Spec supplies a build-time catalogue for standalone binaries. When nil,
+	// NewHandler extracts the host's live catalogue using the Go toolchain.
+	Spec *genmonarch.Spec
 	// CelEnvs are layered onto gomplate's own CEL options, per evaluation.
 	CelEnvs func(context.Context) []cel.EnvOption
 	// Functions are exposed to both CEL and go templates. Note gomplate's

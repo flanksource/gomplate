@@ -22,14 +22,20 @@ type Handler struct {
 	options Options
 }
 
-// NewHandler builds the API over a freshly extracted spec, so a running
-// playground reflects the current binary rather than a stale generated file.
+// NewHandler builds the API over Options.Spec, or extracts the host's live
+// catalogue when no build-time spec is supplied.
 //
 // The spec is extracted once, against context.Background(): Options.CelEnvs is
 // a per-request factory because a function's *binding* closes over a request's
 // context, but the declarations it registers -- the names, overloads and types
 // the editor completes from -- are the same for every request.
 func NewHandler(options Options) (*Handler, error) {
+	if options.Spec != nil {
+		if len(options.Spec.CEL.Functions) == 0 || len(options.Spec.GoTemplate.Functions) == 0 {
+			return nil, fmt.Errorf("playground catalogue has no functions")
+		}
+		return &Handler{spec: *options.Spec, options: options}, nil
+	}
 	celSpec, err := genmonarch.ExtractCEL(options.celEnvs(context.Background())...)
 	if err != nil {
 		return nil, err
