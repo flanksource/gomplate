@@ -22,7 +22,8 @@ jobs:
       - uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           node-version: 24
-      - name: Enable pnpm
-        run: corepack enable
+      - uses: pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d # v3.0.0
+        with:
+          package_json_file: web/package.json
       - name: Test
         run: make test
