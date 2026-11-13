@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/flanksource/gomplate/v4/playground"
+	"github.com/flanksource/gomplate/v4/web/packages/lang"
 )
 
 func main() {
@@ -23,7 +24,12 @@ func main() {
 
 	// No CelEnvs or Functions: this binary serves gomplate's own language. A
 	// host embeds the same package and supplies its own.
-	handler, err := playground.NewHandler(playground.Options{Timeout: *timeout})
+	spec, err := lang.Spec()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "playground:", err)
+		os.Exit(1)
+	}
+	handler, err := playground.NewHandler(playground.Options{Timeout: *timeout, Spec: spec})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "playground:", err)
 		os.Exit(1)

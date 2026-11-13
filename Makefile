@@ -1,7 +1,7 @@
 .DEFAULT_GOAL = build
 GO ?= go
 extension = $(patsubst windows,.exe,$(filter windows,$(1)))
-PKG_NAME := gomplate
+PKG_NAME := ceval
 DOCKER_REPO ?= hairyhenderson/$(PKG_NAME)
 PREFIX := .
 DOCKER_LINUX_PLATFORMS ?= linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le
@@ -144,7 +144,12 @@ $(PREFIX)/bin/$(PKG_NAME)_%$(TARGETVARIANT)$(call extension,$(GOOS)): $(shell fi
 $(PREFIX)/bin/$(PKG_NAME)$(call extension,$(GOOS)): $(PREFIX)/bin/$(PKG_NAME)_$(GOOS)-$(GOARCH)$(TARGETVARIANT)$(call extension,$(GOOS))
 	cp $< $@
 
-build: $(PREFIX)/bin/$(PKG_NAME)_$(GOOS)-$(GOARCH)$(TARGETVARIANT)$(call extension,$(GOOS)) $(PREFIX)/bin/$(PKG_NAME)$(call extension,$(GOOS))
+.PHONY: build-binary
+build: web-build
+	$(MAKE) build-binary
+
+build-binary:
+	CGO_ENABLED=0 $(GO) build -ldflags "-w -s $(COMMIT_FLAG) $(VERSION_FLAG)" -o $(PREFIX)/bin/$(PKG_NAME)$(call extension,$(GOOS)) ./cmd/$(PKG_NAME)
 
 ifeq ($(OS),Windows_NT)
 test:
@@ -191,9 +196,9 @@ gomplate.png: gomplate.svg
 	cloudconvert -f png -c density=288 $^
 
 .PHONY: lint
-lint: $(LOCALBIN)
+lint: web-build $(LOCALBIN)
 	mkdir -p bin
-	GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.10.1
+	GOBIN=$(LOCALBIN) go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 	$(LOCALBIN)/golangci-lint run
 
 
@@ -236,12 +241,25 @@ web-install:
 	pnpm -C web install --frozen-lockfile
 
 .PHONY: web-build
-web-build: web-install
+web-build: web-install wasm-smoke
 	pnpm -C web build
+
+.PHONY: wasm
+wasm:
+	mkdir -p web/apps/playground/public/wasm
+	GOOS=js GOARCH=wasm CGO_ENABLED=0 $(GO) build -trimpath -ldflags "-w -s" -o web/apps/playground/public/wasm/eval.wasm ./cmd/wasm
+	gzip -n -9 -f web/apps/playground/public/wasm/eval.wasm
+	install -m 0644 "$(shell $(GO) env GOROOT)/lib/wasm/wasm_exec.js" web/apps/playground/public/wasm/wasm_exec.js
+
+.PHONY: wasm-smoke
+wasm-smoke: wasm
+	node hack/wasm-smoke.mjs
 
 .PHONY: web-test
 web-test: web-install
 	pnpm -C web test
+
+test: web-build
 
 # Serves the evaluation API the playground proxies to.
 .PHONY: playground-server
@@ -249,7 +267,7 @@ playground-server:
 	go run ./cmd/playground
 
 .PHONY: playground
-playground: web-install
+playground: web-install wasm
 	pnpm -C web dev:playground
 
 .PHONY: celext

@@ -8,7 +8,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/antlr4-go/antlr/v4 v4.13.1
-	github.com/flanksource/commons v1.64.0
+	github.com/flanksource/commons v1.64.2-0.20261113080906-9bb965c627aa
 	github.com/flanksource/is-healthy v1.0.93
 	github.com/flanksource/kubectl-neat v1.0.4
 	github.com/google/go-cmp v0.7.0
@@ -31,6 +31,7 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/timberio/go-datemath v0.1.0
 	github.com/ugorji/go/codec v1.3.2
+	go.yaml.in/yaml/v3 v3.0.5
 	golang.org/x/text v0.43.0
 	golang.org/x/tools v0.52.0
 	google.golang.org/protobuf v1.36.12
@@ -86,7 +87,6 @@ require (
 	go.opentelemetry.io/otel v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/exp v0.0.0-20260527015227-08cc5374adb3 // indirect
 	golang.org/x/mod v0.42.0 // indirect
 	golang.org/x/net v0.62.0 // indirect

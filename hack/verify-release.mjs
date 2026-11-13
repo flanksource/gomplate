@@ -44,19 +44,24 @@ for (const scenario of [
 }
 const branch = normalized.find(({ name }) => name === target);
 assert(branch, `Unknown release branch: ${target}`);
-const lastVersion = semver.rsort(branch.tags.map(({ version }) => version))[0];
+const moduleMajor = readFileSync("go.mod", "utf8").match(/^module github.com\/flanksource\/gomplate\/v(\d+)$/m);
+assert(moduleMajor, "Cannot determine gomplate module major");
+const releaseTags = target === "main"
+ ? git("tag", "--list", `v${moduleMajor[1]}.*`).split("\n")
+   .map(gitTag => ({gitTag, version: semver.valid(gitTag)}))
+   .filter(({version}) => version && !semver.prerelease(version))
+ : branch.tags;
+const lastVersion = semver.rsort(releaseTags.map(({ version }) => version))[0];
 assert(lastVersion, `No published release found on ${target}`);
-const lastTag = branch.tags.find(({ version }) => version === lastVersion).gitTag;
+const lastTag = releaseTags.find(({ version }) => version === lastVersion).gitTag;
 const commits = git("log", "--format=%B%x00", `${lastTag}..${revision}`).split("\0")
  .map((message, index) => ({ hash: String(index), message: message.trim() }))
  .filter(({ message }) => message);
-const kind = await analyzeCommits(options, { commits, logger, cwd: process.cwd() });
+const kind = target === "main" ? "patch" : await analyzeCommits(options, { commits, logger, cwd: process.cwd() });
 if (kind) {
  const candidate = semver.inc(lastVersion, kind);
  assert(semver.satisfies(candidate, branch.range),
   `${target} cannot publish ${candidate}: allowed range is ${branch.range}. Publish v3 fixes from main until main publishes v4.`);
- const moduleMajor = readFileSync("go.mod", "utf8").match(/^module github.com\/flanksource\/gomplate\/v(\d+)$/m);
- assert(moduleMajor, "Cannot determine gomplate module major");
  assert.equal(semver.major(candidate), Number(moduleMajor[1]), "Release major must match the Go module");
  process.stdout.write(`${target} can publish ${candidate} (${branch.range})\n`);
 } else {
@@ -75,6 +80,10 @@ for (const file of ["test.yml", "lint.yml", "web.yml", "release.yml", "security.
  assert(workflow.on.push.branches.includes("3.x"), file);
 }
 const release = parse(readFileSync(".github/workflows/release.yml", "utf8"));
+assert.equal(release.jobs.tag.if, "github.ref == 'refs/heads/main'");
+assert.equal(release.jobs.tag.steps.find(({id}) => id === "version").with.tagMode, "all");
+assert.equal(release.jobs.tag.steps.find(({id}) => id === "version").with.tagPattern, `v${moduleMajor[1]}.*`);
+assert.equal(release.jobs["semantic-release"].if, "github.ref == 'refs/heads/3.x'");
 assert.equal(release.jobs["semantic-release"].steps.find(({ id }) => id === "semantic").with.semantic_version,
  require("semantic-release/package.json").version, "Verification and publishing must use the same semantic-release version");
 for (const file of readdirSync(".github/workflows").filter(file => file.endsWith(".yml"))) {

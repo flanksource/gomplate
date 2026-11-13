@@ -959,33 +959,6 @@
   },
   {
     "language": "cel",
-    "source": "A small helper command is available at `cmd/ceval` to evaluate CEL expressions against an input YAML or JSON file.",
-    "boundaries": [
-      0,
-      2,
-      8,
-      15,
-      23,
-      26,
-      36,
-      39,
-      51,
-      54,
-      63,
-      67,
-      79,
-      87,
-      90,
-      96,
-      101,
-      104,
-      109,
-      113
-    ],
-    "origin": "README.md"
-  },
-  {
-    "language": "cel",
     "source": "B'bytes'",
     "boundaries": [
       0
@@ -1034,17 +1007,6 @@
   },
   {
     "language": "cel",
-    "source": "Example input file:",
-    "boundaries": [
-      0,
-      8,
-      14,
-      18
-    ],
-    "origin": "README.md"
-  },
-  {
-    "language": "cel",
     "source": "Go,25",
     "boundaries": [
       0,
@@ -1064,31 +1026,11 @@
   },
   {
     "language": "cel",
-    "source": "Output:",
-    "boundaries": [
-      0,
-      6
-    ],
-    "origin": "README.md"
-  },
-  {
-    "language": "cel",
     "source": "R'raw\\dstring'",
     "boundaries": [
       0
     ],
     "origin": "edge-case"
-  },
-  {
-    "language": "cel",
-    "source": "Run it with:",
-    "boundaries": [
-      0,
-      4,
-      7,
-      11
-    ],
-    "origin": "README.md"
   },
   {
     "language": "cel",
@@ -1791,6 +1733,20 @@
   },
   {
     "language": "cel",
+    "source": "a/b/c: d",
+    "boundaries": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      7
+    ],
+    "origin": "README.md"
+  },
+  {
+    "language": "cel",
     "source": "aws.arnToMap(\"arn:aws:sns:eu-west-1:123:MMS-Topic\")",
     "boundaries": [
       0,
@@ -2164,6 +2120,28 @@
       91
     ],
     "origin": "GO_TEMPLATE.md"
+  },
+  {
+    "language": "cel",
+    "source": "go run ./cmd/ceval -f env.yaml -e \"labels['a/b/c']\"",
+    "boundaries": [
+      0,
+      3,
+      7,
+      8,
+      9,
+      12,
+      13,
+      19,
+      20,
+      22,
+      25,
+      26,
+      31,
+      32,
+      34
+    ],
+    "origin": "README.md"
   },
   {
     "language": "cel",
@@ -2788,6 +2766,15 @@
       47
     ],
     "origin": "CEL.md"
+  },
+  {
+    "language": "cel",
+    "source": "labels:",
+    "boundaries": [
+      0,
+      6
+    ],
+    "origin": "README.md"
   },
   {
     "language": "cel",

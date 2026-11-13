@@ -26,6 +26,29 @@ group.Any("/playground/*", echo.WrapHandler(
 
 Routes: `POST /api/eval`, `GET /api/spec`, `GET /api/examples`, `GET /api/health`.
 
+## Standalone binary and browser evaluation
+
+Build the complete binary with the Go version in `go.mod`, Node 24 and the pnpm version pinned in `web/package.json`:
+
+```sh
+make build
+./bin/ceval serve
+```
+
+Open `http://127.0.0.1:8321`. The binary embeds the production `dist`, including Monaco, the generated language catalogue, the Go WASM runtime and the compressed evaluator. Serving a release requires no Node, pnpm, Go installation or source checkout.
+
+`ceval serve -addr 127.0.0.1:9000 -timeout 5s` selects the listen address and the server evaluation timeout. `ceval version` prints the release version and commit. Existing `ceval -f env.yaml -e 'count * 2'` evaluation remains available.
+
+The **Evaluate in** selector chooses **Server** or **Browser (WASM)**. The selection is preserved in the URL as `?eval=wasm`, so shared links retain it. WASM runs CEL, Go templates (including the embedded YAML/JSON/text modes), JSONPath and JavaScript through the same Go evaluator in a Web Worker. Source and input stay in the browser during WASM evaluation. WASM uses Gomplate's built-in functions; host extensions and host resources require Server mode. Browser network and filesystem restrictions still apply to functions that use those resources.
+
+WASM loads lazily on the first browser evaluation. Its compressed module is decompressed using the browser's `DecompressionStream` API before streaming compilation. An evaluation, including initialization, has a ten-second ceiling; cancellation or timeout terminates the worker and the next run creates a new one. This releases runaway browser work as well as returning an error.
+
+For development, `make playground` builds WASM and starts Vite with the Go API. `make wasm` refreshes the module and its matching `wasm_exec.js` after changing Go code. `make wasm-smoke` runs all four evaluators in the compiled WASM module under Node; `make web-build` runs that check before building the production UI. `make build-binary` compiles a binary from an already-built UI. Source checkouts must build the UI before compiling packages that embed it; `make build`, `make test` and `make lint` do that automatically.
+
+The v4 release workflow follows Gavel and commons-db: it builds `dist` and adds it to a release-only commit before tagging, while main keeps generated bundles ignored. Release assets contain `ceval` archives for Linux, macOS and Windows on amd64 and arm64, plus SHA-256 checksums. Tagged source supports `go install github.com/flanksource/gomplate/v4/cmd/ceval@<tag>` without building the frontend locally. The `3.x` maintenance branch retains its existing semantic-release policy and downstream dependency updates.
+
+Standalone servers pass the generated catalogue through `Options.Spec`. Hosts that register functions can omit it to extract a live catalogue, or supply a catalogue generated for their own registrations. A supplied spec must describe the functions granted by the other options.
+
 ## ⚠️ It carries no authorization
 
 `/api/eval` runs arbitrary expressions with whatever `Options` grants them. In a host whose functions reach a database or a repository, **that is arbitrary execution against real data** — a `catalog.query` an author can write is a `catalog.query` anyone reaching the endpoint can write.

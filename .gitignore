@@ -12,3 +12,4 @@ report.xml
 *.test
 
 .vscode
+web/apps/playground/public/wasm/

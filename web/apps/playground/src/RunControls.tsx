@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Button, Switch } from "@flanksource/clicky-ui";
 import { UiPlay } from "@flanksource/clicky-ui/icons";
 import type { Evaluator } from "./useEvaluator";
+import type { EvalBackend } from "./useEvaluator";
 
 /** The accelerator, spelled the way the platform spells it. */
 export const RUN_SHORTCUT_LABEL = isApple() ? "⌘⏎" : "Ctrl+↵";
@@ -14,7 +15,18 @@ export function RunControls({ evaluator }: RunControlsProps) {
   useGlobalRunShortcut(evaluator.run);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex max-w-full flex-wrap items-center gap-3">
+      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+        Evaluate in
+        <select
+          value={evaluator.backend}
+          onChange={(event) => evaluator.setBackend(event.target.value as EvalBackend)}
+          className="rounded border border-border bg-background px-2 py-1 text-foreground"
+        >
+          <option value="server">Server</option>
+          <option value="wasm">Browser (WASM)</option>
+        </select>
+      </label>
       <Switch
         checked={evaluator.autoRun}
         onChange={evaluator.setAutoRun}
