@@ -8,7 +8,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/antchfx/xmlquery v1.5.2
 	github.com/antlr4-go/antlr/v4 v4.13.1
-	github.com/flanksource/commons v1.64.2-0.20261113080906-9bb965c627aa
+	github.com/flanksource/commons v1.64.2
 	github.com/flanksource/is-healthy v1.0.93
 	github.com/flanksource/kubectl-neat v1.0.4
 	github.com/google/go-cmp v0.7.0
