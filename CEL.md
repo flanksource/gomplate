@@ -436,6 +436,26 @@ Returns a new sub-list using the given indices.
 [1, 2, 3, 4].slice(2, 4)    // [3, 4]
 ```
 
+### .percentile
+
+Returns the nearest-rank percentile `q` of a list of ints and/or doubles as a double: the sample at `sorted[max(ceil(q/100*n)-1, 0)]`. `q` must be in (0, 100]. An empty list, a non-numeric sample (including a bool), a NaN or infinite sample, or a `q` outside (0, 100] is an error.
+
+```
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].percentile(90)   // 9.0
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].percentile(95)   // 10.0
+[3, 2.5, 1].percentile(50)                       // 2.5
+```
+
+### .stats
+
+Summarizes a list of ints and/or doubles as `{min, avg, max, p50, p90, p95, p99, samples}`. `samples` is an int and the rest are doubles. The percentiles use the same nearest-rank rule as `.percentile`, and the same inputs are errors.
+
+```
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].stats()
+// {"min": 1.0, "avg": 5.5, "max": 10.0, "p50": 5.0, "p90": 9.0, "p95": 10.0, "p99": 10.0, "samples": 10}
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].stats().p90      // 9.0
+```
+
 ---
 
 ## sets

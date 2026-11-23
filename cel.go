@@ -54,6 +54,7 @@ func staticCelEnvOptions() []cel.EnvOption {
 	opts = append(opts, getFoldCelLibrary())
 	opts = append(opts, collectionCelOptions()...)
 	opts = append(opts, decimalSumOption())
+	opts = append(opts, statisticsCelOptions()...)
 	opts = append(opts, celvalues.Library())
 	opts = append(opts, cel.RegexProgramSizeLimit(celRegexProgramSizeLimit))
 	return opts
