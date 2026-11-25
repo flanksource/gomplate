@@ -1,6 +1,8 @@
 package gomplate
 
 import (
+	"math"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -78,6 +80,30 @@ var _ = Describe("order statistics", func() {
 		Expect(value).To(Equal(map[string]any{
 			"min": -2.5, "avg": -2.5, "max": -2.5, "p50": -2.5, "p90": -2.5, "p95": -2.5, "p99": -2.5, "samples": int64(1),
 		}))
+	})
+	It("selects the exact rank for every whole percentile of 1..100", func() {
+		samples := make([]int, 100)
+		for i := range samples {
+			samples[i] = i + 1
+		}
+		for q := 1; q <= 100; q++ {
+			value, err := RunExpression(map[string]any{"samples": samples, "q": q},
+				Template{Expression: `samples.percentile(q)`, Strict: true})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(value).To(Equal(float64(q)), "percentile(%d)", q)
+		}
+	})
+	It("keeps the average finite when the sample sum overflows", func() {
+		value, err := RunExpression(map[string]any{"samples": []float64{math.MaxFloat64, math.MaxFloat64}},
+			Template{Expression: `samples.stats().avg`, Strict: true})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(value).To(Equal(math.MaxFloat64))
+	})
+	It("keeps the average finite for opposite-sign extremes", func() {
+		value, err := RunExpression(map[string]any{"samples": []float64{-math.MaxFloat64, -math.MaxFloat64, math.MaxFloat64}},
+			Template{Expression: `samples.stats().avg`, Strict: true})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(value).To(BeNumerically("~", -math.MaxFloat64/3, math.MaxFloat64*1e-12))
 	})
 	DescribeTable("percentile returns the nearest-rank sample as a double",
 		func(expression string, expected float64) {
