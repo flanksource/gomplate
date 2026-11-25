@@ -45,9 +45,11 @@ func orderedSamples(name string, value ref.Val) ([]float64, ref.Val) {
 	return samples, nil
 }
 
-// nearestRank is sorted[max(ceil(q/100*n)-1, 0)] for q in (0, 100].
+// nearestRank is sorted[max(ceil(q*n/100)-1, 0)] for q in (0, 100]. q*n is
+// multiplied before dividing so whole-number ranks stay exact (7/100*100 is
+// 7.000000000000001, which would round up to the next sample).
 func nearestRank(ordered []float64, q float64) types.Double {
-	return types.Double(ordered[max(int(math.Ceil(q/100*float64(len(ordered))))-1, 0)])
+	return types.Double(ordered[max(int(math.Ceil(q*float64(len(ordered))/100))-1, 0)])
 }
 
 func percentileOf(value, rank ref.Val) ref.Val {
@@ -72,17 +74,32 @@ func percentileOf(value, rank ref.Val) ref.Val {
 	return nearestRank(ordered, q)
 }
 
+// meanOf averages finite samples; when their sum overflows it averages them
+// scaled by the largest magnitude so the mean of finite samples stays finite.
+func meanOf(ordered []float64) float64 {
+	count := float64(len(ordered))
+	total := 0.0
+	for _, sample := range ordered {
+		total += sample
+	}
+	if !math.IsInf(total, 0) {
+		return total / count
+	}
+	scale := max(-ordered[0], ordered[len(ordered)-1])
+	total = 0
+	for _, sample := range ordered {
+		total += sample / scale
+	}
+	return total / count * scale
+}
+
 func statsOf(value ref.Val) ref.Val {
 	ordered, err := orderedSamples("stats", value)
 	if err != nil {
 		return err
 	}
-	total := 0.0
-	for _, sample := range ordered {
-		total += sample
-	}
 	return types.NewRefValMap(types.DefaultTypeAdapter, map[ref.Val]ref.Val{
-		types.String("min"): types.Double(ordered[0]), types.String("avg"): types.Double(total / float64(len(ordered))),
+		types.String("min"): types.Double(ordered[0]), types.String("avg"): types.Double(meanOf(ordered)),
 		types.String("max"): types.Double(ordered[len(ordered)-1]),
 		types.String("p50"): nearestRank(ordered, 50), types.String("p90"): nearestRank(ordered, 90),
 		types.String("p95"): nearestRank(ordered, 95), types.String("p99"): nearestRank(ordered, 99),
